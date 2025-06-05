@@ -1,0 +1,55 @@
+from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import Enum, String
+from backend.app.models.mixins import UUIDMixin, TimeStampMixin
+from backend.app.enums import UserRole
+from backend.db.session import Base
+
+class User(UUIDMixin, TimeStampMixin, Base):
+    """
+    Base user model used as a parent class for all user roles:
+    Client, Worker, Broker, and Admin.
+
+    Inherits:
+    - UUIDMixin: provides UUID primary key as 'id'
+    - TimeStampMixin: provides 'created_at' and 'updated_at' fields
+
+    This class serves as a polymorphic base for role-based subclasses.
+    """
+
+    __tablename__ = 'users'
+
+    telegram_id: Mapped[str] = mapped_column(
+        String,
+        unique=True,
+        nullable=False
+    )
+    # Telegram internal ID used as external identifier for bots
+
+    telegram_username: Mapped[str] = mapped_column(
+        String(255),
+        unique=True,
+        nullable=False
+    )
+    # Username of the user in Telegram, used for display/logging/search
+
+    role: Mapped[UserRole] = mapped_column(
+        Enum(UserRole),
+        nullable=False
+    )
+    # Enum-based user role: defines access level and behavior (e.g., client, admin)
+
+    is_active: Mapped[bool] = mapped_column(
+        default=True,
+        nullable=False
+    )
+    # Logical flag indicating if the user is allowed to access the system
+
+    __mapper_args__ = {
+        "polymorphic_identity": role,  # Uses 'role' column to resolve subclass
+    }
+
+    def __repr__(self):
+        """
+        Developer-friendly string representation for debugging/logging purposes.
+        """
+        return f"<User - {self.telegram_username}: ({self.role.value}). ID: {self.telegram_id} is {self.is_active}>"
