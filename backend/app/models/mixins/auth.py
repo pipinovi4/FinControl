@@ -1,3 +1,5 @@
+# Temporary template, in the next 10 hours of work I will change it to JWT Auth
+
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import String
 
