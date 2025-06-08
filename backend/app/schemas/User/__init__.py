@@ -1,13 +1,13 @@
 # schemas/user/__init__.py
-from .base import UserBaseSchema
-from .create import UserCreateSchema
-from .update import UserUpdateSchema
-from .out import UserOutSchema
+from .base import UserBase
+from .create import UserCreate
+from .update import UserUpdate
+from .out import UserOut
 
 
 __all__ = [
-    "UserBaseSchema",
-    "UserCreateSchema",
-    "UserUpdateSchema",
-    "UserOutSchema"
+    "UserBase",
+    "UserCreate",
+    "UserUpdate",
+    "UserOut"
 ]
