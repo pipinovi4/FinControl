@@ -1,4 +1,4 @@
-from backend.app.schemas.user.base import UserBase
+from backend.app.schemas.User import UserBase
 from backend.app.schemas.mixins import UUIDSchema, TimeStampSchema
 
 class UserOut(UserBase, UUIDSchema, TimeStampSchema):
