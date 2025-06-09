@@ -1,7 +1,7 @@
-from pydantic import BaseModel
 from backend.app.permissions import PermissionRole
+from backend.app.schemas.User import UserBase
 
-class UserCreate(BaseModel):
+class UserCreate(UserBase):
     """
     Schema for creating a new user.
 
