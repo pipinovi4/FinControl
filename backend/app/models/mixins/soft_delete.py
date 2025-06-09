@@ -1,5 +1,7 @@
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import Boolean
+from sqlalchemy import Boolean, DateTime
+from typing import Optional
+import datetime
 
 
 class SoftDeleteMixin:
@@ -29,7 +31,14 @@ class SoftDeleteMixin:
 
     is_deleted: Mapped[bool] = mapped_column(
         Boolean,
-        default=False,        # All new records are active by default
-        nullable=False,       # Enforces explicit boolean value
-        index=True            # Optimizes lookups for active records
+        default=False,         # All new records are active by default
+        nullable=False,        # Enforces explicit boolean value
+        index=True,            # Optimizes lookups for active records
+        description = "Soft delete flag"
+    )
+
+    deleted_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True),
+        default=None,
+        description="When object was marked as deleted"
     )
