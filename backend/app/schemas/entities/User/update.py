@@ -1,6 +1,7 @@
-from pydantic import BaseModel
+from .base import UserBase
 
-class UserUpdate(BaseModel):
+
+class UserUpdate(UserBase):
     """
     Schema for updating an existing user.
 
