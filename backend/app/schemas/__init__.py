@@ -10,5 +10,5 @@ __all__ = [
     "SchemaBase",
     "RefreshToken", "RefreshTokenOut",
     "UserSchema", "ClientSchema", "WorkerSchema", "BrokerSchema", "AdminSchema",
-    "AuthSchema", "DynamicLinkAuthSchema", "SoftDel"
+    "AuthSchema", "DynamicLinkAuthSchema", "SoftDeleteSchema"
 ]
