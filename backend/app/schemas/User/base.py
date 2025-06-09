@@ -1,7 +1,8 @@
-from pydantic import BaseModel, Field
 from backend.app.permissions import PermissionRole
+from backend.app.schemas import SchemaBase
+from pydantic import Field
 
-class UserBase(BaseModel):
+class UserBase(SchemaBase):
     """
     Base schema shared across all user-related models.
 
