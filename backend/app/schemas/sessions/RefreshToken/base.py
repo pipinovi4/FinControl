@@ -7,4 +7,3 @@ class RefreshTokenBase(BaseModel):
     user_id: UUID
     user_agent: str
     ip_address: str
-    fingerprint: str
