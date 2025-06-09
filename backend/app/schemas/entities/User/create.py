@@ -1,5 +1,5 @@
 from backend.app.permissions import PermissionRole
-from backend.app.schemas.User import UserBase
+from backend.app.schemas.entities.User import UserBase
 
 class UserCreate(UserBase):
     """

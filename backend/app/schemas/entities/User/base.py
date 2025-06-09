@@ -1,8 +1,9 @@
 from backend.app.permissions import PermissionRole
+from backend.app.schemas.mixins import UUIDSchema, TimeStampSchema
 from backend.app.schemas import SchemaBase
 from pydantic import Field
 
-class UserBase(SchemaBase):
+class UserBase(SchemaBase, UUIDSchema, TimeStampSchema):
     """
     Base schema shared across all user-related models.
 

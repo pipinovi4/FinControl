@@ -1,15 +1,15 @@
-from .auth import AuthSchema
-from .dynamic_link_auth import DynamicLinkAuthSchema
-from .telegram import TelegramSchema
-from .timestamp import TimeStampSchema
-from .timestamp_auth import TimeStampAuthSchema
-from .uuid import UUIDSchema
+from backend.app.schemas.mixins.Auth import *
+from backend.app.schemas.mixins.DynamicLinkAuth import *
+from backend.app.schemas.mixins.TelegramBase import *
+from backend.app.schemas.mixins.TimeStamp import *
+from backend.app.schemas.mixins.TimeStampAuth import *
+from backend.app.schemas.mixins.UUID import *
 
 __all__ = [
-    'AuthSchema',
-    'DynamicLinkAuthSchema',
-    'TelegramSchema',
-    'TimeStampSchema',
-    'TimeStampAuthSchema',
-    'UUIDSchema'
+    "Auth",
+    "UUID",
+    "TimeStamp",
+    "TelegramBase",
+    "TimeStampAuth",
+    "DynamicLinkAuth",
 ]
