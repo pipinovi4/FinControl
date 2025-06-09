@@ -1,6 +1,7 @@
-import uuid
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import text
+import uuid
 
 
 class UUIDMixin:
@@ -20,8 +21,6 @@ class UUIDMixin:
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),            # SQLAlchemy column type for native PostgreSQL UUID
         primary_key=True,              # Marks this field as primary key
-        default=uuid.uuid4,            # Generates UUID automatically
-        unique=True,                   # Ensures uniqueness in the database
-        index=True,                    # Speeds up lookups by this field
+        server_default=text("gen_random_uuid()"),
         nullable=False
     )
