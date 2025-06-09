@@ -1,5 +1,5 @@
-# from backend.app.schemas.sessions.refresh_token import refresh_token
+from .RefreshToken import RefreshToken
 
 __all__ = [
-    "refresh_token"
+    "RefreshToken",
 ]
