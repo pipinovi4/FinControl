@@ -5,9 +5,8 @@ from .update import UserUpdate
 from .out import UserOut
 
 
-__all__ = [
-    "UserBase",
-    "UserCreate",
-    "UserUpdate",
-    "UserOut"
-]
+class UserSchema:
+    Base = UserBase
+    Create = UserCreate
+    Update = UserUpdate
+    Out = UserOut
