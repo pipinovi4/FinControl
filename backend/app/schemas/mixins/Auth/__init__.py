@@ -4,7 +4,7 @@ from .out     import AuthOut
 from .update import AuthUpdate
 
 
-class Auth:
+class AuthSchema:
     Base   = AuthBase
     Create = AuthCreate
     Out    = AuthOut
