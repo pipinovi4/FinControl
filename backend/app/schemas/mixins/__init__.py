@@ -6,10 +6,10 @@ from backend.app.schemas.mixins.TimeStampAuth import *
 from backend.app.schemas.mixins.UUID import *
 
 __all__ = [
-    "Auth",
-    "UUID",
-    "TimeStamp",
-    "TelegramBase",
-    "TimeStampAuth",
-    "DynamicLinkAuth",
+    "AuthSchema",
+    "UUIDSchema",
+    "TimeStampSchema",
+    "TelegramBaseSchema",
+    "TimeStampAuthSchema",
+    "DynamicLinkAuthSchema",
 ]
