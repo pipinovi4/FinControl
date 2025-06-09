@@ -1,9 +1,10 @@
-from backend.app.schemas.mixins.Auth import *
-from backend.app.schemas.mixins.DynamicLinkAuth import *
-from backend.app.schemas.mixins.TelegramBase import *
-from backend.app.schemas.mixins.TimeStamp import *
-from backend.app.schemas.mixins.TimeStampAuth import *
-from backend.app.schemas.mixins.UUID import *
+from .Auth import *
+from .DynamicLinkAuth import *
+from .TelegramBase import *
+from .TimeStamp import *
+from .TimeStampAuth import *
+from .UUID import *
+from .SoftDeleteSchema import *
 
 __all__ = [
     "AuthSchema",
@@ -12,4 +13,5 @@ __all__ = [
     "TelegramBaseSchema",
     "TimeStampAuthSchema",
     "DynamicLinkAuthSchema",
+    "SoftDeleteSchema",
 ]
