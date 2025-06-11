@@ -1,8 +1,7 @@
 from typing import Optional
 from pydantic import EmailStr, Field
-from backend.app.schemas import SchemaBase
 
-class AuthUpdate(SchemaBase):
+class AuthUpdate:
     """
     Schema for updating authentication credentials.
 
