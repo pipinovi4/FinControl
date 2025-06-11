@@ -1,7 +1,6 @@
 from datetime import datetime
-from backend.app.schemas import SchemaBase
 
-class TimeStampAuthSchema(SchemaBase):
+class TimeStampAuthSchema:
     """
     Shared schema for exposing the last login timestamp of a user.
     Used in Out schemas for role-based models (e.g., Worker, Broker).
