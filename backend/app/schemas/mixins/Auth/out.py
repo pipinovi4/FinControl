@@ -1,6 +1,6 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import EmailStr, Field
 
-class AuthOut(BaseModel):
+class AuthOut:
     """
     Public-facing schema for authentication info in API responses.
 
