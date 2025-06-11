@@ -7,5 +7,4 @@ from .enums import PermissionRole
 __all__ = [
     "require_role",
     "PermissionRole",
-
 ]
