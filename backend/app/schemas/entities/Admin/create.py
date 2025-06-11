@@ -1,8 +1,6 @@
-from typing import Optional
-from pydantic import Field, EmailStr
-from uuid import UUID
+from pydantic import Field
 
-from backend.app.schemas.entities import UserSchema
+from backend.app.schemas.entities.User import UserSchema
 
 class AdminCreate(UserSchema.Create):
     """
@@ -13,8 +11,8 @@ class AdminCreate(UserSchema.Create):
     Adds:
       - display_name       (optional friendly name for UI/logs)
     """
-    display_name: Optional[str] = Field(
-        None,
+    display_name: str = Field(
+        ...,
         example="Jane Admin",
         description="Friendly display name for dashboard or logs"
     )
