@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import UUID, String, ForeignKey
 from sqlalchemy.dialects.postgresql import ARRAY
-from backend.app.models import User
+
+from backend.app.models.entities import User, Client
 from backend.app.models.mixins import AuthMixin, TimeStampAuthMixin
 
 
@@ -17,29 +18,34 @@ class Broker(User, AuthMixin, TimeStampAuthMixin):
 
     __tablename__ = "brokers"
 
-    # Primary key mapped to base users.id (inherits from User)
     id: Mapped[UUID] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("users.id", ondelete="CASCADE"),
         primary_key=True
     )
 
-    # Optional company name associated with the broker
     company_name: Mapped[str] = mapped_column(
         String(255),
         nullable=True,
-        comment="Name of the broker's company"
+        info={"description": "Name of the broker's company"}
     )
 
-    # Regions broker is responsible for — stored as a list of strings
     region: Mapped[list[str]] = mapped_column(
         ARRAY(String),
         nullable=True,
-        comment="List of regions where the broker is active"
+        info={"description": "List of regions where the broker is active"}
+    )
+
+    clients: Mapped[list[Client]] = mapped_column(
+        "Client",
+        back_populates="broker",
+        cascade="all, delete-orphan",
+        lazy="selectin"
     )
 
     __mapper_args__ = {
-        "polymorphic_identity": "broker"  # Used for polymorphic loading
+        "polymorphic_identity": "broker",
+        "inherit_condition": (id == User.id),
     }
 
     def __repr__(self) -> str:
