@@ -1,8 +1,7 @@
 from typing import Optional
 from pydantic import Field
-from backend.app.schemas import SchemaBase
 
-class DynamicLinkAuthSchema(SchemaBase):
+class DynamicLinkAuthSchema:
     """
     Base schema for dynamic login authentication.
 
