@@ -6,11 +6,11 @@ imported directly from 'backend.app.models.entities'.
 """
 
 # Core user entities
-from backend.app.models.entities.user import User
-from backend.app.models.entities.client import Client
-from backend.app.models.entities.worker import Worker
-from backend.app.models.entities.broker import Broker
-from backend.app.models.entities.admin import Admin
+from .user import User
+from .client import Client
+from .worker import Worker
+from .broker import Broker
+from .admin import Admin
 
 # Public API of the entities package
 __all__ = [
