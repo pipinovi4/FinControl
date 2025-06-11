@@ -1,10 +1,9 @@
 from pydantic import Field
 from typing import Optional
 from datetime import datetime
-from backend.app.schemas import SchemaBase
 
 
-class SoftDeleteSchema(SchemaBase):
+class SoftDeleteSchema:
     """
     Base schema to support soft deletion logic in API layer.
 
