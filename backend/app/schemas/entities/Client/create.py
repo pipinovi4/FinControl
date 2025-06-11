@@ -15,10 +15,17 @@ class ClientCreate(UserSchema.Create):
     Optional:
     - worker_id, questionnaire fields, report_files
     """
+
     worker_id: Optional[UUID] = Field(
         None,
         description="UUID of the assigned worker (if any)"
     )
+
+    broker_id: Optional[UUID] = Field(
+        None,
+        description="UUID of the assigned broker (if any)"
+    )
+
     full_name: str = Field(..., example="Ivan Ivanov", description="Client’s full legal name")
     phone_number: str = Field(..., example="+380931234567", description="Contact phone number")
     email: EmailStr = Field(..., example="client@example.com", description="Contact email address")
