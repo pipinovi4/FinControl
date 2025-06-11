@@ -1,8 +1,7 @@
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import Enum, String
-from backend.app.models import SoftDeleteMixin
-from backend.app.models.mixins import UUIDMixin, TimeStampMixin
-from backend.app.enums import UserRole
+from backend.app.models.mixins import UUIDMixin, TimeStampMixin, SoftDeleteMixin
+from backend.app.permissions.enums import PermissionRole
 from backend.db.session import Base
 
 class User(Base, UUIDMixin, TimeStampMixin, SoftDeleteMixin):
@@ -33,8 +32,8 @@ class User(Base, UUIDMixin, TimeStampMixin, SoftDeleteMixin):
     )
     # Username of the user in Telegram, used for display/logging/search
 
-    role: Mapped[UserRole] = mapped_column(
-        Enum(UserRole),
+    role: Mapped[PermissionRole] = mapped_column(
+        Enum(PermissionRole),
         nullable=False
     )
     # Enum-based user role: defines access level and behavior (e.g., client, admin)
@@ -46,7 +45,8 @@ class User(Base, UUIDMixin, TimeStampMixin, SoftDeleteMixin):
     # Logical flag indicating if the user is allowed to access the system
 
     __mapper_args__ = {
-        "polymorphic_identity": role,  # Uses 'role' column to resolve subclass
+        "polymorphic_on": role,
+        "polymorphic_identity": "user",
     }
 
     def __repr__(self):
