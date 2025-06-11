@@ -1,9 +1,8 @@
 from datetime import datetime
 from pydantic import Field
-from backend.app.schemas import SchemaBase
 
 
-class TimeStampSchema(SchemaBase):
+class TimeStampSchema:
     """
     Schema for timestamp tracking fields.
 
