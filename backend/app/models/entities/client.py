@@ -2,7 +2,7 @@ import uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey, UUID, String, Text
 from sqlalchemy.dialects.postgresql import JSONB
-from backend.app.models import User
+from backend.app.models.entities import User, Worker, Broker
 
 
 class Client(User):
@@ -32,12 +32,25 @@ class Client(User):
     )
     # Reference to the user who manages this client (must be of role Worker)
 
-    worker: Mapped["User"] = relationship(
-        "User",
+    worker: Mapped[Worker] = relationship(
+        "Worker",
         foreign_keys=[worker_id],
         back_populates="clients"
     )
     # ORM relationship to the assigned worker (reverse via User.clients)
+
+    broker_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey('users.id', ondelete='SET NULL'),
+        nullable=True
+    )
+
+    broker: Mapped[Broker] = relationship(
+        "Broker",
+        foreign_keys=[broker_id],
+        back_populates="clients"
+    )
+    # ORM relationship to the assigned broker (reverse via User.clients)
 
     full_name: Mapped[str] = mapped_column(String(255), nullable=False)
     # Full legal name (e.g., from passport)
@@ -104,6 +117,7 @@ class Client(User):
 
     __mapper_args__ = {
         "polymorphic_identity": "client",
+        "inherit_condition": (id == User.id),
     }
     # Enables SQLAlchemy polymorphic loading based on 'role' column in User
 
