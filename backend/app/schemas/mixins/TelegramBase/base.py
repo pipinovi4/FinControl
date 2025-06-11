@@ -1,8 +1,7 @@
 from pydantic import Field
-from backend.app.schemas import SchemaBase
 
 
-class TelegramBaseSchema(SchemaBase):
+class TelegramBaseSchema:
     """
     Schema representing Telegram user information.
 
