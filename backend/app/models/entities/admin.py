@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import UUID, String, ForeignKey
-from backend.app.models import User
+from sqlalchemy import UUID, String, ForeignKey, Boolean
+from backend.app.models.entities import User
 from backend.app.models.mixins import AuthMixin, TimeStampAuthMixin, DynamicLinkAuthMixin
+
 
 class Admin(User, AuthMixin, TimeStampAuthMixin, DynamicLinkAuthMixin):
     """
@@ -26,12 +27,20 @@ class Admin(User, AuthMixin, TimeStampAuthMixin, DynamicLinkAuthMixin):
     # Optional display name for UI or logs
     display_name: Mapped[str] = mapped_column(
         String(255),
-        nullable=True,
-        comment="Friendly name for the admin (used in dashboards/logs)"
+        nullable=False,
+        unique=True,
+        info={"description": "Friendly name for the admin (used in dashboards/logs)"}
+    )
+
+    is_super_admin: Mapped[bool] = mapped_column(
+        Boolean,
+        nullable=False,
+        info={"description": "Whether the admin is super admin"}
     )
 
     __mapper_args__ = {
-        "polymorphic_identity": "admin"
+        "inherit_condition": (id == User.id),
+        "polymorphic_identity": "admin",
     }
 
     def __repr__(self) -> str:
