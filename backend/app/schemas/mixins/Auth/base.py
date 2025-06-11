@@ -1,7 +1,6 @@
 from pydantic import EmailStr, Field
-from backend.app.schemas import SchemaBase
 
-class AuthBase(SchemaBase):
+class AuthBase:
     """
     Internal schema for authentication models.
 
