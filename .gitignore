@@ -62,3 +62,6 @@ next-env.d.ts
 # idea PyCharm - Webstorm
 .idea/
 
+# Alembic temp (optionally)
+backend/db/alembic/versions/*.pyc
+backend/db/alembic/versions/__pycache__/
