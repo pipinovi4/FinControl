@@ -1,6 +1,6 @@
-from backend.app.permissions import PermissionRole
-from backend.app.schemas.mixins import UUIDSchema, TimeStampSchema
-from backend.app.schemas import SchemaBase, SoftDeleteSchema
+from backend.app.permissions.enums import PermissionRole
+from backend.app.schemas.mixins import UUIDSchema, TimeStampSchema, SoftDeleteSchema
+from backend.app.schemas import SchemaBase
 from pydantic import Field
 
 class UserBase(SchemaBase, UUIDSchema, TimeStampSchema, SoftDeleteSchema):
