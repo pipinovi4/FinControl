@@ -12,6 +12,7 @@ class ClientUpdate(UserSchema.Update):
     All fields optional; only provided ones will be updated.
     """
     worker_id: Optional[UUID] = Field(None, description="UUID of the assigned worker")
+    broker_id: Optional[UUID] = Field(None, description="UUID of the assigned broker")
     full_name: Optional[str] = Field(None, example="Ivan Ivanov", description="Client’s full legal name")
     phone_number: Optional[str] = Field(None, example="+380931234567", description="Contact phone number")
     email: Optional[EmailStr] = Field(None, example="client@example.com", description="Contact email address")
