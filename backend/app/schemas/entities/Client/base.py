@@ -1,7 +1,7 @@
 from typing import Optional, List, Dict
 from uuid import UUID
 from pydantic import Field
-from backend.app.schemas.entities import UserSchema
+from backend.app.schemas.entities import UserSchema, WorkerSchema, BrokerSchema
 
 
 class ClientBase(UserSchema.Base):
@@ -17,6 +17,22 @@ class ClientBase(UserSchema.Base):
         None,
         description="UUID of the assigned worker (if any)"
     )
+
+    worker: Optional[WorkerSchema.Base]= Field(
+        None,
+        description="Full nested Worker schema if assigned"
+    )
+
+    broker_id: Optional[UUID] = Field(
+        None,
+        description="UUID of the assigned broker (if any)"
+    )
+
+    broker: Optional[BrokerSchema.Base]= Field(
+        None,
+        description="Full nested Broker schema if assigned"
+    )
+
     # Contact & identity
     full_name: str = Field(..., example="Ivan Ivanov", description="Client’s full legal name")
     phone_number: str = Field(..., example="+380931234567", description="Contact phone number")
