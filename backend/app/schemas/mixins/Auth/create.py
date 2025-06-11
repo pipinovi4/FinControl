@@ -1,6 +1,6 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import EmailStr, Field
 
-class AuthCreate(BaseModel):
+class AuthCreate:
     """
     Schema for user sign-up / login via email + plain-text password.
 
