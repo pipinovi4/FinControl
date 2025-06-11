@@ -6,7 +6,7 @@ imported directly from 'backend.app.models.sessions'.
 """
 
 # RefreshToken model for tracking per-device refresh tokens
-from backend.app.models.sessions.refresh_token import RefreshToken
+from .refresh_token import RefreshToken
 
 # Public API of the sessions package
 __all__ = [
