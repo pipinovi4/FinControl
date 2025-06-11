@@ -1,7 +1,7 @@
 from typing import Optional
 from pydantic import Field, EmailStr
 
-from backend.app.schemas.entities import UserSchema
+from backend.app.schemas.entities.User import UserSchema
 
 class AdminUpdate(UserSchema.Update):
     """
@@ -10,8 +10,8 @@ class AdminUpdate(UserSchema.Update):
     Inherits all optional user-update fields, then adds:
       - display_name
     """
-    display_name: Optional[str] = Field(
-        None,
+    display_name: str = Field(
+        ...,
         example="Jane A.",
         description="Updated friendly display name"
     )
