@@ -1,8 +1,9 @@
 from fastapi import FastAPI
+from backend.app.routes import users  # якщо лежить у app/routes/users.py
 
 def create_app() -> FastAPI:
     app = FastAPI()
-
+    app.include_router(users.router)  # додаємо наш роутер
     return app
 
 app = create_app()
