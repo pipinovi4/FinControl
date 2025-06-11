@@ -1,5 +1,7 @@
 from fastapi import Depends, HTTPException, status
-from backend.app.permissions import PermissionRole
+from backend.app.permissions.enums import PermissionRole
+
+from backend.app.schemas.entities.User.out import UserOut
 
 # TODO: Replace with actual implementation
 # Dependency to extract current user from token or telegram ID
