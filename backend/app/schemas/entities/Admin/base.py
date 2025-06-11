@@ -1,6 +1,6 @@
 from typing import Optional
 from pydantic import Field
-from backend.app.schemas.entities import UserSchema
+from backend.app.schemas.entities.User import UserSchema
 from backend.app.schemas.mixins import (
     AuthSchema,
     TimeStampAuthSchema,
@@ -26,7 +26,7 @@ class AdminBase(
       - display_name              (optional friendly name for UI/logs)
     """
     display_name: Optional[str] = Field(
-        None,
+        ...,
         example="Jane Admin",
         description="Friendly display name used in dashboards or logs"
     )
