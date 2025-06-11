@@ -1,6 +1,7 @@
+from typing import Sequence
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import UUID, String, ForeignKey
-from backend.app.models import User
+from backend.app.models.entities import User, Client
 from backend.app.models.mixins import AuthMixin, TimeStampAuthMixin, DynamicLinkAuthMixin
 
 
@@ -43,13 +44,14 @@ class Worker(User, AuthMixin, TimeStampAuthMixin, DynamicLinkAuthMixin):
     )
 
     # One-to-many relationship: this worker can have multiple clients
-    clients: Mapped[list["Client"]] = relationship(
+    clients: Mapped[list[Client]] = relationship(
         "Client",
         back_populates="worker"
     )
 
     # Used by SQLAlchemy's polymorphic system to identify the model
     __mapper_args__ = {
+    "inherit_condition": (id == User.id),
         "polymorphic_identity": "worker",
     }
 
