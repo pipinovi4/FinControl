@@ -22,5 +22,6 @@ class SoftDeleteMixin:
     deleted_at: Mapped[Optional[datetime.datetime]] = mapped_column(
         DateTime(timezone=True),
         default=None,
+        nullable=True,
         info={"description": "When object was marked as deleted"}
     )
