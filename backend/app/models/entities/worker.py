@@ -41,7 +41,7 @@ class Worker(User, AuthMixin, TimeStampAuthMixin, DynamicLinkAuthMixin):
         "Client",
         back_populates="worker",
         foreign_keys="Client.worker_id",
-        cascade="all, delete-orphan"
+        cascade="all"
     )
 
     # Used by SQLAlchemy's polymorphic system to identify the model
