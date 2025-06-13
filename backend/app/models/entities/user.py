@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Enum, String
 from backend.app.models.mixins import UUIDMixin, TimeStampMixin, SoftDeleteMixin
 from backend.app.permissions.enums import PermissionRole
@@ -43,6 +43,12 @@ class User(Base, UUIDMixin, TimeStampMixin, SoftDeleteMixin):
         nullable=False
     )
     # Logical flag indicating if the user is allowed to access the system
+
+    refresh_tokens: Mapped[list["RefreshToken"]] = relationship(
+        "RefreshToken",
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
 
     __mapper_args__ = {
         "polymorphic_on": role,
