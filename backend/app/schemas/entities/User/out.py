@@ -1,7 +1,6 @@
-from backend.app.schemas.entities.User import UserBase
-from backend.app.schemas.mixins import UUIDSchema, TimeStampSchema
+from backend.app.schemas.entities.User.base import UserBase
 
-class UserOut(UserBase, UUIDSchema, TimeStampSchema):
+class UserOut(UserBase):
     """
     Schema for returning user data to clients.
 
