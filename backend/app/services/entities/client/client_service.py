@@ -5,21 +5,15 @@ from uuid import UUID
 from backend.app.models import Client
 from backend.app.services.entities import UserService
 from backend.app.utils.decorators import handle_exceptions
+from backend.app.schemas.entities.Client import ClientSchema
 
 ClientT = TypeVar("ClientT", bound=Client)
 
 
 class ClientServices(UserService):
-    """
-    Service for managing Client entities.
-    Extends UserService with client-specific logic.
-    """
-
     def __init__(self, db: Session, client_model: Type[ClientT] = Client):
         super().__init__(db)
         self.client_model = client_model
-
-    # --- GETTERS ---
 
     @handle_exceptions(raise_404=True)
     def get_client_by_id(self, client_id: UUID) -> ClientT | None:
@@ -37,8 +31,6 @@ class ClientServices(UserService):
     def get_client_field(self, client_id: UUID, field_name: str) -> str | None:
         client = self.get_client_by_id(client_id)
         return getattr(client, field_name, None) if client else None
-
-    # --- SETTERS ---
 
     @handle_exceptions()
     def update_client_field(self, client_id: UUID, field_name: str, value: str) -> None:
@@ -65,23 +57,18 @@ class ClientServices(UserService):
             client.income = income
             self.db.commit()
 
-    # --- SOFT DELETE / RESTORE ---
-    # Already inherited from UserService
-
-    # --- CRUD ---
-
     @handle_exceptions()
-    def create_client(self, client_data: dict) -> ClientT:
-        client = Client(**client_data)
+    def create_client(self, client_data: ClientSchema.Create) -> ClientT:
+        client = Client(**client_data.model_dump())
         self.db.add(client)
         self.db.commit()
         self.db.refresh(client)
         return client
 
     @handle_exceptions()
-    def update_client(self, client_id: UUID, client_data: dict) -> ClientT:
+    def update_client(self, client_id: UUID, client_data: ClientSchema.Update) -> ClientT:
         client = self.get_client_by_id(client_id)
-        for key, value in client_data.items():
+        for key, value in client_data.model_dump(exclude_unset=True).items():
             setattr(client, key, value)
         self.db.commit()
         self.db.refresh(client)

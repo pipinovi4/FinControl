@@ -17,6 +17,7 @@ from backend.app.services.entities import UserService
 from backend.app.permissions import PermissionRole
 from backend.app.models.entities import Admin
 from backend.app.utils.decorators import handle_exceptions
+from backend.app.schemas.entities.Admin import AdminSchema
 
 T = TypeVar("T", bound=Admin)
 
@@ -28,24 +29,34 @@ class AdminService(UserService):
 
     @handle_exceptions(raise_404=True)
     def get_admin_by_id(self, admin_id: UUID) -> T:
-        return cast(T, self.db.query(Admin).filter_by(id=admin_id, is_deleted=False).first())
+        return cast(
+            T,
+            self.db.query(Admin)
+            .filter_by(id=admin_id, is_deleted=False)
+            .first()
+        )
 
     @handle_exceptions(default_return=[])
     def get_all_admins(self) -> Sequence[T]:
-        return cast(Sequence[T], self.db.query(Admin).filter_by(role=PermissionRole.ADMIN).all())
+        return cast(
+            Sequence[T],
+            self.db.query(Admin)
+            .filter_by(role=PermissionRole.ADMIN)
+            .all()
+        )
 
     @handle_exceptions()
-    def create_admin(self, admin_data: dict) -> T:
-        admin = Admin(**admin_data)
+    def create_admin(self, admin_data: AdminSchema.Create) -> T:
+        admin = Admin(**admin_data.model_dump())
         self.db.add(admin)
         self.db.commit()
         self.db.refresh(admin)
         return cast(T, admin)
 
     @handle_exceptions()
-    def update_admin(self, admin_id: UUID, updates: dict) -> T:
+    def update_admin(self, admin_id: UUID, updates: AdminSchema.Update) -> T:
         admin = self.get_admin_by_id(admin_id)
-        for key, value in updates.items():
+        for key, value in updates.model_dump(exclude_unset=True).items():
             setattr(admin, key, value)
         self.db.commit()
         self.db.refresh(admin)

@@ -1,20 +1,3 @@
-"""
-WorkerService handles operations related to Worker users.
-
-Methods:
-    get_worker_by_id(worker_id): Get worker by UUID, raise 404 if not found.
-    get_by_username(username): Get worker by internal username.
-    get_clients(worker_id): Get all clients assigned to a worker.
-    update_username(worker_id, new_username): Change worker's username.
-    update_telegram_username(worker_id, telegram_username): Update Telegram tag.
-    assign_client(worker_id, client_id): Assign a client to worker.
-    unassign_client(worker_id, client_id): Remove client from worker.
-    bulk_assign_clients(worker_id, client_ids): Assign multiple clients.
-    create_worker(worker_data): Create a new worker.
-    update_worker(worker_id, worker_data): Update existing worker fields.
-    delete_worker(worker_id): Hard delete worker from DB.
-"""
-
 from sqlalchemy.orm import Session
 from uuid import UUID
 from typing import Sequence, cast, TypeVar
@@ -22,6 +5,7 @@ from typing import Sequence, cast, TypeVar
 from backend.app.models import Worker, Client
 from backend.app.services.entities import UserService
 from backend.app.utils.decorators import handle_exceptions
+from backend.app.schemas.entities.Worker import WorkerSchema  # Імпорт схем
 
 WorkerT = TypeVar("WorkerT", bound=Worker)
 
@@ -30,8 +14,6 @@ class WorkerService(UserService):
     def __init__(self, db: Session):
         super().__init__(db)
         self.db = db
-
-    # --- GETTERS ---
 
     @handle_exceptions(raise_404=True)
     def get_worker_by_id(self, worker_id: UUID) -> WorkerT | None:
@@ -46,8 +28,6 @@ class WorkerService(UserService):
         worker = self.get_worker_by_id(worker_id)
         return cast(Sequence[Client], worker.clients if worker else [])
 
-    # --- UPDATES ---
-
     @handle_exceptions()
     def update_username(self, worker_id: UUID, new_username: str) -> None:
         self.db.query(Worker).filter(Worker.id == worker_id).update({"username": new_username})
@@ -57,8 +37,6 @@ class WorkerService(UserService):
     def update_telegram_username(self, worker_id: UUID, telegram_username: str) -> None:
         self.db.query(Worker).filter(Worker.id == worker_id).update({"telegram_username": telegram_username})
         self.db.commit()
-
-    # --- CLIENT MANAGEMENT ---
 
     @handle_exceptions()
     def assign_client(self, worker_id: UUID, client_id: UUID) -> None:
@@ -72,8 +50,6 @@ class WorkerService(UserService):
             self.db.query(Client).filter(Client.id == client_id).update({"worker_id": None})
             self.db.commit()
 
-    # --- BULK ---
-
     @handle_exceptions()
     def bulk_assign_clients(self, worker_id: UUID, client_ids: list[UUID]) -> None:
         self.db.query(Client).filter(Client.id.in_(client_ids)).update(
@@ -81,20 +57,18 @@ class WorkerService(UserService):
         )
         self.db.commit()
 
-    # --- CRUD ---
-
     @handle_exceptions()
-    def create_worker(self, worker_data: dict) -> WorkerT:
-        worker = Worker(**worker_data)
+    def create_worker(self, worker_data: WorkerSchema.Create) -> WorkerT:
+        worker = Worker(**worker_data.model_dump())
         self.db.add(worker)
         self.db.commit()
         self.db.refresh(worker)
         return cast(WorkerT, worker)
 
     @handle_exceptions()
-    def update_worker(self, worker_id: UUID, worker_data: dict) -> WorkerT:
+    def update_worker(self, worker_id: UUID, worker_data: WorkerSchema.Update) -> WorkerT:
         worker = self.get_worker_by_id(worker_id)
-        for key, value in worker_data.items():
+        for key, value in worker_data.model_dump(exclude_unset=True).items():
             setattr(worker, key, value)
         self.db.commit()
         self.db.refresh(worker)
