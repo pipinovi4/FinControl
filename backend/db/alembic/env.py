@@ -67,6 +67,7 @@ for m in MODEL_MODULES:
     importlib.import_module(m)
 
 from backend.db.session import Base  # тепер Base.metadata заповнений
+from backend.app.models import *
 
 print("DEBUG tables =>", list(Base.metadata.tables.keys()))
 
