@@ -1,7 +1,9 @@
 from typing import Optional, List, Dict
 from uuid import UUID
 from pydantic import Field
-from backend.app.schemas.entities import UserSchema, WorkerSchema, BrokerSchema
+from backend.app.schemas.entities.User import UserSchema
+from backend.app.schemas.entities.Worker import WorkerSchema
+from backend.app.schemas.entities.Broker import BrokerSchema
 
 
 class ClientBase(UserSchema.Base):
