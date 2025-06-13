@@ -36,10 +36,11 @@ class Broker(User, AuthMixin, TimeStampAuthMixin):
         info={"description": "List of regions where the broker is active"}
     )
 
-    clients: Mapped[list[Client]] = relationship(
+    clients: Mapped[list["Client"]] = relationship(
         "Client",
         back_populates="broker",
-        lazy="selectin"
+        foreign_keys="Client.broker_id",
+        cascade="all"
     )
 
     __mapper_args__ = {
