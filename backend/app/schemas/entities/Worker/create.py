@@ -1,6 +1,10 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import EmailStr, Field
 
-class WorkerCreate(BaseModel):
+from backend.app.schemas.mixins import AuthSchema, DynamicLinkAuthSchema, TimeStampAuthSchema
+from backend.app.schemas.entities import UserSchema
+
+
+class WorkerCreate(UserSchema.Create, AuthSchema.Create, TimeStampAuthSchema, DynamicLinkAuthSchema):
     """
     Schema for creating a new Worker.
 
@@ -11,20 +15,7 @@ class WorkerCreate(BaseModel):
     - username            (internal login username)
     - telegram_username   (optional Telegram handle)
     """
-    email: EmailStr = Field(..., example="user@example.com")
-    password: str = Field(
-        ..., min_length=8, example="StrongP@ssw0rd",
-        description="Plain-text password; will be hashed server-side"
-    )
-    full_name: str = Field(
-        ..., example="John Smith",
-        description="Worker’s full display name"
-    )
     username: str = Field(
         ..., example="john.smith",
         description="Unique internal username for login"
-    )
-    telegram_username: str | None = Field(
-        None, example="pipin",
-        description="Optional Telegram username"
     )
