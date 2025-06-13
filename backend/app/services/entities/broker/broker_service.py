@@ -4,14 +4,16 @@ from uuid import UUID
 
 from backend.app.models.entities import Broker, Client
 from backend.app.permissions import PermissionRole
+from backend.app.services.entities import UserService
 from backend.app.utils.decorators import handle_exceptions
-from backend.app.schemas.entities.Broker import BrokerSchema  # імпорт схеми
+from backend.app.schemas.entities.Broker import BrokerSchema
 
 BrokerT = TypeVar("BrokerT", bound=Broker)
 
 
-class BrokerService:
+class BrokerService(UserService):
     def __init__(self, db: Session):
+        super().__init__(db)
         self.db = db
 
     @handle_exceptions(raise_404=True)
