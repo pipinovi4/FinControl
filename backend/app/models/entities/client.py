@@ -2,7 +2,7 @@ import uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey, UUID, String, Text
 from sqlalchemy.dialects.postgresql import JSONB
-from backend.app.models.entities import User, Worker, Broker
+from backend.app.models.entities.user import User
 
 
 class Client(User):
@@ -32,7 +32,7 @@ class Client(User):
     )
     # Reference to the user who manages this client (must be of role Worker)
 
-    worker: Mapped[Worker] = relationship(
+    worker: Mapped["Worker"] = relationship(
         "Worker",
         foreign_keys=[worker_id],
         back_populates="clients"
@@ -45,7 +45,7 @@ class Client(User):
         nullable=True
     )
 
-    broker: Mapped[Broker] = relationship(
+    broker: Mapped["Broker"] = relationship(
         "Broker",
         foreign_keys=[broker_id],
         back_populates="clients"
