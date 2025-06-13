@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import UUID, String, ForeignKey
 from sqlalchemy.dialects.postgresql import ARRAY
 
@@ -36,10 +36,9 @@ class Broker(User, AuthMixin, TimeStampAuthMixin):
         info={"description": "List of regions where the broker is active"}
     )
 
-    clients: Mapped[list[Client]] = mapped_column(
+    clients: Mapped[list[Client]] = relationship(
         "Client",
         back_populates="broker",
-        cascade="all, delete-orphan",
         lazy="selectin"
     )
 
