@@ -25,13 +25,12 @@ from backend.app.schemas.mixins import (
 )
 
 # Session-related schemas
-from backend.app.schemas.sessions import RefreshToken  # Schema for refresh tokens
-RefreshTokenOut = RefreshToken.out  # Output schema for refresh token responses
+from backend.app.schemas.sessions.refresh_token import RefreshTokenSchema  # Schema for refresh tokens
 
 # Public API of the schemas package
 __all__ = [
     "SchemaBase",
-    "RefreshToken", "RefreshTokenOut",
+    "RefreshTokenSchema",
     "UserSchema", "ClientSchema", "WorkerSchema", "BrokerSchema", "AdminSchema",
     "AuthSchema", "DynamicLinkAuthSchema", "SoftDeleteSchema"
 ]
