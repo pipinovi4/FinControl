@@ -1,10 +1,12 @@
 from typing import Optional, List
-from pydantic import Field, EmailStr
-from uuid import UUID
+from pydantic import Field
 
+from backend.app.schemas.mixins import AuthSchema
 from backend.app.schemas.entities import UserSchema
+from backend.app.schemas.mixins import TimeStampAuthSchema
 
-class BrokerCreate(UserSchema.Create):
+
+class BrokerCreate(UserSchema.Create, AuthSchema.Create, TimeStampAuthSchema):
     """
     Schema for creating a new Broker.
 
