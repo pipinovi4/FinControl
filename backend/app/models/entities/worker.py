@@ -1,7 +1,7 @@
 from typing import Sequence
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import UUID, String, ForeignKey
-from backend.app.models.entities import User, Client
+from backend.app.models.entities.user import User
 from backend.app.models.mixins import AuthMixin, TimeStampAuthMixin, DynamicLinkAuthMixin
 
 
@@ -25,7 +25,7 @@ class Worker(User, AuthMixin, TimeStampAuthMixin, DynamicLinkAuthMixin):
     # Primary key UUID, inherits from User table via foreign key
     id: Mapped[UUID] = mapped_column(
         UUID(as_uuid=True),
-        ForeignKey("workers.id", ondelete="CASCADE"),
+        ForeignKey("users.id", ondelete="CASCADE"),
         primary_key=True,
     )
 
@@ -36,17 +36,12 @@ class Worker(User, AuthMixin, TimeStampAuthMixin, DynamicLinkAuthMixin):
         unique=True
     )
 
-    # Optional Telegram handle for cross-referencing and contact
-    telegram_username: Mapped[str] = mapped_column(
-        String(255),
-        unique=True,
-        nullable=True
-    )
-
     # One-to-many relationship: this worker can have multiple clients
-    clients: Mapped[list[Client]] = relationship(
+    clients: Mapped[list["Client"]] = relationship(
         "Client",
-        back_populates="worker"
+        back_populates="worker",
+        foreign_keys="Client.worker_id",
+        cascade="all, delete-orphan"
     )
 
     # Used by SQLAlchemy's polymorphic system to identify the model
