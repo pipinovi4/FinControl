@@ -41,7 +41,7 @@ class UserService:
         return cast(UserT, self.db.query(User).filter_by(id=user_id, is_deleted=False).first())
 
     @handle_exceptions()
-    def get_user_by_telegram_id(self, telegram_id: int) -> UserT | None:
+    def get_user_by_telegram_id(self, telegram_id: UUID) -> UserT | None:
         return cast(UserT, self.db.query(User).filter_by(telegram_id=telegram_id, is_deleted=False).first())
 
     @handle_exceptions(default_return=[])
