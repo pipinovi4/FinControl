@@ -1,5 +1,5 @@
 from backend.app.models import Worker
-from backend.app.services.entities.user_interface import UserInterfaceService
+from backend.app.services.entities.user import UserInterfaceService
 
 
 class WorkerInterfaceService(UserInterfaceService):
