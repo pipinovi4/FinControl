@@ -6,11 +6,11 @@ from backend.db.session import get_db
 from backend.app.schemas.entities.Broker import BrokerSchema
 from backend.app.services.entities import BrokerService
 
-router = APIRouter(prefix="/broker", tags=["Broker"])
+router = APIRouter()
 
 
 @router.post(
-    "/",
+    "/broker",
     summary="Create a new Broker",
     response_model=BrokerSchema.Out,
     status_code=status.HTTP_201_CREATED,
