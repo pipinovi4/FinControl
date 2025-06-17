@@ -6,11 +6,11 @@ from backend.db.session import get_db
 from backend.app.schemas.entities.Client import ClientSchema
 from backend.app.services.entities import ClientServices
 
-router = APIRouter(prefix="/client", tags=["Client"])
+router = APIRouter()
 
 
 @router.post(
-    "/",
+    "/client",
     summary="Create a new Client",
     response_model=ClientSchema.Out,
     status_code=status.HTTP_201_CREATED,
