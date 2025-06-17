@@ -6,11 +6,11 @@ from backend.db.session import get_db
 from backend.app.schemas.entities.Worker import WorkerSchema
 from backend.app.services.entities import WorkerService
 
-router = APIRouter(prefix="/worker", tags=["Worker"])
+router = APIRouter()
 
 
 @router.post(
-    "/",
+    "/client",
     summary="Create a new Worker",
     response_model=WorkerSchema.Out,
     status_code=status.HTTP_201_CREATED,
@@ -33,7 +33,7 @@ def create_worker(
     """
     service = WorkerService(db)
 
-    if service.get_user_by_telegram_id(UUID(user.telegram_id)):
+    if service.get_user_by_telegram_id(user.telegram_id):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Worker with given telegram_id already exists",
