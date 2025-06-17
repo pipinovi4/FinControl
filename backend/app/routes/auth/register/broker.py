@@ -8,7 +8,7 @@ from backend.app.schemas.entities.Broker import BrokerSchema
 from backend.app.services.entities import BrokerService
 from backend.app.services.auth_service import AuthService
 
-router = APIRouter(prefix="/auth/register", tags=["Authentication"])
+router = APIRouter()
 
 
 @router.post(
@@ -24,7 +24,7 @@ def register_broker(
 ):
     svc = BrokerService(db)
 
-    if svc.get_user_by_telegram_id(UUID(payload.telegram_id)):
+    if svc.get_user_by_telegram_id(payload.telegram_id):
         raise HTTPException(status.HTTP_409_CONFLICT, "Broker already exists")
 
     broker = svc.create_broker(payload)
