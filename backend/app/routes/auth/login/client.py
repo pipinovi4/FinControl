@@ -6,7 +6,7 @@ from backend.app.schemas.auth import LoginRequest, TokenPair
 from backend.app.services.auth_service import AuthService
 from backend.app.permissions.enums import PermissionRole
 
-router = APIRouter(prefix="/auth/login", tags=["Authentication"])
+router = APIRouter()
 
 
 @router.post(
