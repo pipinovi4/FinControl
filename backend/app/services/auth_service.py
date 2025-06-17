@@ -25,6 +25,10 @@ class AuthService:
 
     # --- helpers ---------------------------------------------------------
 
+    @classmethod
+    def hash_password(cls, password: str) -> str:
+        return pwd_ctx.hash(password)
+
     @staticmethod
     def verify_password(plain: str, hashed: str) -> bool:
         return pwd_ctx.verify(plain, hashed)
@@ -37,8 +41,7 @@ class AuthService:
             .filter_by(email=email, is_deleted=False)
             .first()
         )
-        # if admin and self.verify_password(password, str(admin.password)):
-        if admin and password == str(admin.password):
+        if admin and self.verify_password(password, str(admin.password_hash)):
             return admin
         return None
 
