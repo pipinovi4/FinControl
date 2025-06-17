@@ -1,9 +1,17 @@
 from fastapi import FastAPI
-from backend.app.routes import users  # якщо лежить у app/routes/users.py
+from backend.app.routes.crud_route import create_crud_router
+from backend.app.routes.auth_route import create_auth_router
+from fastapi.routing import APIRoute
 
 def create_app() -> FastAPI:
     app = FastAPI()
-    app.include_router(users.router)  # додаємо наш роутер
+    app.include_router(create_auth_router())
+    app.include_router(create_crud_router())
+
+    for route in app.routes:
+        if isinstance(route, APIRoute):
+            print(f"{route.path} -> {route.endpoint.__name__}")
+
     return app
 
 app = create_app()
