@@ -29,7 +29,7 @@ class AdminCreate(UserSchema.Create, AuthSchema.Create, TimeStampAuthSchema, Dyn
         description="If true, grants full root access to admin features"
     )
 
-    password_hash: Optional[str] = Field(
+    password: Optional[str] = Field(
         default=None,
         description="Hashed password (optional if using dynamic login)"
     )
