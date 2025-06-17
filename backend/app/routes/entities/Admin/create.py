@@ -6,10 +6,10 @@ from backend.db.session import get_db
 from backend.app.schemas.entities.Admin import AdminSchema
 from backend.app.services.entities import AdminService
 
-router = APIRouter(prefix="/admin", tags=["Admin"])
+router = APIRouter()
 
 @router.post(
-    "/",
+    "/admin",
     summary="Create a new Admin",
     response_model=AdminSchema.Out,
     status_code=status.HTTP_201_CREATED,
@@ -34,7 +34,7 @@ def create_admin(
     """
     service = AdminService(db)
 
-    if service.get_user_by_telegram_id(telegram_id=UUID(user.telegram_id)):
+    if service.get_user_by_telegram_id(user.telegram_id):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Admin with given email or telegram_id already exists"
