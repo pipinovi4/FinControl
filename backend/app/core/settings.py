@@ -1,19 +1,39 @@
-# backend/app/core/settings.py
+from pathlib import Path
+from pydantic_settings import BaseSettings
+from pydantic import computed_field
+from dotenv import load_dotenv
 
-from pydantic import BaseSettings
+# підвантажуємо .env поряд із коренем проєкту
+ENV_PATH = Path(__file__).resolve().parent.parent.parent.parent / ".env"
+load_dotenv(ENV_PATH, override=True)
+
 
 class Settings(BaseSettings):
-    # JWT
-    JWT_SECRET: str
-    JWT_ALGO: str = "HS256"
-    ACCESS_EXPIRE_MINUTES: int = 30
-    REFRESH_EXPIRE_DAYS: int = 30
+    # --- DB ---
+    DB_USER: str
+    DB_PASSWORD: str
+    DB_HOST: str
+    DB_PORT: str
+    DB_NAME: str
 
-    # DB
-    DATABASE_URL: str
+    # --- JWT ---
+    JWT_SECRET: str
+    JWT_ALGO: str
+    ACCESS_EXPIRE_MINUTES: int
+    REFRESH_EXPIRE_DAYS: int
+
+    # --- computed ---
+    @computed_field
+    @property
+    def DATABASE_URL(self) -> str:
+        return (
+            f"postgresql+psycopg2://{self.DB_USER}:{self.DB_PASSWORD}"
+            f"@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+        )
 
     class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
+        env_file = ".env"          # fallback, якщо load_dotenv не спрацює
+        extra = "ignore"           # про всяк випадок
+
 
 settings = Settings()
