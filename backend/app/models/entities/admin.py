@@ -2,6 +2,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import UUID, String, ForeignKey, Boolean
 from backend.app.models.entities import User
 from backend.app.models.mixins import AuthMixin, TimeStampAuthMixin, DynamicLinkAuthMixin
+from backend.app.permissions import PermissionRole
 
 
 class Admin(User, AuthMixin, TimeStampAuthMixin, DynamicLinkAuthMixin):
@@ -40,7 +41,7 @@ class Admin(User, AuthMixin, TimeStampAuthMixin, DynamicLinkAuthMixin):
 
     __mapper_args__ = {
         "inherit_condition": (id == User.id),
-        "polymorphic_identity": "admin",
+        "polymorphic_identity": PermissionRole.ADMIN,
     }
 
     def __repr__(self) -> str:
