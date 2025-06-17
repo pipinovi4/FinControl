@@ -3,6 +3,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey, UUID, String, Text
 from sqlalchemy.dialects.postgresql import JSONB
 from backend.app.models.entities.user import User
+from backend.app.permissions.enums import PermissionRole
 
 
 class Client(User):
@@ -116,7 +117,7 @@ class Client(User):
     # List of uploaded credit history report file IDs (can be JSON if Postgres)
 
     __mapper_args__ = {
-        "polymorphic_identity": "client",
+        "polymorphic_identity": PermissionRole.CLIENT,
         "inherit_condition": (id == User.id),
     }
     # Enables SQLAlchemy polymorphic loading based on 'role' column in User
