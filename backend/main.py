@@ -1,16 +1,17 @@
 from fastapi import FastAPI
-from backend.app.routes.crud_route import create_crud_router
-from backend.app.routes.sessions import create_refresh_router
-from backend.app.routes.auth import create_login_router, create_register_router
-
+from .app.routes import create_api_router
 
 def create_app() -> FastAPI:
     app = FastAPI()
 
-    app.include_router(create_crud_router())
-    app.include_router(create_register_router())
-    app.include_router(create_login_router())
-    app.include_router(create_refresh_router())
+    app.include_router(create_api_router())
+
+    for route in app.routes:
+        # У FastAPI всі HTTP-роути — це Starlette Route об'єкти
+        methods = getattr(route, "methods", None)
+        if methods:
+            methods = ", ".join(sorted(methods))
+        print(f"{route.name:<30} {route.path:<30} {methods}")
 
     return app
 
