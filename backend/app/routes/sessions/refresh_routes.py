@@ -7,7 +7,7 @@ from backend.app.schemas.sessions import TokenPair, RefreshRequest
 from backend.app.services.auth import AccessTokenService, RefreshTokenService
 from backend.app.permissions.enums import PermissionRole
 
-refresh_router = APIRouter(prefix="/refresh", tags=["Refresh"])
+refresh_router = APIRouter(tags=["Refresh"])
 
 def generate_refresh_handler(role: PermissionRole, path: str):
     @handle_route_exceptions

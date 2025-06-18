@@ -9,8 +9,7 @@ from backend.app.services.auth import PasswordService, generate_token_pair
 from backend.app.permissions.enums import PermissionRole
 from backend.app.utils.decorators import handle_route_exceptions
 
-login_router = APIRouter()
-
+login_router = APIRouter(tags=["Login"])
 
 def generate_login_handler(role: PermissionRole, path: str):
     @handle_route_exceptions
