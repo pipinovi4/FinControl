@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session
 from typing import TypeVar, cast, Sequence
 from uuid import UUID
 
-from backend.app.services.auth_service import AuthService
+from backend.app.services.auth import PasswordService
 from backend.app.services.entities import UserService
 from backend.app.permissions import PermissionRole
 from backend.app.models.entities import Admin
@@ -25,22 +25,15 @@ from backend.app.schemas.entities.Admin import AdminSchema
 
 T = TypeVar("T", bound=Admin)
 
-
 class AdminService(UserService):
     def __init__(self, db: Session):
         super().__init__(db)
-        self.db = db  # if UserService doesn't define it itself
+        self.db = db  # in case UserService doesn't define it
 
     @handle_exceptions(raise_404=True)
     def get_admin_by_id(self, admin_id: UUID) -> T:
         """
         Fetch a specific Admin user by their unique ID.
-
-        Args:
-            admin_id (UUID): Unique identifier of the admin.
-
-        Returns:
-            Admin instance if found, otherwise raises 404.
         """
         return cast(
             T,
@@ -53,9 +46,6 @@ class AdminService(UserService):
     def get_all_admins(self) -> Sequence[T]:
         """
         Fetch all users with the ADMIN role.
-
-        Returns:
-            List of Admin instances.
         """
         return cast(
             Sequence[T],
@@ -67,22 +57,11 @@ class AdminService(UserService):
     @handle_exceptions()
     def create_admin(self, admin_data: AdminSchema.Create) -> T:
         """
-        Create a new Admin user.
-
-        Steps:
-            - Extract raw password from input schema.
-            - Hash the password and replace the plain password.
-            - Save the Admin to the database.
-
-        Args:
-            admin_data (AdminSchema.Create): Incoming validated schema.
-
-        Returns:
-            The newly created Admin instance.
+        Create a new Admin user. Hashes the password before saving.
         """
         updated_admin_data = admin_data.model_dump()
-        updated_admin_data["password_hash"] = AuthService.hash_password(updated_admin_data.pop("password"))
-
+        # Використовуємо новий PasswordService
+        updated_admin_data["password_hash"] = PasswordService.hash(updated_admin_data.pop("password"))
         admin = Admin(**updated_admin_data)
         self.db.add(admin)
         self.db.commit()
@@ -93,13 +72,6 @@ class AdminService(UserService):
     def update_admin(self, admin_id: UUID, updates: AdminSchema.Update) -> T:
         """
         Update an existing Admin's fields.
-
-        Args:
-            admin_id (UUID): Admin's unique identifier.
-            updates (AdminSchema.Update): Pydantic model with changes.
-
-        Returns:
-            The updated Admin instance.
         """
         admin = self.get_admin_by_id(admin_id)
         for key, value in updates.model_dump(exclude_unset=True).items():
@@ -112,12 +84,6 @@ class AdminService(UserService):
     def delete_admin(self, admin_id: UUID) -> T:
         """
         Permanently delete an Admin from the database.
-
-        Args:
-            admin_id (UUID): Admin's unique identifier.
-
-        Returns:
-            The deleted Admin instance.
         """
         admin = self.get_admin_by_id(admin_id)
         self.db.delete(admin)
