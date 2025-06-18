@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
+from uuid import UUID
 
 from backend.db.session import get_db
 from backend.app.schemas.auth import LoginRequest, TokenPair
-from backend.app.services.auth_service import AuthService
+from backend.app.services.auth import AccessTokenService, RefreshTokenService, PasswordService, generate_token_pair
 from backend.app.permissions.enums import PermissionRole
 
 router = APIRouter()
@@ -20,11 +21,22 @@ def client_login(
     request: Request,
     db: Session = Depends(get_db),
 ):
-    auth = AuthService(db)
-    user = auth.authenticate(str(credentials.email), credentials.password)
-    if not user or user.role != PermissionRole.CLIENT:
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid client credentials")
+    password_service = PasswordService(db)
+    client = password_service.authenticate(str(credentials.email), credentials.password)
 
-    access, ttl = auth.create_access_token(str(user.id))
-    refresh = auth.create_refresh_token(str(user.id), request.client.host, request.headers.get("User-Agent"))
+    if client is None:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+
+    if client.role != PermissionRole.CLIENT:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Not a client")
+
+    access, refresh, ttl = (
+        generate_token_pair(
+            UUID(str(client.id)),
+            db,
+            request.client.host,
+            request.headers.get("User-Agent")
+        )
+    )
+
     return TokenPair(access_token=access, refresh_token=refresh, expires_in=ttl)
