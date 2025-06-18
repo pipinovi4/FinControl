@@ -24,7 +24,7 @@ class RefreshTokenService:
         ip: str | None,
         ua: str | None,
         ttl_days: int = 30,
-    ) -> RefreshToken:
+    ):
         token_row = RefreshToken(
             user_id=user_id,
             token_hash=self._hash(raw_token),
@@ -36,7 +36,6 @@ class RefreshTokenService:
         self.db.add(token_row)
         self.db.commit()
         self.db.refresh(token_row)
-        return token_row
 
     def revoke(self, token_hash: str) -> None:
         """
