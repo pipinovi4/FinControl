@@ -3,19 +3,23 @@
 from functools import wraps
 from fastapi import HTTPException, status
 from sqlalchemy.exc import SQLAlchemyError
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def handle_exceptions(default_return=None, raise_404: bool = False):
     """
-    Decorator for wrapping DB methods in try/except.
+    Decorator to handle exceptions in DB services.
 
     Args:
-        default_return: Value to return if exception occurs.
-        raise_404: If True, raises 404 if result is None.
+        default_return: Value to return if error occurs (e.g., [] or None).
+        raise_404: Raise 404 if result is None.
 
     Returns:
-        Decorated function that handles SQLAlchemyError and raises HTTPException.
+        Decorated function with exception handling and optional rollback.
     """
+
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -28,6 +32,9 @@ def handle_exceptions(default_return=None, raise_404: bool = False):
                 db = getattr(args[0], "db", None)
                 if db:
                     db.rollback()
+                logger.exception("Database error in %s: %s", func.__name__, str(e))
                 raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"DB error: {str(e)}")
+
         return wrapper
+
     return decorator
