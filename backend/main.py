@@ -1,18 +1,21 @@
 from fastapi import FastAPI
 from backend.app.routes.crud_route import create_crud_router
-from backend.app.routes.auth_route import create_auth_router
-from fastapi.routing import APIRoute
+from backend.app.routes.sessions import create_refresh_router
+from backend.app.routes.auth import create_login_router, create_register_router
+
 
 def create_app() -> FastAPI:
     app = FastAPI()
 
-    app.include_router(create_auth_router())
     app.include_router(create_crud_router())
+    app.include_router(create_register_router())
+    app.include_router(create_login_router())
+    app.include_router(create_refresh_router())
 
     return app
 
-app = create_app()
+application = create_app()
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("main:application", host="127.0.0.1", port=8000, reload=True)
