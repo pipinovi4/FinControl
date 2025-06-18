@@ -1,12 +1,13 @@
-from uuid import UUID
 from fastapi import APIRouter, Depends, status, HTTPException, Request
 from sqlalchemy.orm import Session
+import secrets
+from uuid import UUID
 
 from backend.db.session import get_db
 from backend.app.schemas.auth import TokenPair
 from backend.app.schemas.entities.Broker import BrokerSchema
 from backend.app.services.entities import BrokerService
-from backend.app.services.auth_service import AuthService
+from backend.app.services.auth import generate_token_pair
 
 router = APIRouter()
 
@@ -29,8 +30,12 @@ def register_broker(
 
     broker = svc.create_broker(payload)
 
-    auth = AuthService(db)
-    access, ttl = auth.create_access_token(str(broker.id))
-    refresh = auth.create_refresh_token(str(broker.id), request.client.host, request.headers.get("User-Agent"))
-
+    access, refresh, ttl = (
+        generate_token_pair(
+            UUID(str(broker.id)),
+            db,
+            request.client.host,
+            request.headers.get("User-Agent")
+        )
+    )
     return TokenPair(access_token=access, refresh_token=refresh, expires_in=ttl)

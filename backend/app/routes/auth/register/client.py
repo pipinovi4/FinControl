@@ -1,12 +1,12 @@
-from uuid import UUID
 from fastapi import APIRouter, Depends, status, HTTPException, Request
 from sqlalchemy.orm import Session
+from uuid import UUID
 
+from backend.app.services.auth import generate_token_pair
 from backend.db.session import get_db
 from backend.app.schemas.auth import TokenPair
 from backend.app.schemas.entities.Client import ClientSchema
 from backend.app.services.entities import ClientServices
-from backend.app.services.auth_service import AuthService
 
 router = APIRouter()
 
@@ -29,8 +29,13 @@ def register_client(
 
     client = svc.create_client(payload)
 
-    auth = AuthService(db)
-    access, ttl = auth.create_access_token(str(client.id))
-    refresh = auth.create_refresh_token(str(client.id), request.client.host, request.headers.get("User-Agent"))
+    access, refresh, ttl = (
+        generate_token_pair(
+            UUID(str(client.id)),
+            db,
+            request.client.host,
+            request.headers.get("User-Agent")
+        )
+    )
 
     return TokenPair(access_token=access, refresh_token=refresh, expires_in=ttl)
