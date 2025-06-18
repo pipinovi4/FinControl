@@ -3,13 +3,16 @@ from sqlalchemy.orm import Session
 from uuid import UUID
 
 from backend.db.session import get_db
-from backend.app.schemas.auth import TokenPair
+from backend.app.schemas.sessions import TokenPair
 from backend.app.schemas.entities.Admin import AdminSchema
 from backend.app.services.entities import AdminService
 from backend.app.services.auth import generate_token_pair
+from backend.app.utils.decorators import handle_route_exceptions
 
 router = APIRouter()
 
+
+@handle_route_exceptions
 @router.post(
     "/admin",
     response_model=TokenPair,

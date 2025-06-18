@@ -4,13 +4,15 @@ from uuid import UUID
 
 from backend.app.services.auth import generate_token_pair
 from backend.db.session import get_db
-from backend.app.schemas.auth import TokenPair
+from backend.app.schemas.sessions import TokenPair
 from backend.app.schemas.entities.Client import ClientSchema
 from backend.app.services.entities import ClientServices
+from backend.app.utils.decorators import handle_route_exceptions
 
 router = APIRouter()
 
 
+@handle_route_exceptions
 @router.post(
     "/client",
     response_model=TokenPair,
