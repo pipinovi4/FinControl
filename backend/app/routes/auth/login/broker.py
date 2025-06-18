@@ -3,13 +3,16 @@ from sqlalchemy.orm import Session
 from uuid import UUID
 
 from backend.db.session import get_db
-from backend.app.schemas.auth import LoginRequest, TokenPair
-from backend.app.services.auth import AccessTokenService, RefreshTokenService, PasswordService, generate_token_pair
+from backend.app.schemas.auth import LoginRequest
+from backend.app.schemas.sessions import TokenPair
+from backend.app.utils.decorators import handle_route_exceptions
+from backend.app.services.auth import PasswordService, generate_token_pair
 from backend.app.permissions.enums import PermissionRole
 
 router = APIRouter()
 
 
+@handle_route_exceptions
 @router.post(
     "/broker",
     response_model=TokenPair,
