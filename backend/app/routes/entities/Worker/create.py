@@ -10,7 +10,7 @@ router = APIRouter()
 
 
 @router.post(
-    "/client",
+    "/worker",
     summary="Create a new Worker",
     response_model=WorkerSchema.Out,
     status_code=status.HTTP_201_CREATED,
