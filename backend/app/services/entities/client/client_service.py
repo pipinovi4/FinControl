@@ -10,7 +10,7 @@ from backend.app.schemas.entities.Client import ClientSchema
 ClientT = TypeVar("ClientT", bound=Client)
 
 
-class ClientServices(UserService):
+class ClientService(UserService):
     def __init__(self, db: Session, client_model: Type[ClientT] = Client):
         super().__init__(db)
         self.client_model = client_model

@@ -1,7 +1,7 @@
 from .user import UserService, UserUtilService, UserFilterService, UserInterfaceService
 from .admin import AdminService, AdminInterfaceService, AdminFilterService, AdminUtils
 from .broker import BrokerUtils, BrokerService, BrokerInterfaceService, BrokerFilterService
-from .client import ClientServices, ClientUtilService, ClientInterfaceService, ClientFilterService
+from .client import ClientService, ClientUtilService, ClientInterfaceService, ClientFilterService
 from .worker import WorkerService, WorkerInterfaceService, WorkerUtilsService, WorkerFilterService
 
 __all__ = [
@@ -24,5 +24,5 @@ __all__ = [
     "ClientUtilService",
     "ClientInterfaceService",
     "ClientFilterService",
-    "ClientServices"
+    "ClientService"
 ]
