@@ -1,12 +1,5 @@
-from pathlib import Path
 from pydantic_settings import BaseSettings
-from pydantic import computed_field
-from dotenv import load_dotenv
-
-# підвантажуємо .env поряд із коренем проєкту
-ENV_PATH = Path(__file__).resolve().parent.parent.parent.parent / ".env"
-load_dotenv(ENV_PATH, override=True)
-
+from pydantic import EmailStr
 
 class Settings(BaseSettings):
     # --- DB ---
@@ -22,8 +15,18 @@ class Settings(BaseSettings):
     ACCESS_EXPIRE_MINUTES: int
     REFRESH_EXPIRE_DAYS: int
 
+    # --- SMTP ---
+    MAIL_USERNAME: EmailStr
+    MAIL_PASSWORD: str
+    MAIL_FROM: EmailStr
+    MAIL_PORT: int
+    MAIL_SERVER: str
+    MAIL_STARTTLS: bool
+    MAIL_SSL_TLS: bool
+    USE_CREDENTIALS: bool
+    FRONTEND_URL: str
+
     # --- computed ---
-    @computed_field
     @property
     def DATABASE_URL(self) -> str:
         return (
@@ -32,8 +35,7 @@ class Settings(BaseSettings):
         )
 
     class Config:
-        env_file = ".env"          # fallback, якщо load_dotenv не спрацює
-        extra = "ignore"           # про всяк випадок
+        env_file = ".env"
 
 
 settings = Settings()
