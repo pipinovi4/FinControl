@@ -1,4 +1,4 @@
-from backend.app.schemas import AuthSchema
+from backend.app.schemas.mixins import AuthSchema
 from backend.app.schemas.entities.User.base import UserBase
 
 class UserOut(UserBase, AuthSchema.Out):

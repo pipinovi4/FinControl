@@ -1,5 +1,6 @@
 from backend.app.permissions.enums import PermissionRole
-from backend.app.schemas import SchemaBase, AuthSchema
+from backend.app.schemas import SchemaBase
+from backend.app.schemas.mixins import AuthSchema
 
 
 class UserCreate(SchemaBase, AuthSchema.Create):

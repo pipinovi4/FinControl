@@ -1,8 +1,7 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Enum, String
 
-from backend.app.models import AuthMixin
-from backend.app.models.mixins import UUIDMixin, TimeStampMixin, SoftDeleteMixin
+from backend.app.models.mixins import UUIDMixin, TimeStampMixin, SoftDeleteMixin, AuthMixin
 from backend.app.permissions.enums import PermissionRole
 from backend.db.session import Base
 
