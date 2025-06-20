@@ -13,7 +13,7 @@ Methods:
     restore(user_id): Restore a soft-deleted user.
     delete_user(user_id): Hard delete user from database.
 """
-
+from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from uuid import UUID
 from datetime import datetime, UTC
@@ -22,6 +22,7 @@ from pydantic import EmailStr
 
 from backend.app.models.entities.user import User
 from backend.app.permissions import PermissionRole
+from backend.app.services.auth import PasswordService
 from backend.app.utils.decorators import handle_exceptions
 
 UserT = TypeVar("UserT", bound=User)
@@ -70,11 +71,26 @@ class UserService:
     @handle_exceptions()
     def update_user(self, user_id: UUID, updates: dict) -> UserT:
         user = self.get_user_by_id(user_id)
+        if user is None:
+            raise HTTPException(status.HTTP_404_NOT_FOUND, "User not found")
+
         for key, value in updates.items():
             setattr(user, key, value)
         self.db.commit()
         self.db.refresh(user)
         return user
+
+    @handle_exceptions()
+    def update_password(self, user_id: UUID, new_password: str) -> UserT | None:
+        user = self.get_user_by_id(user_id)
+        if user is None:
+            raise HTTPException(status.HTTP_404_NOT_FOUND, "User not found")
+
+        user.password_hash = PasswordService.hash(new_password)
+        self.db.commit()
+        self.db.refresh(user)
+        return user
+
 
     # --- SOFT DELETE / RESTORE ---
 
