@@ -1,10 +1,12 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Enum, String
+
+from backend.app.models import AuthMixin
 from backend.app.models.mixins import UUIDMixin, TimeStampMixin, SoftDeleteMixin
 from backend.app.permissions.enums import PermissionRole
 from backend.db.session import Base
 
-class User(Base, UUIDMixin, TimeStampMixin, SoftDeleteMixin):
+class User(Base, AuthMixin, UUIDMixin, TimeStampMixin, SoftDeleteMixin):
     """
     Base user model used as a parent class for all user roles:
     Client, Worker, Broker, and Admin.
