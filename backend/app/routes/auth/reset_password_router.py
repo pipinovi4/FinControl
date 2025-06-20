@@ -24,8 +24,25 @@ def request_reset(
         raise HTTPException(status_code=404, detail="User with this email does not exist")
 
     ResetPasswordService(db).request_reset(email)
-
     return {"msg": "A reset link has been sent to the specified email."}
+
+
+@reset_password_router.post(
+    "/resend-reset-link",
+    status_code=status.HTTP_200_OK,
+    summary="Resend password reset link to user's email",
+)
+@handle_route_exceptions
+def resend_reset_link(
+    data: ResetPasswordRequest,
+    db: Session = Depends(get_db),
+):
+    email = data.email
+    if not email:
+        raise HTTPException(status_code=404, detail="User with this email does not exist")
+
+    ResetPasswordService(db).request_reset(email)
+    return {"msg": "A new reset link has been resent to the specified email."}
 
 
 @reset_password_router.post(
