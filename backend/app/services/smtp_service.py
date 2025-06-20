@@ -31,9 +31,9 @@ conf = ConnectionConfig(
     MAIL_FROM=settings.MAIL_FROM,
     MAIL_PORT=settings.MAIL_PORT,
     MAIL_SERVER=settings.MAIL_SERVER,
-    MAIL_STARTTLS=False,
-    MAIL_SSL_TLS=True,
-    USE_CREDENTIALS=True
+    MAIL_STARTTLS=settings.MAIL_STARTTLS,
+    MAIL_SSL_TLS=settings.MAIL_SSL_TLS,
+    USE_CREDENTIALS=settings.USE_CREDENTIALS,
 )
 
 
@@ -43,7 +43,6 @@ class SMTPService:
 
     async def send_password_reset_email(self, to_email: EmailStr, reset_token: str) -> None:
         reset_link = f"{settings.FRONTEND_URL}/reset-password?token={reset_token}"
-
         html = Template(RESET_PASSWORD_TEMPLATE).render(reset_link=reset_link)
 
         message = MessageSchema(
