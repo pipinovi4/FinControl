@@ -1,5 +1,3 @@
-from datetime import datetime
-from typing import Optional
 from pydantic import Field
 
 from backend.app.schemas.mixins import DynamicLinkAuthSchema

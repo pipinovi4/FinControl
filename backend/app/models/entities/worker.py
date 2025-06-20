@@ -1,4 +1,3 @@
-from typing import Sequence
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import UUID, String, ForeignKey
 from backend.app.models.entities.user import User

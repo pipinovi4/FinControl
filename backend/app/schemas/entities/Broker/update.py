@@ -1,5 +1,5 @@
 from typing import Optional, List
-from pydantic import Field, EmailStr
+from pydantic import Field
 
 from backend.app.schemas.entities import UserSchema
 

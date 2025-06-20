@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import DateTime
-from datetime import datetime, UTC
+from datetime import datetime
 
 class TimeStampAuthMixin:
     """

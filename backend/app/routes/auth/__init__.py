@@ -44,7 +44,7 @@ def create_register_router():
 
     # Import all services and schemas needed for each role registration
     from backend.app.services.entities import (
-        AdminService, WorkerService, ClientServices, BrokerService,
+        AdminService, WorkerService, ClientService, BrokerService,
     )
     from backend.app.schemas.entities.Admin import AdminSchema
     from backend.app.schemas.entities.Worker import WorkerSchema
@@ -60,7 +60,7 @@ def create_register_router():
         ("/admin", AdminService, AdminSchema.Create, "register_admin"),
         ("/worker", WorkerService, WorkerSchema.Create, "register_worker"),
         ("/broker", BrokerService, BrokerSchema.Create, "register_broker"),
-        ("/client", ClientServices, ClientSchema.Create, "register_client"),
+        ("/client", ClientService, ClientSchema.Create, "register_client"),
     ]
 
     # Generate each handler dynamically using the definitions

@@ -1,6 +1,5 @@
 from typing import Type, TypeVar, List
 from backend.app.models import Worker
-from backend.app.permissions import PermissionRole
 from backend.app.schemas import SchemaBase
 
 T = TypeVar("T", bound=SchemaBase)

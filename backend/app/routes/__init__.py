@@ -2,9 +2,9 @@ from fastapi import APIRouter
 
 
 def create_api_router() -> APIRouter:
-    from backend.app.routes.auth import create_login_router, create_register_router
-    from backend.app.routes.sessions import create_refresh_router
-    from backend.app.routes.crud_route import create_crud_router
+    from .auth import create_login_router, create_register_router
+    from .sessions import create_refresh_router
+    from .entities import create_crud_router
 
     router = APIRouter(prefix="/api")
 

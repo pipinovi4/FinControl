@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Query
 from sqlalchemy import func
-from datetime import datetime
 from backend.app.models import Worker, Client
 from backend.app.permissions import PermissionRole
 from backend.app.services.entities import UserFilterService

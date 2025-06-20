@@ -1,5 +1,5 @@
 import secrets
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, UTC
 from typing import Optional
 from uuid import UUID
 from sqlalchemy.orm import Session

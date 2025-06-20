@@ -1,4 +1,4 @@
-from pydantic import EmailStr, Field
+from pydantic import Field
 
 from backend.app.schemas.mixins import AuthSchema, DynamicLinkAuthSchema, TimeStampAuthSchema
 from backend.app.schemas.entities import UserSchema

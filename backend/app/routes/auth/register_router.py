@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 from uuid import UUID
-from typing import Type, Any, TypeVar
+from typing import Type, TypeVar
 
 from backend.app.schemas import AdminSchema, WorkerSchema, BrokerSchema, ClientSchema
-from backend.app.services.entities import AdminService, WorkerService, BrokerService, ClientServices
+from backend.app.services.entities import AdminService, WorkerService, BrokerService, ClientService
 from backend.db.session import get_db
 from backend.app.schemas.sessions import TokenPair
 from backend.app.services.auth import generate_token_pair
@@ -25,7 +25,7 @@ ServiceT = TypeVar(
     AdminService,
     WorkerService,
     BrokerService,
-    ClientServices
+    ClientService
 )
 
 def generate_register_handler(
