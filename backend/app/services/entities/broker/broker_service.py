@@ -17,7 +17,7 @@ class BrokerService(UserService):
         self.db = db
 
     @handle_exceptions(raise_404=True)
-    def get_broker_by_id(self, broker_id: UUID) -> BrokerT:
+    def get_by_id(self, broker_id: UUID) -> BrokerT:
         return cast(BrokerT, self.db.query(Broker).filter_by(id=broker_id, is_deleted=False).first())
 
     @handle_exceptions(default_return=[])
@@ -25,7 +25,7 @@ class BrokerService(UserService):
         return cast(Sequence[BrokerT], self.db.query(Broker).filter_by(role=PermissionRole.BROKER).all())
 
     @handle_exceptions()
-    def create_broker(self, broker_data: BrokerSchema.Create) -> Broker:
+    def create(self, broker_data: BrokerSchema.Create) -> Broker:
         broker = Broker(**broker_data.model_dump())
         self.db.add(broker)
         self.db.commit()
@@ -33,7 +33,7 @@ class BrokerService(UserService):
         return broker
 
     @handle_exceptions()
-    def update_broker(self, broker_id: UUID, updates: BrokerSchema.Update) -> Broker:
+    def update(self, broker_id: UUID, updates: BrokerSchema.Update) -> Broker:
         broker = self.get_broker_by_id(broker_id)
         for key, value in updates.model_dump(exclude_unset=True).items():
             setattr(broker, key, value)
@@ -42,7 +42,7 @@ class BrokerService(UserService):
         return broker
 
     @handle_exceptions()
-    def delete_broker(self, broker_id: UUID) -> Broker:
+    def delete(self, broker_id: UUID) -> Broker:
         broker = self.get_broker_by_id(broker_id)
         self.db.delete(broker)
         self.db.commit()

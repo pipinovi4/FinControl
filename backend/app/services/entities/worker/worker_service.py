@@ -16,7 +16,7 @@ class WorkerService(UserService):
         self.db = db
 
     @handle_exceptions(raise_404=True)
-    def get_worker_by_id(self, worker_id: UUID) -> WorkerT | None:
+    def get_by_id(self, worker_id: UUID) -> WorkerT | None:
         return cast(WorkerT, self.db.query(Worker).filter(Worker.id == worker_id).first())
 
     @handle_exceptions()
@@ -58,7 +58,7 @@ class WorkerService(UserService):
         self.db.commit()
 
     @handle_exceptions()
-    def create_worker(self, worker_data: WorkerSchema.Create) -> WorkerT:
+    def create(self, worker_data: WorkerSchema.Create) -> WorkerT:
         worker = Worker(**worker_data.model_dump())
         self.db.add(worker)
         self.db.commit()
@@ -66,7 +66,7 @@ class WorkerService(UserService):
         return cast(WorkerT, worker)
 
     @handle_exceptions()
-    def update_worker(self, worker_id: UUID, worker_data: WorkerSchema.Update) -> WorkerT:
+    def update(self, worker_id: UUID, worker_data: WorkerSchema.Update) -> WorkerT:
         worker = self.get_worker_by_id(worker_id)
         for key, value in worker_data.model_dump(exclude_unset=True).items():
             setattr(worker, key, value)
@@ -75,7 +75,7 @@ class WorkerService(UserService):
         return cast(WorkerT, worker)
 
     @handle_exceptions()
-    def delete_worker(self, worker_id: UUID) -> WorkerT:
+    def delete(self, worker_id: UUID) -> WorkerT:
         worker = self.get_worker_by_id(worker_id)
         self.db.delete(worker)
         self.db.commit()

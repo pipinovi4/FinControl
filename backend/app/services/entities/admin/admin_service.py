@@ -31,7 +31,7 @@ class AdminService(UserService):
         self.db = db  # in case UserService doesn't define it
 
     @handle_exceptions(raise_404=True)
-    def get_admin_by_id(self, admin_id: UUID) -> T:
+    def get_by_id(self, admin_id: UUID) -> T:
         """
         Fetch a specific Admin user by their unique ID.
         """
@@ -55,12 +55,11 @@ class AdminService(UserService):
         )
 
     @handle_exceptions()
-    def create_admin(self, admin_data: AdminSchema.Create) -> T:
+    def create(self, admin_data: AdminSchema.Create) -> T:
         """
         Create a new Admin user. Hashes the password before saving.
         """
         updated_admin_data = admin_data.model_dump()
-        # Використовуємо новий PasswordService
         updated_admin_data["password_hash"] = PasswordService.hash(updated_admin_data.pop("password"))
         admin = Admin(**updated_admin_data)
         self.db.add(admin)
@@ -69,7 +68,7 @@ class AdminService(UserService):
         return cast(T, admin)
 
     @handle_exceptions()
-    def update_admin(self, admin_id: UUID, updates: AdminSchema.Update) -> T:
+    def update(self, admin_id: UUID, updates: AdminSchema.Update) -> T:
         """
         Update an existing Admin's fields.
         """
@@ -81,7 +80,7 @@ class AdminService(UserService):
         return cast(T, admin)
 
     @handle_exceptions()
-    def delete_admin(self, admin_id: UUID) -> T:
+    def delete(self, admin_id: UUID) -> T:
         """
         Permanently delete an Admin from the database.
         """

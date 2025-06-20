@@ -17,8 +17,7 @@ Methods:
 from sqlalchemy.orm import Session
 from uuid import UUID
 from datetime import datetime, UTC
-from typing import Sequence, cast, Type, TypeVar
-from sqlalchemy import true, false
+from typing import Sequence, cast, TypeVar
 
 from backend.app.models.entities.user import User
 from backend.app.permissions import PermissionRole

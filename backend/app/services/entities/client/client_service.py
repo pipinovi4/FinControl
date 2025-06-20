@@ -16,7 +16,7 @@ class ClientService(UserService):
         self.client_model = client_model
 
     @handle_exceptions(raise_404=True)
-    def get_client_by_id(self, client_id: UUID) -> ClientT | None:
+    def get_by_id(self, client_id: UUID) -> ClientT | None:
         return cast(ClientT | None,
                     self.db.query(self.client_model).filter_by(id=client_id, is_deleted=False).first())
 
@@ -58,7 +58,7 @@ class ClientService(UserService):
             self.db.commit()
 
     @handle_exceptions()
-    def create_client(self, client_data: ClientSchema.Create) -> ClientT:
+    def create(self, client_data: ClientSchema.Create) -> ClientT:
         client = Client(**client_data.model_dump())
         self.db.add(client)
         self.db.commit()
@@ -66,7 +66,7 @@ class ClientService(UserService):
         return client
 
     @handle_exceptions()
-    def update_client(self, client_id: UUID, client_data: ClientSchema.Update) -> ClientT:
+    def update(self, client_id: UUID, client_data: ClientSchema.Update) -> ClientT:
         client = self.get_client_by_id(client_id)
         for key, value in client_data.model_dump(exclude_unset=True).items():
             setattr(client, key, value)
@@ -75,7 +75,7 @@ class ClientService(UserService):
         return client
 
     @handle_exceptions()
-    def delete_client(self, client_id: UUID) -> ClientT:
+    def delete(self, client_id: UUID) -> ClientT:
         client = self.get_client_by_id(client_id)
         self.db.delete(client)
         self.db.commit()
