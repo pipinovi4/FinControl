@@ -7,18 +7,13 @@ class ResetPasswordConfirm(BaseModel):
 
     Fields:
         token (str): The JWT reset token received via email.
-        new_password (str): The new password to be set.
-                            Must be at least 8 characters.
+        new_password (str): The new password to be set (8-32 chars).
     """
     token: str
-    new_password: str = Field(..., description="New password (min. 8 characters)")
+    new_password: str = Field(..., description="New password (8-32 characters)")
 
     @field_validator("new_password")
-    def validate_password(self, v: str) -> str:
-        if len(v) < 8:
-            raise ValueError("Password must be at least 8 characters long")
-
-        if len(v) > 32:
-            raise ValueError("Password must be at most 32 characters long")
-
+    def validate_password(cls, v: str) -> str:      # ← cls, не self
+        if not (8 <= len(v) <= 32):
+            raise ValueError("Password length must be 8-32 characters")
         return v
