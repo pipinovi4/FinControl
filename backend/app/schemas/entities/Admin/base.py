@@ -2,14 +2,12 @@ from typing import Optional
 from pydantic import Field
 from backend.app.schemas.entities.User import UserSchema
 from backend.app.schemas.mixins import (
-    AuthSchema,
     TimeStampAuthSchema,
     DynamicLinkAuthSchema
 )
 
 class AdminBase(
     UserSchema.Base,
-    AuthSchema,
     TimeStampAuthSchema,
     DynamicLinkAuthSchema
 ):

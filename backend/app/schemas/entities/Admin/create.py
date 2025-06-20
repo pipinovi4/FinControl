@@ -1,12 +1,11 @@
 from pydantic import Field
 
 from backend.app.schemas.mixins import DynamicLinkAuthSchema
-from backend.app.schemas.mixins import AuthSchema
 from backend.app.schemas.entities.User import UserSchema
 from backend.app.schemas.mixins import TimeStampAuthSchema
 
 
-class AdminCreate(UserSchema.Create, AuthSchema.Create, TimeStampAuthSchema, DynamicLinkAuthSchema):
+class AdminCreate(UserSchema.Create, TimeStampAuthSchema, DynamicLinkAuthSchema):
     """
     Schema for creating a new Admin.
 

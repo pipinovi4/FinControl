@@ -1,10 +1,10 @@
 from pydantic import Field
 
-from backend.app.schemas.mixins import AuthSchema, DynamicLinkAuthSchema, TimeStampAuthSchema
+from backend.app.schemas.mixins import DynamicLinkAuthSchema, TimeStampAuthSchema
 from backend.app.schemas.entities import UserSchema
 
 
-class WorkerCreate(UserSchema.Create, AuthSchema.Create, TimeStampAuthSchema, DynamicLinkAuthSchema):
+class WorkerCreate(UserSchema.Create, TimeStampAuthSchema, DynamicLinkAuthSchema):
     """
     Schema for creating a new Worker.
 

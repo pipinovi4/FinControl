@@ -1,7 +1,6 @@
 from pydantic import Field
 from backend.app.schemas.entities import UserSchema
 from backend.app.schemas.mixins import (
-    AuthSchema,
     TimeStampAuthSchema,
     DynamicLinkAuthSchema
 )
@@ -9,7 +8,6 @@ from backend.app.schemas.mixins import (
 
 class WorkerBase(
     UserSchema.Base,
-    AuthSchema,
     TimeStampAuthSchema,
     DynamicLinkAuthSchema
 ):

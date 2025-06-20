@@ -1,11 +1,10 @@
 from typing import Optional, List
 from pydantic import Field
 from backend.app.schemas.entities import UserSchema
-from backend.app.schemas.mixins import AuthSchema, TimeStampAuthSchema
+from backend.app.schemas.mixins import TimeStampAuthSchema
 
 class BrokerBase(
     UserSchema.Base,
-    AuthSchema,
     TimeStampAuthSchema
 ):
     """
