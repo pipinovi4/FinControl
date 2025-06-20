@@ -1,11 +1,11 @@
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import UUID, String, ForeignKey, Boolean
 from backend.app.models.entities import User
-from backend.app.models.mixins import AuthMixin, TimeStampAuthMixin, DynamicLinkAuthMixin
+from backend.app.models.mixins import TimeStampAuthMixin, DynamicLinkAuthMixin
 from backend.app.permissions import PermissionRole
 
 
-class Admin(User, AuthMixin, TimeStampAuthMixin, DynamicLinkAuthMixin):
+class Admin(User, TimeStampAuthMixin, DynamicLinkAuthMixin):
     """
     Admin model — full-access user with complete control over the system.
 

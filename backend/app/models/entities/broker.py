@@ -2,11 +2,11 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import UUID, String, ForeignKey
 from sqlalchemy.dialects.postgresql import ARRAY
 
-from backend.app.models.entities import User, Client
-from backend.app.models.mixins import AuthMixin, TimeStampAuthMixin
+from backend.app.models.entities import User
+from backend.app.models.mixins import TimeStampAuthMixin
 
 
-class Broker(User, AuthMixin, TimeStampAuthMixin):
+class Broker(User, TimeStampAuthMixin):
     """
     Broker model — represents an external partner with limited read-only access.
 

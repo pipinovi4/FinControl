@@ -1,10 +1,10 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import UUID, String, ForeignKey
 from backend.app.models.entities.user import User
-from backend.app.models.mixins import AuthMixin, TimeStampAuthMixin, DynamicLinkAuthMixin
+from backend.app.models.mixins import TimeStampAuthMixin, DynamicLinkAuthMixin
 
 
-class Worker(User, AuthMixin, TimeStampAuthMixin, DynamicLinkAuthMixin):
+class Worker(User, TimeStampAuthMixin, DynamicLinkAuthMixin):
     """
     Represents an internal employee who manages client applications
     and interacts with the system via the admin panel.
