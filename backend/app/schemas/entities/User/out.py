@@ -1,6 +1,7 @@
+from backend.app.schemas import AuthSchema
 from backend.app.schemas.entities.User.base import UserBase
 
-class UserOut(UserBase):
+class UserOut(UserBase, AuthSchema.Out):
     """
     Schema for returning user data to clients.
 

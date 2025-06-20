@@ -1,8 +1,8 @@
 from backend.app.permissions.enums import PermissionRole
-from backend.app.schemas import SchemaBase
+from backend.app.schemas import SchemaBase, AuthSchema
 
 
-class UserCreate(SchemaBase):
+class UserCreate(SchemaBase, AuthSchema.Create):
     """
     Schema for creating a new user.
 
