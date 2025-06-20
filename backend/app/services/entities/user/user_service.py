@@ -18,6 +18,7 @@ from sqlalchemy.orm import Session
 from uuid import UUID
 from datetime import datetime, UTC
 from typing import Sequence, cast, TypeVar
+from pydantic import EmailStr
 
 from backend.app.models.entities.user import User
 from backend.app.permissions import PermissionRole
@@ -43,8 +44,12 @@ class UserService:
     def get_user_by_telegram_id(self, telegram_id: str) -> UserT | None:
         return cast(UserT, self.db.query(User).filter_by(telegram_id=telegram_id, is_deleted=False).first())
 
+    @handle_exceptions()
+    def get_user_by_email(self, email: EmailStr):
+        return cast(UserT, self.db.query(User).filter_by(email=email, is_deleted=False).first())
+
     @handle_exceptions(default_return=[])
-    def get_all(self) -> Sequence[UserT]:
+    def get_all_users(self) -> Sequence[UserT]:
         return cast(Sequence[UserT], self.db.query(User).filter_by(is_deleted=False).all())
 
     @handle_exceptions(default_return=[])
