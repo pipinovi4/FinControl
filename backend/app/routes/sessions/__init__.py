@@ -1,5 +1,5 @@
 def create_refresh_router():
-    from .refresh_routes import generate_refresh_handler, refresh_router
+    from .refresh_router import generate_refresh_handler, refresh_router
     from backend.app.permissions import PermissionRole
 
     generate_refresh_handler(PermissionRole.ADMIN, "/admin")
