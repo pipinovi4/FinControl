@@ -17,6 +17,8 @@ To mount:
     app.include_router(create_register_router(), prefix="/auth/register", tags=["Auth"])
 """
 
+from .reset_password_router import router as reset_password_router
+
 def create_login_router():
     # Lazy import to prevent circular dependencies and reduce startup overhead
     from .login_router import generate_login_handler, login_router
@@ -70,9 +72,9 @@ def create_register_router():
     # Return router with all registered registration endpoints
     return register_router
 
-
 # Explicit module exports
 __all__ = [
     "create_login_router",
     "create_register_router",
+    "reset_password_router"
 ]
