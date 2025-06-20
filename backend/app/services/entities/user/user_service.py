@@ -65,7 +65,11 @@ class UserService:
 
     @handle_exceptions()
     def update_last_login(self, user_id: UUID) -> None:
-        self.db.query(User).filter_by(id=user_id).update({"last_login": datetime.now(UTC)})
+        user = self.get_user_by_id(user_id)
+        if user is None:
+            raise HTTPException(status.HTTP_404_NOT_FOUND, "User not found")
+
+        user.last_login = datetime.now(UTC)
         self.db.commit()
 
     @handle_exceptions()
