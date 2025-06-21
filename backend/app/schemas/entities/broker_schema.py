@@ -1,7 +1,8 @@
 # backend/app/schemas/entities/broker_schema.py
+from __future__ import annotations
 
 from typing import Optional, List, Type, ForwardRef
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, Field
 
 from backend.app.schemas.entities.user_schema import UserSchema
 from backend.app.schemas.mixins import TimeStampAuthSchema
@@ -39,7 +40,7 @@ class BrokerOut(BrokerBase, TimeStampAuthSchema):
     """
     Schema for returning Broker data with related clients.
     """
-    clients: Optional[List[ClientOut]] = Field(None, description="List of clients assigned to this broker")
+    clients: Optional[List["ClientSchema.Out"]] = Field(None, description="List of clients assigned to this broker")
 
 
 class BrokerSchema:
@@ -47,7 +48,3 @@ class BrokerSchema:
     Create: Type[BaseModel] = BrokerCreate
     Update: Type[BaseModel] = BrokerUpdate
     Out:    Type[BaseModel] = BrokerOut
-
-
-# Rebuild forward refs to resolve ClientOut
-BrokerOut.model_rebuild()

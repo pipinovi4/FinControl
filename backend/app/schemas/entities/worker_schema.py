@@ -1,12 +1,10 @@
-from typing import Optional, Type, List, ForwardRef
+from __future__ import annotations
+
+from typing import Optional, Type, List
 from pydantic import BaseModel, Field
 
 from backend.app.schemas.entities.user_schema import UserSchema
 from backend.app.schemas.mixins import TimeStampAuthSchema, DynamicLinkAuthSchema
-
-# Forward reference to avoid circular import
-ClientOut = ForwardRef("ClientSchema.Out")
-
 
 class WorkerBase(UserSchema.Base):
     """
@@ -34,8 +32,8 @@ class WorkerOut(WorkerBase, TimeStampAuthSchema, DynamicLinkAuthSchema):
     """
     Public-facing schema for Worker including metadata and relations.
     """
-    clients: Optional[List[ClientOut]] = Field(
-        default=None,
+    clients: Optional[List["ClientSchema.Base"]] = Field(
+        None,
         description="List of assigned clients (optional)"
     )
 
@@ -46,4 +44,3 @@ class WorkerSchema:
     Update: Type[BaseModel] = WorkerUpdate
     Out: Type[BaseModel] = WorkerOut
 
-WorkerOut.model_rebuild()
