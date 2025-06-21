@@ -33,8 +33,7 @@ Adding a new role → just append one tuple to `_RAW`.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Dict, Tuple, Type
+from typing import Dict, Type
 from pydantic import BaseModel
 
 from backend.app.permissions import PermissionRole
@@ -52,32 +51,9 @@ from backend.app.services.entities import (
 )
 from backend.app.utils.protocols import BaseService
 from backend.app.utils.wrappers import RoleServiceWrapper
-from ..crud.types import BaseSchemaNamespace
+from backend.app.utils.types import RoleBundle
+from backend.app.routes.entities.analyze.types import RawTuple
 
-# TODO move BaseSchemaNamespace to utils
-
-# ──────────────────────────────────────────────────────────────────
-# 1. High-level typed container for a role
-# ──────────────────────────────────────────────────────────────────
-@dataclass(frozen=True)
-class RoleBundle:
-    prefix:    str
-    service:   RoleServiceWrapper[BaseService]
-    interface: RoleServiceWrapper[BaseService]
-    filter:    RoleServiceWrapper[BaseService]
-    utils:     RoleServiceWrapper[BaseService]
-    schema:    Type[BaseModel]
-
-# ──────────────────────────────────────────────────────────────────
-# 2. Raw mapping: role → (prefix, service classes, schema class)
-#    Only “dumb” data, so it is easy to read / diff.
-# ──────────────────────────────────────────────────────────────────
-RawTuple = Tuple[
-    str,
-    Type[BaseService], Type[BaseService],
-    Type[BaseService], Type[BaseService],
-    Type[BaseSchemaNamespace],
-]
 
 _RAW: Dict[PermissionRole, RawTuple] = {
     PermissionRole.ADMIN: (
@@ -107,7 +83,7 @@ _RAW: Dict[PermissionRole, RawTuple] = {
 }
 
 # ──────────────────────────────────────────────────────────────────
-# 3. Final registry: classes are wrapped → RoleBundle is created
+# Registry: classes are wrapped → RoleBundle is created
 # ──────────────────────────────────────────────────────────────────
 def _build_bundle(
     prefix: str,
