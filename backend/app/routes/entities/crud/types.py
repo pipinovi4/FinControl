@@ -1,10 +1,9 @@
-from typing import Protocol, Type, runtime_checkable, TypeVar
-from pydantic import BaseModel
+from typing import Protocol, runtime_checkable, TypeVar
 from sqlalchemy.orm.session import Session
 from uuid import UUID
 
 from backend.app.schemas.entities import AdminSchema, BrokerSchema, WorkerSchema, ClientSchema
-from backend.app.services.entities import AdminService, WorkerService, BrokerService, ClientService, UserService
+from backend.app.services.entities import AdminService, WorkerService, BrokerService, ClientService
 
 SchemaT = TypeVar(
     "SchemaT",
@@ -25,6 +24,7 @@ SchemaT = TypeVar(
     ClientSchema.Out,
     ClientSchema.Base,
 )
+
 ServiceT = TypeVar(
     "ServiceT",
     AdminService,
@@ -33,11 +33,6 @@ ServiceT = TypeVar(
     ClientService
 )
 
-class BaseSchemaNamespace(Protocol):
-    Create: Type[BaseModel]
-    Out: Type[BaseModel]
-    Update: Type[BaseModel]
-    Base: Type[BaseModel]
 
 @runtime_checkable
 class BaseServiceProtocol(Protocol):
@@ -55,6 +50,5 @@ class BaseServiceProtocol(Protocol):
 __all__ = [
     "SchemaT",
     "ServiceT",
-    "BaseSchemaNamespace",
     "BaseServiceProtocol",
 ]
