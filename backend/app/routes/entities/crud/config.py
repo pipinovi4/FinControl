@@ -2,7 +2,8 @@
 from typing import Tuple, List, Type, cast
 from pydantic import BaseModel
 
-from .types import BaseServiceProtocol, BaseSchemaNamespace
+from backend.app.utils.protocols import BaseSchemaNamespace
+from .types import BaseServiceProtocol
 from backend.app.permissions import PermissionRole
 from backend.app.services.entities import (
     AdminService,
