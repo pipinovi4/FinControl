@@ -12,7 +12,6 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 
 from backend.app.utils.decorators import handle_route_exceptions
-from .types import SchemaT
 
 # Thin wrapper around `router.<verb>()`                                    #
 def generate_crud_endpoints(
