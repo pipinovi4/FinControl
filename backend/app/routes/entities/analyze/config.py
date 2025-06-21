@@ -37,8 +37,8 @@ from typing import Dict, Type
 from pydantic import BaseModel
 
 from backend.app.permissions import PermissionRole
-from backend.app.schemas import (
-    AdminSchema, WorkerSchema, BrokerSchema, ClientSchema,
+from backend.app.schemas.entities.filters import (
+    WorkerFilterSchema, BrokerFilterSchema, ClientFilterSchema, AdminFilterSchema, UserFilterSchema
 )
 from backend.app.services.entities import (
     AdminService, WorkerService, BrokerService, ClientService,
@@ -46,8 +46,6 @@ from backend.app.services.entities import (
     BrokerInterfaceService, ClientInterfaceService,
     AdminFilterService,  WorkerFilterService,
     BrokerFilterService, ClientFilterService,
-    AdminUtilService,    WorkerUtilService,
-    BrokerUtilService,   ClientUtilService,
 )
 from backend.app.utils.protocols import BaseService
 from backend.app.utils.wrappers import RoleServiceWrapper
@@ -59,26 +57,26 @@ _RAW: Dict[PermissionRole, RawTuple] = {
     PermissionRole.ADMIN: (
         "/admin",
         AdminService,  AdminInterfaceService,
-        AdminFilterService,  AdminUtilService,
-        AdminSchema,
+        AdminFilterService,
+        AdminFilterSchema,
     ),
     PermissionRole.WORKER: (
         "/worker",
         WorkerService, WorkerInterfaceService,
-        WorkerFilterService, WorkerUtilService,
-        WorkerSchema,
+        WorkerFilterService,
+        WorkerFilterSchema,
     ),
     PermissionRole.BROKER: (
         "/broker",
         BrokerService, BrokerInterfaceService,
-        BrokerFilterService, BrokerUtilService,
-        BrokerSchema,
+        BrokerFilterService,
+        BrokerFilterSchema,
     ),
     PermissionRole.CLIENT: (
         "/client",
         ClientService, ClientInterfaceService,
-        ClientFilterService, ClientUtilService,
-        ClientSchema,
+        ClientFilterService,
+        ClientFilterSchema,
     ),
 }
 
@@ -108,3 +106,7 @@ ROLE_REGISTRY: Dict[PermissionRole, RoleBundle] = {
     role: _build_bundle(*raw_tuple)
     for role, raw_tuple in _RAW.items()
 }
+
+__all__ = [
+    "ROLE_REGISTRY"
+]
