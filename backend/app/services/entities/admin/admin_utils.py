@@ -15,7 +15,7 @@ from backend.app.models.entities import Admin
 AdminT = TypeVar("AdminT", bound=Admin)
 
 
-class AdminUtils:
+class AdminUtilService:
     @staticmethod
     def is_super_admin(admin: AdminT) -> bool:
         """Check if the admin has SUPERADMIN role."""
@@ -24,7 +24,7 @@ class AdminUtils:
     @staticmethod
     def can_edit_other_admins(admin: AdminT) -> bool:
         """Allow only superadmins to edit or delete other admins."""
-        return AdminUtils.is_super_admin(admin)
+        return AdminUtilService.is_super_admin(admin)
 
     @staticmethod
     def sanitize_admin_payload(data: dict) -> dict:

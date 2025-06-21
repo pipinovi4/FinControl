@@ -2,7 +2,7 @@ from backend.app.models.entities import Broker
 from typing import Optional
 
 
-class BrokerUtils:
+class BrokerUtilService:
     """
     Utility class for handling Broker-related logic.
 

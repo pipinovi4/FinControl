@@ -4,7 +4,7 @@ from backend.app.schemas import SchemaBase
 
 T = TypeVar("T", bound=SchemaBase)
 
-class WorkerUtilsService:
+class WorkerUtilService:
     """
     Utility functions for working with worker-related data.
     All methods are static and operate on raw Worker instances or lists of workers.
