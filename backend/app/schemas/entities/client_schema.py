@@ -39,6 +39,7 @@ class ClientBase(UserSchema.Base):
     assets: Optional[str] = Field(None, example="Yes")
     extra_income: Optional[str] = Field(None, example="Freelance")
     contact_person: Optional[str] = Field(None, example="Olga Petrova, +380631234567, sister")
+    active_credit: int = Field(0, ge=0, example=100000)
     report_files: Optional[List[Dict]] = Field(None, description="Uploaded report file metadata")
 
 
