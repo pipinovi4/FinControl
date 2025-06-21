@@ -34,12 +34,12 @@ class UserOut(UserBase, AuthSchema.Out):
     pass
 
 
-class UserUpdate(UserBase):
+class UserUpdate(BaseModel):
     """
     Schema for updating an existing user.
     """
-    telegram_username: Optional[str] = None
-    is_active: Optional[bool] = None
+    telegram_username: Optional[str] = Field(None, example="user_updated")
+    is_active: Optional[bool] = Field(None, example=True)
 
 
 class UserSchema:

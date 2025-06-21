@@ -1,10 +1,13 @@
 # backend/app/schemas/filters/worker_filter_schema.py
 
 from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import Field
+
+from backend.app.schemas import WorkerSchema
+from backend.app.schemas.entities.filters import UserFilterSchema
 
 
-class WorkerFilterSchema(BaseModel):
+class WorkerFilterSchema(WorkerSchema.Base, UserFilterSchema):
     """
     Filter schema for querying Worker entities.
 

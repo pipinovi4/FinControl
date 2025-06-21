@@ -1,65 +1,45 @@
 # backend/app/schemas/entities/broker_schema.py
 
-from typing import Optional, List, Type
-from pydantic import BaseModel, Field
+from typing import Optional, List, Type, ForwardRef
+from pydantic import BaseModel, Field, EmailStr
 
 from backend.app.schemas.entities.user_schema import UserSchema
 from backend.app.schemas.mixins import TimeStampAuthSchema
 
+# To avoid circular import with ClientSchema
+ClientOut = ForwardRef("ClientSchema.Out")
 
-class BrokerBase(UserSchema.Base, TimeStampAuthSchema):
+
+class BrokerBase(UserSchema.Base):
     """
     Shared schema for the Broker entity.
     """
-    company_name: Optional[str] = Field(
-        None,
-        example="ACME Brokerage",
-        description="Name of the broker’s company, if any"
-    )
-    region: Optional[List[str]] = Field(
-        None,
-        example=["Mazovia", "Lesser Poland"],
-        description="List of regions where the broker is active"
-    )
+    company_name: Optional[str] = Field(None, example="Acme Ltd.", description="Broker's company name")
+    region: Optional[List[str]] = Field(None, example=["Kyiv", "Lviv"], description="Regions of operation")
 
 
 class BrokerCreate(UserSchema.Create, TimeStampAuthSchema):
     """
-    Schema for creating a new Broker.
+    Schema for creating a Broker.
     """
-    company_name: Optional[str] = Field(
-        None,
-        example="ACME Brokerage",
-        description="Name of the broker’s company"
-    )
-    region: Optional[List[str]] = Field(
-        None,
-        example=["Mazovia", "Lesser Poland"],
-        description="Regions where the broker will operate"
-    )
+    company_name: Optional[str] = Field(None, example="Acme Ltd.")
+    region: Optional[List[str]] = Field(None, example=["Kyiv", "Lviv"])
 
 
-class BrokerUpdate(UserSchema.Update):
+class BrokerUpdate(BaseModel):
     """
-    Schema for updating an existing Broker.
+    Schema for updating a Broker.
     """
-    company_name: Optional[str] = Field(
-        None,
-        example="ACME Brokerage",
-        description="Updated company name"
-    )
-    region: Optional[List[str]] = Field(
-        None,
-        example=["Mazovia"],
-        description="Updated list of active regions"
-    )
+    company_name: Optional[str] = Field(None, example="New Name Ltd.")
+    region: Optional[List[str]] = Field(None, example=["Dnipro", "Odessa"])
+    telegram_username: Optional[str] = Field(None, example="newbroker")
 
 
-class BrokerOut(BrokerBase):
+class BrokerOut(BrokerBase, TimeStampAuthSchema):
     """
-    Public-facing schema for returning Broker data.
+    Schema for returning Broker data with related clients.
     """
-    pass
+    clients: Optional[List[ClientOut]] = Field(None, description="List of clients assigned to this broker")
 
 
 class BrokerSchema:
@@ -67,3 +47,7 @@ class BrokerSchema:
     Create: Type[BaseModel] = BrokerCreate
     Update: Type[BaseModel] = BrokerUpdate
     Out:    Type[BaseModel] = BrokerOut
+
+
+# Rebuild forward refs to resolve ClientOut
+BrokerOut.model_rebuild()

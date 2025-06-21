@@ -1,23 +1,23 @@
 # backend/app/schemas/entities/client_schema.py
 
-from typing import Optional, List, Dict, Type
+from typing import Optional, List, Dict, Type, ForwardRef
 from uuid import UUID
 from pydantic import BaseModel, Field, EmailStr
 
 from backend.app.schemas.entities.user_schema import UserSchema
-from backend.app.schemas.entities.broker_schema import BrokerSchema
-from backend.app.schemas.entities.worker_schema import WorkerSchema
 
+WorkerBase = ForwardRef("WorkerSchema.Base")
+BrokerBase = ForwardRef("BrokerSchema.Base")
 
 class ClientBase(UserSchema.Base):
     """
     Shared schema for the Client entity.
     """
     worker_id: Optional[UUID] = Field(None, description="UUID of the assigned worker")
-    worker: Optional[WorkerSchema.Base] = Field(None, description="Nested Worker (if assigned)")
+    worker: Optional[WorkerBase] = Field(None, description="Nested Worker (if assigned)")
 
     broker_id: Optional[UUID] = Field(None, description="UUID of the assigned broker")
-    broker: Optional[BrokerSchema.Base] = Field(None, description="Nested Broker (if assigned)")
+    broker: Optional[BrokerBase] = Field(None, description="Nested Broker (if assigned)")
 
     full_name: str = Field(..., example="Ivan Ivanov")
     phone_number: str = Field(..., example="+380931234567")
@@ -116,3 +116,6 @@ class ClientSchema:
     Create: Type[BaseModel] = ClientCreate
     Update: Type[BaseModel] = ClientUpdate
     Out:    Type[BaseModel] = ClientOut
+
+ClientBase.model_rebuild()
+ClientOut.model_rebuild()

@@ -12,7 +12,7 @@ class AdminBase(UserSchema.Base, TimeStampAuthSchema, DynamicLinkAuthSchema):
     Shared schema for the Admin entity.
     """
     display_name: Optional[str] = Field(
-        ...,
+        None,
         example="Jane Admin",
         description="Friendly display name used in dashboards or logs"
     )
@@ -37,8 +37,8 @@ class AdminUpdate(UserSchema.Update):
     """
     Schema for updating an existing Admin.
     """
-    display_name: str = Field(
-        ...,
+    display_name: Optional[str] = Field(
+        None,
         example="Jane A.",
         description="Updated friendly display name"
     )

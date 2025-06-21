@@ -1,10 +1,12 @@
 # backend/app/schemas/entities/filters/client_filter_schema.py
 
-from backend.app.schemas.entities.client_schema import ClientSchema
 from pydantic import Field
 
+from backend.app.schemas.entities.client_schema import ClientSchema
+from backend.app.schemas.entities.filters import UserFilterSchema
 
-class ClientFilterSchema(ClientSchema.Base):
+
+class ClientFilterSchema(ClientSchema.Base, UserFilterSchema):
     """
     Filter schema for querying Client entities.
 

@@ -1,45 +1,43 @@
-# backend/app/schemas/entities/worker_schema.py
-
-from typing import Optional, Type
-from pydantic import BaseModel, EmailStr, Field
+from typing import Optional, Type, List, ForwardRef
+from pydantic import BaseModel, Field
 
 from backend.app.schemas.entities.user_schema import UserSchema
 from backend.app.schemas.mixins import TimeStampAuthSchema, DynamicLinkAuthSchema
 
+# Forward reference to avoid circular import
+ClientOut = ForwardRef("ClientSchema.Out")
 
-class WorkerBase(UserSchema.Base, TimeStampAuthSchema, DynamicLinkAuthSchema):
+
+class WorkerBase(UserSchema.Base):
     """
-    Shared schema for the Worker entity.
+    Shared base schema for the Worker entity.
     """
-    username: str = Field(..., example="john.smith", description="Internal login username for this worker")
-    telegram_username: Optional[str] = Field(
-        None, example="pipin", description="Optional Telegram username for contacting this worker"
-    )
+    username: str = Field(..., example="john.smith", description="Internal login username")
 
 
 class WorkerCreate(UserSchema.Create, TimeStampAuthSchema, DynamicLinkAuthSchema):
     """
-    Schema for creating a new Worker.
+    Schema for creating a Worker.
     """
-    username: str = Field(..., example="john.smith", description="Unique internal username for login")
+    username: str = Field(..., example="john.smith", description="Internal login username")
 
 
 class WorkerUpdate(BaseModel):
     """
-    Schema for updating Worker profile.
+    Schema for updating a Worker.
     """
-    email: Optional[EmailStr] = Field(None, example="new@example.com")
-    password: Optional[str] = Field(None, min_length=8, example="NewStr0ngP@ss")
-    full_name: Optional[str] = Field(None, example="John Smith Jr.")
-    username: Optional[str] = Field(None, example="john.smith2")
+    username: Optional[str] = Field(None, example="john.smith.updated")
     telegram_username: Optional[str] = Field(None, example="newpipin")
 
 
-class WorkerOut(WorkerBase):
+class WorkerOut(WorkerBase, TimeStampAuthSchema, DynamicLinkAuthSchema):
     """
-    Public schema for returning Worker data in API responses.
+    Public-facing schema for Worker including metadata and relations.
     """
-    pass
+    clients: Optional[List[ClientOut]] = Field(
+        default=None,
+        description="List of assigned clients (optional)"
+    )
 
 
 class WorkerSchema:
@@ -47,3 +45,5 @@ class WorkerSchema:
     Create: Type[BaseModel] = WorkerCreate
     Update: Type[BaseModel] = WorkerUpdate
     Out: Type[BaseModel] = WorkerOut
+
+WorkerOut.model_rebuild()
