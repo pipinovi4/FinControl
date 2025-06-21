@@ -1,5 +1,5 @@
 # config.py
-from typing import Tuple, List, Type, cast
+from typing import Tuple, List, Type, cast, Dict
 from pydantic import BaseModel
 
 from backend.app.utils.protocols import BaseSchemaNamespace
@@ -26,7 +26,7 @@ MatrixRow = Tuple[PermissionRole, str, Type[BaseServiceProtocol], Type[BaseModel
 # ---------------------------------------------------------------------- #
 # This dict contains base schema *namespaces* like `AdminSchema`
 # ---------------------------------------------------------------------- #
-ROLE_REGISTRY: dict[PermissionRole, tuple[str, Type[BaseServiceProtocol], Type[BaseSchemaNamespace]]] = {
+ROLE_REGISTRY: Dict[PermissionRole, Tuple[str, Type[BaseServiceProtocol], Type[BaseSchemaNamespace]]] = {
     PermissionRole.ADMIN:  ("/admin",  cast(Type[BaseServiceProtocol], AdminService),  AdminSchema),
     PermissionRole.WORKER: ("/worker", cast(Type[BaseServiceProtocol], WorkerService), WorkerSchema),
     PermissionRole.BROKER: ("/broker", cast(Type[BaseServiceProtocol], BrokerService), BrokerSchema),
