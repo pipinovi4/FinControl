@@ -4,7 +4,7 @@ from backend.app.schemas.entities.client_schema import ClientSchema
 from pydantic import Field
 
 
-class ClientFilter(ClientSchema.Base):
+class ClientFilterSchema(ClientSchema.Base):
     """
     Filter schema for querying Client entities.
 

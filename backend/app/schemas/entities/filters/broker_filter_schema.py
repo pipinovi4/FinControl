@@ -4,7 +4,7 @@ from backend.app.schemas.entities.broker_schema import BrokerSchema
 from pydantic import Field
 
 
-class BrokerFilter(BrokerSchema.Base):
+class BrokerFilterSchema(BrokerSchema.Base):
     """
     Filter schema for querying Broker entities.
 

@@ -1,7 +1,7 @@
 from backend.app.schemas.entities.admin_schema import AdminSchema
 from pydantic import Field
 
-class AdminFilter(AdminSchema.Base):
+class AdminFilterSchema(AdminSchema.Base):
     """
     Filter schema for querying Admins.
     Excludes technical or sensitive fields.
