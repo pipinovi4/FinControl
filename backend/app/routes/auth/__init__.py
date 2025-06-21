@@ -48,10 +48,10 @@ def create_register_router():
     from backend.app.services.entities import (
         AdminService, WorkerService, ClientService, BrokerService,
     )
-    from backend.app.schemas.entities.Admin import AdminSchema
-    from backend.app.schemas.entities.Worker import WorkerSchema
-    from backend.app.schemas.entities.Client import ClientSchema
-    from backend.app.schemas.entities.Broker import BrokerSchema
+    from backend.app.schemas.entities.admin_schema import AdminSchema
+    from backend.app.schemas.entities.worker_schema import WorkerSchema
+    from backend.app.schemas.entities.client_schema import ClientSchema
+    from backend.app.schemas.entities.broker_schema import BrokerSchema
 
     # Define registration routes:
     # - Path (string)

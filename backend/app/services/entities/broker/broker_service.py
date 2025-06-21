@@ -6,7 +6,7 @@ from backend.app.models.entities import Broker, Client
 from backend.app.permissions import PermissionRole
 from backend.app.services.entities import UserService
 from backend.app.utils.decorators import handle_exceptions
-from backend.app.schemas.entities.Broker import BrokerSchema
+from backend.app.schemas.entities.broker_schema import BrokerSchema
 
 BrokerT = TypeVar("BrokerT", bound=Broker)
 

@@ -21,7 +21,7 @@ from backend.app.services.entities import UserService
 from backend.app.permissions import PermissionRole
 from backend.app.models.entities import Admin
 from backend.app.utils.decorators import handle_exceptions
-from backend.app.schemas.entities.Admin import AdminSchema
+from backend.app.schemas.entities.admin_schema import AdminSchema
 
 T = TypeVar("T", bound=Admin)
 

@@ -5,7 +5,7 @@ from typing import Sequence, cast, TypeVar
 from backend.app.models import Worker, Client
 from backend.app.services.entities import UserService
 from backend.app.utils.decorators import handle_exceptions
-from backend.app.schemas.entities.Worker import WorkerSchema  # Імпорт схем
+from backend.app.schemas.entities.worker_schema import WorkerSchema  # Імпорт схем
 
 WorkerT = TypeVar("WorkerT", bound=Worker)
 

@@ -5,7 +5,7 @@ from uuid import UUID
 from backend.app.models import Client
 from backend.app.services.entities import UserService
 from backend.app.utils.decorators import handle_exceptions
-from backend.app.schemas.entities.Client import ClientSchema
+from backend.app.schemas.entities.client_schema import ClientSchema
 
 ClientT = TypeVar("ClientT", bound=Client)
 
