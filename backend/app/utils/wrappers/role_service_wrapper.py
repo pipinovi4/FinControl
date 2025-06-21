@@ -1,8 +1,16 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, Callable, TypeVar, Union, Protocol
+from typing import Any, TypeVar, Union
 
+from backend.app.services.entities import (
+    AdminService, BrokerService, WorkerService, ClientService,
+    AdminInterfaceService, BrokerInterfaceService, WorkerInterfaceService, ClientInterfaceService,
+    AdminFilterService, BrokerFilterService, WorkerFilterService, ClientFilterService,
+    AdminUtils, BrokerUtils, WorkerUtilsService, ClientUtilService
+)
+
+S = TypeVar("S", AdminService, BrokerService, WorkerService, ClientService)
 
 class LimitedService:
     """
