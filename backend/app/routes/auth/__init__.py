@@ -19,26 +19,20 @@ To mount:
 
 from backend.app.routes.auth.reset_password.reset_password_router import router as reset_password_router
 
-def create_login_router():
-    # Lazy import to prevent circular dependencies and reduce startup overhead
-    from backend.app.routes.auth.login.login_router import generate_login_handler, login_router
-    from backend.app.permissions import PermissionRole
+from fastapi import APIRouter
 
-    # Define login endpoints per role and URL path
-    login_definitions = [
-        (PermissionRole.ADMIN, "/admin"),
-        (PermissionRole.WORKER, "/worker"),
-        (PermissionRole.BROKER, "/broker"),
-        (PermissionRole.CLIENT, "/client"),
-    ]
+def create_login_router() -> APIRouter:
+    refresh_router = APIRouter()
 
-    # Dynamically generate handlers for each role-path pair
-    for role, path in login_definitions:
-        generate_login_handler(role, path)
+    from backend.app.routes.auth.login.router_factory import create_login_routers
 
-    # Return router with all registered login endpoints
-    return login_router
+    for router in create_login_routers():
+        refresh_router.include_router(router)
 
+    return refresh_router
+
+
+__all__ = ["create_login_router"]
 
 def create_register_router():
     # Lazy import to avoid unnecessary module loading and circular deps
