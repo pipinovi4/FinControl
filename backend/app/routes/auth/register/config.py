@@ -6,42 +6,35 @@ from backend.app.permissions import PermissionRole
 from backend.app.routes.auth.register.types import RegisterTypes
 from backend.app.utils.protocols import BaseSchemaNamespace, BaseService
 
-ROLE_REGISTRY: Dict[PermissionRole, Tuple[str, Tuple[List[RegisterTypes], BaseService, BaseSchemaNamespace, str]]] = {
+
+ROLE_REGISTRY: Dict[PermissionRole, Tuple[str, BaseService, BaseSchemaNamespace, str, List[RegisterTypes]]] = {
     PermissionRole.ADMIN: (
         "/admin",  # Path for admin register
-        (
-            [RegisterTypes.WEB, RegisterTypes.BOT],  # Register types for Admin
-            AdminService,  # Service for Admin
-            AdminSchema,  # Schema for Admin
-            "admin_registration_handler",  # Handler name for Admin
-        )
+        AdminService,  # Service for Admin
+        AdminSchema,  # Schema for Admin
+        "create_admin",  # Method name for Admin
+        [RegisterTypes.WEB, RegisterTypes.BOT],  # Register types for Admin
     ),
     PermissionRole.WORKER: (
         "/worker",  # Path for worker register
-        (
-            [RegisterTypes.WEB, RegisterTypes.BOT],  # Register types for Worker
-            WorkerService,  # Service for Worker
-            WorkerSchema,  # Schema for Worker
-            "worker_registration_handler",  # Handler name for Worker
-        )
+        WorkerService,  # Service for Worker
+        WorkerSchema,  # Schema for Worker
+        "create_worker",  # Method name for Worker
+        [RegisterTypes.WEB, RegisterTypes.BOT],  # Register types for Worker
     ),
     PermissionRole.CLIENT: (
         "/client",  # Path for client register
-        (
-            [RegisterTypes.BOT],  # Register type for Client
-            ClientService,  # Service for Client
-            ClientSchema,  # Schema for Client
-            "client_registration_handler",  # Handler name for Client
-        )
+        ClientService,  # Service for Client
+        ClientSchema,  # Schema for Client
+        "create_client",  # Method name for Client
+        [RegisterTypes.BOT],  # Register type for Client
     ),
     PermissionRole.BROKER: (
         "/broker",  # Path for broker register
-        (
-            [RegisterTypes.WEB],  # Register type for Broker
-            BrokerService,  # Service for Broker
-            BrokerSchema,  # Schema for Broker
-            "broker_registration_handler",  # Handler name for Broker
-        )
+        BrokerService,  # Service for Broker
+        BrokerSchema,  # Schema for Broker
+        "create_broker",  # Method name for Broker
+        [RegisterTypes.WEB],  # Register type for Broker
     ),
 }
 

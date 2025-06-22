@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Awaitable, Callable, List, Type, TypeVar
+from typing import Awaitable, Callable, List, Type, TypeVar, cast
 from fastapi import APIRouter, HTTPException, Request, Depends, status
 from fastapi.responses import JSONResponse
 from pydantic import EmailStr
@@ -130,22 +130,21 @@ def create_register_routers() -> List[APIRouter]:
     routers: List[APIRouter] = []
 
     # Iterate over all roles and their registration types
-    for role, (path, register_addons) in ROLE_REGISTRY.items():
+    for role, (path, service, schema, create_method_name, register_types) in ROLE_REGISTRY.items():
         router: APIRouter = APIRouter()  # Create a new router for the current role
 
-        # Iterate through the list of registration types (e.g., WEB, BOT) for the current role
-        for register_type, service, schema, create_method_name in register_addons:
+        for register_type in register_types:
             # Create a handler for the current register_type (WEB or BOT)
             handler = make_register_handler(
                 role=role,
                 register_type=register_type,  # Pass the current registration type (WEB or BOT)
-                service_class=service,
-                schema_class=schema,
+                service_class=cast(Type[ServiceT], service),
+                schema_class=cast(Type[SchemaT], schema),
                 create_method_name=create_method_name,
             )
 
             # Generate a unique path for this registration type (e.g., /admin/register/web)
-            register_path = f"{path}/register/{register_type.name.lower()}"
+            register_path = f"{path}/{register_type.name.lower()}"
             tag_name = f"{role.value.lower()}-{register_type.name.lower()}"
 
             # Add the registration endpoint to the router
