@@ -8,11 +8,9 @@ from uuid import UUID
 
 from backend.app.routes.auth.register.types import RegisterTypes
 from backend.app.routes.auth.register.config import ROLE_REGISTRY
-from backend.app.schemas.auth import LoginRequest
 from backend.app.schemas.sessions import TokenPair
 from backend.app.services.auth import PasswordService, generate_token_pair
 from backend.app.utils.cookies import set_auth_cookies
-from backend.app.utils.protocols import BaseService, BaseSchemaNamespace
 from backend.db.session import get_async_db
 from backend.app.routes.auth.register._base import generate_register_endpoints
 from backend.app.permissions import PermissionRole
@@ -58,7 +56,7 @@ def make_register_handler(
     """
 
     async def _handler(
-            request_data: LoginRequest,
+            request_data: Type[schema_class],
             request: Request,
             db=Depends(get_async_db),
     ) -> JSONResponse | TokenPair:
