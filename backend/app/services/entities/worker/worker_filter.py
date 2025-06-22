@@ -1,141 +1,141 @@
-from sqlalchemy.orm import Query
-from sqlalchemy import func
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select, func
 from backend.app.models import Worker, Client
 from backend.app.permissions import PermissionRole
-from backend.app.services.entities import UserFilterService
 
 
-class WorkerFilterService(UserFilterService):
+class WorkerFilterService:
     """
-    Service for filtering Worker queries based on dynamic conditions.
-    """
+    Async service for filtering Worker queries based on dynamic conditions.
 
-    def __init__(self, base_query: Query):
+    Methods:
+        - by_username(username): Filter workers by their system username.
+        - by_telegram_username(telegram_username): Filter by Telegram username.
+        - by_email(email): Filter workers by email address (partial match).
+        - by_has_clients(has_clients): Filter workers based on presence of assigned clients.
+        - by_role(): Filter only users with WORKER role.
+        - by_client_full_name(full_name): Filter if worker has client with matching name.
+        - by_client_phone_number(phone_number): Filter if worker has client with matching phone.
+        - by_client_email(email): Filter if worker has client with matching email.
+        - by_client_id(client_id): Filter if worker has client with specific ID.
+        - by_min_clients_count(min_count): Filter workers who have at least X clients.
+        - by_max_clients_count(max_count): Filter workers who have at most X clients.
+        - apply(): Executes the query and returns matching Worker instances.
+    """
+    def __init__(self, db: AsyncSession):
         """
-        Initialize the filter service with a base query.
-        :param base_query: Initial SQLAlchemy Query object.
+        Initialize the filter service with a database session.
+        :param db: Async SQLAlchemy session.
         """
-        super().__init__(base_query)
-        self.query = base_query
+        self.db = db
+        self.filters = []
 
     def by_username(self, username: str):
         """
         Filter workers by the system username.
-        :param username: The worker's username.
         """
-        self.query = self.query.filter(Worker.username == username)
+        self.filters.append(Worker.username == username)
         return self
 
     def by_telegram_username(self, telegram_username: str):
         """
         Filter workers by Telegram username.
-        :param telegram_username: The Telegram handle.
         """
-        self.query = self.query.filter(Worker.telegram_username == telegram_username)
+        self.filters.append(Worker.telegram_username == telegram_username)
         return self
 
     def by_email(self, email: str):
         """
-        Filter workers by email (from AuthMixin).
-        :param email: The email substring to search for.
+        Filter workers by email address.
+        Uses a case-insensitive LIKE match.
         """
-        self.query = self.query.filter(Worker.email.ilike(f"%{email}%"))
+        self.filters.append(Worker.email.ilike(f"%{email}%"))
         return self
 
     def by_has_clients(self, has_clients: bool = True):
         """
         Filter workers based on whether they have assigned clients.
-        If it has_clients is True, returns workers with at least one client;
-        if False, returns workers with no assigned clients.
+        If has_clients is True — only workers with clients.
+        If has_clients is False — only workers without clients.
         """
         if has_clients:
-            self.query = self.query.filter(Worker.clients.any())
+            self.filters.append(Worker.clients.any())
         else:
-            self.query = self.query.filter(~Worker.clients.any())
-        return self
-
-    def by_min_clients_count(self, min_count: int):
-        """
-        Filter workers who have at least `min_count` clients assigned.
-        This uses a subquery with a join and group_by.
-        :param min_count: Minimum number of clients.
-        """
-        subq = (
-            self.query.session.query(Worker.id, func.count(Client.id).label("client_count"))
-            .join(Worker.clients)
-            .group_by(Worker.id)
-            .subquery()
-        )
-        self.query = self.query.join(subq, Worker.id == subq.c.id).filter(subq.c.client_count >= min_count)
-        return self
-
-    def by_max_clients_count(self, max_count: int):
-        """
-        Filter workers who have at most `max_count` clients assigned.
-        :param max_count: Maximum number of clients.
-        """
-        subq = (
-            self.query.session.query(Worker.id, func.count(Client.id).label("client_count"))
-            .join(Worker.clients)
-            .group_by(Worker.id)
-            .subquery()
-        )
-        self.query = self.query.join(subq, Worker.id == subq.c.id).filter(subq.c.client_count <= max_count)
+            self.filters.append(~Worker.clients.any())
         return self
 
     def by_role(self):
         """
         Filter workers by role.
-        Assumes that Worker.role exists and that PermissionRole.WORKER represents the worker role.
+        Only includes users with PermissionRole.WORKER.
         """
-        self.query = self.query.filter(Worker.role == PermissionRole.WORKER)
+        self.filters.append(Worker.role == PermissionRole.WORKER)
         return self
-
-    # --- Фільтри за даними клієнтів, які менеджер має ---
 
     def by_client_full_name(self, full_name: str):
         """
-        Filter workers by the full name of at least one of their clients.
-        Checks if any assigned client's full_name contains the substring (case-insensitive).
-
-        :param full_name: Substring to search within client's full_name.
+        Filter workers by presence of a client with matching full name.
+        Case-insensitive partial match.
         """
-        self.query = self.query.filter(Worker.clients.any(Client.full_name.ilike(f"%{full_name}%")))
+        self.filters.append(Worker.clients.any(Client.full_name.ilike(f"%{full_name}%")))
         return self
 
     def by_client_phone_number(self, phone_number: str):
         """
-        Filter workers by a client's phone number.
-        Checks if any assigned client's phone number contains the given substring.
-
-        :param phone_number: Substring to search within client's phone number.
+        Filter workers by presence of a client with matching phone number.
         """
-        self.query = self.query.filter(Worker.clients.any(Client.phone_number.ilike(f"%{phone_number}%")))
+        self.filters.append(Worker.clients.any(Client.phone_number.ilike(f"%{phone_number}%")))
         return self
 
     def by_client_email(self, email: str):
         """
-        Filter workers by a client's email address.
-        Checks if any assigned client's email contains the given substring.
-
-        :param email: Substring to search within client's email.
+        Filter workers by presence of a client with matching email.
         """
-        self.query = self.query.filter(Worker.clients.any(Client.email.ilike(f"%{email}%")))
+        self.filters.append(Worker.clients.any(Client.email.ilike(f"%{email}%")))
         return self
 
     def by_client_id(self, client_id: str):
         """
-        Filter workers by a specific client ID.
-        Checks if any assigned client's id equals the provided client_id.
-
-        :param client_id: The UUID (as string) of the client.
+        Filter workers by presence of a client with the given ID.
         """
-        self.query = self.query.filter(Worker.clients.any(Client.id == client_id))
+        self.filters.append(Worker.clients.any(Client.id == client_id))
         return self
 
-    def apply(self):
+    async def by_min_clients_count(self, min_count: int):
         """
-        Finalize and return the filtered query.
-        :return: The SQLAlchemy Query object with all applied filters.
+        Filter workers who have at least `min_count` clients assigned.
+        Uses a subquery with GROUP BY and HAVING clause.
         """
-        return self.query
+        subq = (
+            select(Worker.id, func.count(Client.id).label("client_count"))
+            .join(Client, Worker.id == Client.worker_id)
+            .group_by(Worker.id)
+            .having(func.count(Client.id) >= min_count)
+            .subquery()
+        )
+        self.filters.append(Worker.id.in_(select(subq.c.id)))
+        return self
+
+    async def by_max_clients_count(self, max_count: int):
+        """
+        Filter workers who have at most `max_count` clients assigned.
+        Uses a subquery with GROUP BY and HAVING clause.
+        """
+        subq = (
+            select(Worker.id, func.count(Client.id).label("client_count"))
+            .join(Client, Worker.id == Client.worker_id)
+            .group_by(Worker.id)
+            .having(func.count(Client.id) <= max_count)
+            .subquery()
+        )
+        self.filters.append(Worker.id.in_(select(subq.c.id)))
+        return self
+
+    async def apply(self):
+        """
+        Finalize and execute the built query.
+        Returns a list of Worker instances matching the accumulated filters.
+        """
+        stmt = select(Worker).filter(*self.filters)
+        result = await self.db.execute(stmt)
+        return result.scalars().all()

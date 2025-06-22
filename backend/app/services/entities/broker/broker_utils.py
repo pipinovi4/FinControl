@@ -4,12 +4,15 @@ from typing import Optional
 
 class BrokerUtilService:
     """
-    Utility class for handling Broker-related logic.
+    BrokerUtilService provides utility methods for broker-related operations.
 
-    Contains static helper methods to simplify checks and validations
-    (e.g. region matching, role checks).
+    Public Methods:
+        - is_region_match(broker, region): Check if broker operates in specified region.
+        - get_main_region(broker): Get primary region from broker's region list.
+        - get_clients_count(broker): Count number of clients assigned to broker.
+        - has_clients(broker): Check if broker has any clients.
+        - get_company_display(broker): Return company display name or fallback.
     """
-
     @staticmethod
     def is_region_match(broker: Broker, region: str) -> bool:
         """

@@ -9,10 +9,23 @@ T = TypeVar("T", bound=SchemaBase)
 
 class UserUtilService:
     """
-    Utility functions for working with user-related data.
-    All methods are static and operate on raw inputs or lists of users.
-    """
+    A utility class for common user-related operations on ORM instances and schema conversions.
 
+    This class contains only static methods and is designed to:
+    - Extract user-friendly display names.
+    - Filter user collections by role.
+    - Convert SQLAlchemy User models into typed Pydantic schemas (bulk or single).
+
+    Methods:
+        - get_display_name(user): Returns '@username' or UUID-based fallback.
+        - filter_by_role(users, role): Filters a list of User objects by role.
+        - to_schema(users, schema): Maps a list of User models to Pydantic schema instances.
+        - to_schema_one(user, schema): Converts one User model to a Pydantic schema.
+
+    Usage:
+        These methods are typically used in services, responses, or export utilities
+        where model transformation and display-friendly data are needed.
+    """
     @staticmethod
     def get_display_name(user: User) -> str:
         """

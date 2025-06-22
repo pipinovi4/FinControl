@@ -4,12 +4,25 @@ from backend.app.permissions import PermissionRole
 
 class UserInterfaceService:
     """
-    Interface class for accessing and interpreting user-related state and properties.
+    Interface class for interpreting user state and roles in a readable and reusable way.
 
-    This class provides helper methods that abstract the interpretation of a User instance,
-    such as role-checks, soft-delete status, and user identity resolution.
+    This class wraps around a User model instance and provides a high-level API
+    for evaluating role-based permissions, deletion status, and display identity.
+
+    Primary Use Cases:
+    - Authorization logic based on user roles (admin, broker, etc.).
+    - Display utilities for rendering usernames.
+    - Logic branching depending on whether user is soft-deleted or internal staff.
+
+    Methods:
+        - is_admin(): True if user has admin role.
+        - is_worker(): True if user has worker role.
+        - is_broker(): True if user has broker role.
+        - is_client(): True if user has client role.
+        - is_internal(): True if user is staff (admin or worker).
+        - is_deleted(): True if user is soft-deleted.
+        - get_display_name(): Returns '@username' or fallback UUID-like ID.
     """
-
     def __init__(self, user: User) -> None:
         """
         Initialize the interface with a User instance.

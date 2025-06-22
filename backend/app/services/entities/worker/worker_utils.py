@@ -6,10 +6,29 @@ T = TypeVar("T", bound=SchemaBase)
 
 class WorkerUtilService:
     """
-    Utility functions for working with worker-related data.
-    All methods are static and operate on raw Worker instances or lists of workers.
-    """
+    Static utility service for transforming and filtering Worker model data.
 
+    This service is designed for lightweight, stateless manipulation of Worker entities,
+    including formatting display names, filtering based on client assignments,
+    and converting ORM objects to Pydantic schemas.
+
+    Intended Use-Cases:
+        - Preparing data for frontend views or API responses.
+        - Lightweight transformation pipelines outside of main service logic.
+        - DRY utility layer for schema conversion or display name formatting.
+
+    Methods:
+        - get_display_name(worker): Returns a readable display name.
+        - filter_by_clients_count(workers, min_clients): Filters workers by client count.
+        - to_schema(workers, schema): Converts list of Workers to schema objects.
+        - to_schema_one(worker, schema): Converts a single Worker to schema object.
+
+    Example:
+        workers = get_some_workers()
+        filtered = WorkerUtilService.filter_by_clients_count(workers, min_clients=3)
+        schemas = WorkerUtilService.to_schema(filtered, WorkerSchema.Out)
+        display = WorkerUtilService.get_display_name(filtered[0])
+    """
     @staticmethod
     def get_display_name(worker: Worker) -> str:
         """

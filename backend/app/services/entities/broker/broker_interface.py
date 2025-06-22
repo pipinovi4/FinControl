@@ -1,22 +1,3 @@
-"""
-BrokerInterfaceService — wrapper around the Broker model.
-
-Provides helper methods to access broker-specific attributes,
-simplify view rendering, and encapsulate common logic.
-
-TypeVars:
-    BrokerT — any entity subclassing Broker.
-
-Includes:
-    - get_display_name(): Display broker's company or fallback.
-    - get_email(): Return broker's email.
-    - get_regions(): List of broker's active regions.
-    - get_clients_count(): Return number of assigned clients.
-    - has_clients(): Check if broker has any clients.
-    - is_active(): Check if broker is active (not soft-deleted).
-    - __str__(): Developer-friendly string for debugging.
-"""
-
 from typing import TypeVar
 
 from backend.app.models import Broker
@@ -26,6 +7,24 @@ BrokerT = TypeVar("BrokerT", bound=Broker)
 
 
 class BrokerInterfaceService(UserInterfaceService):
+    """
+    BrokerInterfaceService — wrapper around the Broker model.
+
+    Provides helper methods to access broker-specific attributes,
+    simplify view rendering, and encapsulate common logic.
+
+    TypeVars:
+        BrokerT — any entity subclassing Broker.
+
+    Includes:
+        - get_display_name(): Display broker's company or fallback.
+        - get_email(): Return broker's email.
+        - get_regions(): List of broker's active regions.
+        - get_clients_count(): Return number of assigned clients.
+        - has_clients(): Check if broker has any clients.
+        - is_active(): Check if broker is active (not soft-deleted).
+        - __str__(): Developer-friendly string for debugging.
+    """
     def __init__(self, broker: BrokerT):
         super().__init__(broker)
         self.broker: BrokerT = broker

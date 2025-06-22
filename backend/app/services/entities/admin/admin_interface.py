@@ -1,22 +1,3 @@
-"""
-AdminInterfaceService — generic wrapper around the Admin model.
-
-This class wraps an Admin entity, providing convenient access to
-its properties through a unified interface. Useful for rendering views,
-performing role checks, and reducing logic duplication in routes/services.
-
-TypeVars:
-    AdminT — any entity subclassing Admin.
-
-Includes:
-    - is_super_admin(): Check if the admin is a SUPERADMIN.
-    - get_display_name(): Return the admin’s display name or a fallback.
-    - get_email(): Return the admin’s email.
-    - is_active(): Check if the admin is active (not soft-deleted).
-    - get_last_login(): Return last login timestamp or 'N/A'.
-    - __str__(): Developer-friendly string for debugging.
-"""
-
 from backend.app.models import Admin
 from backend.app.services.entities import UserInterfaceService
 from typing import TypeVar
@@ -25,6 +6,24 @@ AdminT = TypeVar("AdminT", bound=Admin)
 
 
 class AdminInterfaceService(UserInterfaceService):
+    """
+    AdminInterfaceService — generic wrapper around the Admin model.
+
+    This class wraps an Admin entity, providing convenient access to
+    its properties through a unified interface. Useful for rendering views,
+    performing role checks, and reducing logic duplication in routes/services.
+
+    TypeVars:
+        AdminT — any entity subclassing Admin.
+
+    Includes:
+        - is_super_admin(): Check if the admin is a SUPERADMIN.
+        - get_display_name(): Return the admin’s display name or a fallback.
+        - get_email(): Return the admin’s email.
+        - is_active(): Check if the admin is active (not soft-deleted).
+        - get_last_login(): Return last login timestamp or 'N/A'.
+        - __str__(): Developer-friendly string for debugging.
+    """
     def __init__(self, admin: AdminT):
         """Initialize with an Admin instance."""
         super().__init__(admin)

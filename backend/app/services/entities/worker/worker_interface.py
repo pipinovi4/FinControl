@@ -4,11 +4,34 @@ from backend.app.services.entities.user import UserInterfaceService
 
 class WorkerInterfaceService(UserInterfaceService):
     """
-    Interface class for accessing and interpreting worker-related state and properties.
+    High-level interface class for accessing worker-specific information and computed attributes.
 
-    Extends UserInterfaceService, adding worker-specific logic based on the Worker model fields.
+    This class builds upon `UserInterfaceService` and provides additional utility methods
+    tailored to the `Worker` entity, such as checking client assignments, generating
+    dynamic login links, and exposing login/user data in a display-friendly form.
+
+    Main Use-Cases:
+        - Rendering worker-related info in templates or frontend APIs.
+        - Abstracting logic that would otherwise duplicate access to raw model fields.
+        - Ensuring safe, consistent, and structured access to optional fields.
+
+    Methods:
+        - has_clients(): Check if the worker has any clients.
+        - is_active(): Returns True if the worker is not soft-deleted.
+        - get_username(): Returns the username of the worker.
+        - get_telegram_username(): Telegram handle or empty string.
+        - get_clients_count(): Count of clients assigned to this worker.
+        - get_clients_display(): List of readable names for assigned clients.
+        - get_last_login(): String representation of last login.
+        - get_dynamic_link(): One-time login link, if supported.
+        - __str__(): Developer-friendly representation of the instance.
+
+    Example:
+        interface = WorkerInterfaceService(worker)
+        print(interface.get_clients_count())
+        if interface.has_clients():
+            print(interface.get_clients_display())
     """
-
     def __init__(self, worker: Worker) -> None:
         """
         Initialize the interface with a Worker instance.
