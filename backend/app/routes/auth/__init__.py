@@ -22,48 +22,24 @@ from backend.app.routes.auth.reset_password.reset_password_router import router 
 from fastapi import APIRouter
 
 def create_login_router() -> APIRouter:
-    refresh_router = APIRouter()
+    login_router = APIRouter()
 
     from backend.app.routes.auth.login.router_factory import create_login_routers
 
     for router in create_login_routers():
-        refresh_router.include_router(router)
+        login_router.include_router(router)
 
-    return refresh_router
+    return login_router
 
 
-__all__ = ["create_login_router"]
+def create_register_router() -> APIRouter:
+    register_router = APIRouter()
 
-def create_register_router():
-    # Lazy import to avoid unnecessary module loading and circular deps
-    from backend.app.routes.auth.register.register_router import generate_register_handler, register_router
+    from backend.app.routes.auth.register.router_factory import create_register_routers
 
-    # Import all services and schemas needed for each role registration
-    from backend.app.services.entities import (
-        AdminService, WorkerService, ClientService, BrokerService,
-    )
-    from backend.app.schemas.entities.admin_schema import AdminSchema
-    from backend.app.schemas.entities.worker_schema import WorkerSchema
-    from backend.app.schemas.entities.client_schema import ClientSchema
-    from backend.app.schemas.entities.broker_schema import BrokerSchema
+    for router in create_register_routers():
+        register_router.include_router(router)
 
-    # Define registration routes:
-    # - Path (string)
-    # - Corresponding service class (to create user)
-    # - Pydantic schema used for input validation
-    # - Method name inside the service to call (e.g., register_admin)
-    register_definitions = [
-        ("/admin", AdminService, AdminSchema.Create, "register_admin"),
-        ("/worker", WorkerService, WorkerSchema.Create, "register_worker"),
-        ("/broker", BrokerService, BrokerSchema.Create, "register_broker"),
-        ("/client", ClientService, ClientSchema.Create, "register_client"),
-    ]
-
-    # Generate each handler dynamically using the definitions
-    for path, service, schema, method_name in register_definitions:
-        generate_register_handler(path, service, schema, method_name)
-
-    # Return router with all registered registration endpoints
     return register_router
 
 # Explicit module exports
