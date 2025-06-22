@@ -1,7 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Request, Response
+from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import UUID
 
+from backend.app.utils.cookies import set_auth_cookies
 from backend.db.session import get_async_db
 from backend.app.schemas.auth import LoginRequest
 from backend.app.schemas.sessions import TokenPair
@@ -24,9 +26,8 @@ def generate_login_handler(role: PermissionRole, path: str):
     async def login(
         credentials: LoginRequest,
         request: Request,
-        db: AsyncSession = Depends(get_async_db),
-        response: Response = Depends()
-    ) -> TokenPair:
+        db: AsyncSession = Depends(get_async_db)
+    ) -> JSONResponse:
         password_service = PasswordService(db)
         user = await password_service.authenticate(str(credentials.email), credentials.password)
 
@@ -43,22 +44,8 @@ def generate_login_handler(role: PermissionRole, path: str):
             request.headers.get("User-Agent"),
         )
 
-        response.set_cookie(
-            key="access_token",
-            value=access,
-            httponly=True,
-            secure=True,  #
-            samesite="strict",
-            expires=ttl
-        )
+        response = JSONResponse(content={"access_token": access, "refresh_token": refresh, "expires_in": ttl})
 
-        response.set_cookie(
-            key="refresh_token",
-            value=refresh,
-            httponly=True,
-            secure=True,
-            samesite="strict",
-            expires=ttl
-        )
+        set_auth_cookies(response, access, refresh, ttl)
 
-        return TokenPair(access_token=access, refresh_token=refresh, expires_in=ttl)
+        return response

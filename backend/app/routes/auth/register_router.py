@@ -1,8 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import UUID
 from typing import Type, TypeVar
 
+from backend.app.utils.cookies import set_auth_cookies
 from backend.app.schemas import AdminSchema, WorkerSchema, BrokerSchema, ClientSchema, UserSchema
 from backend.app.services.entities import AdminService, WorkerService, BrokerService, ClientService
 from backend.app.utils.middlewares import rate_limit
@@ -44,10 +46,10 @@ def generate_register_handler(
         status_code=status.HTTP_201_CREATED,
     )
     async def register(
-        payload: SchemaT ,
+        payload: schema_class, # type: ignore
         request: Request,
         db: AsyncSession = Depends(get_async_db),
-    ) -> TokenPair:
+    ) -> JSONResponse:
         svc = service_class(db)
 
         if await svc.get_user_by_telegram_id(payload.telegram_id): # type: ignore
@@ -63,4 +65,8 @@ def generate_register_handler(
             request.headers.get("User-Agent")
         )
 
-        return TokenPair(access_token=access, refresh_token=refresh, expires_in=ttl)
+        response = JSONResponse(content={"access_token": access, "refresh_token": refresh, "expires_in": ttl})
+
+        set_auth_cookies(response, access, refresh, ttl)
+
+        return response

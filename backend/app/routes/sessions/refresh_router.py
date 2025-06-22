@@ -1,5 +1,8 @@
+from http.client import responses
+
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi.responses import JSONResponse
 
 from backend.app.utils.decorators import handle_route_exceptions
 from backend.app.utils.middlewares import rate_limit
@@ -7,6 +10,7 @@ from backend.db.session import get_async_db
 from backend.app.schemas.sessions import TokenPair, RefreshRequest
 from backend.app.services.auth import AccessTokenService, RefreshTokenService
 from backend.app.permissions.enums import PermissionRole
+from backend.app.utils.cookies import set_auth_cookies
 
 refresh_router = APIRouter(tags=["Refresh"])
 
@@ -29,7 +33,7 @@ def generate_refresh_handler(role: PermissionRole, path: str):
         payload: RefreshRequest,
         request: Request,
         db: AsyncSession = Depends(get_async_db),
-    ) -> TokenPair:
+    ) -> JSONResponse:
         refresh_svc = RefreshTokenService(db)
         access_svc = AccessTokenService()
 
@@ -50,7 +54,11 @@ def generate_refresh_handler(role: PermissionRole, path: str):
             ua=request.headers.get("User-Agent"),
         )
 
-        return TokenPair(access_token=access, refresh_token=refresh_token, expires_in=ttl)
+        response = JSONResponse(content={"access_token": access, "refresh_token": refresh_token, "expires_in": ttl})
+
+        set_auth_cookies(response, access, refresh_token, ttl)
+
+        return response
 
 # TODO make custom refresh for client because they don't use frontend
 # generate_refresh_handler(PermissionRole.CLIENT, "/client")
