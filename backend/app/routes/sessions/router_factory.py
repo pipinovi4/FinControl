@@ -31,9 +31,9 @@ def make_refresh_handler(
         refresh_token: str
 
         # Determine the refresh token based on refresh_type
-        if refresh_type is RefreshTypes.WEB_REFRESH:
+        if refresh_type is RefreshTypes.WEB:
             refresh_token = request.cookies.get("refresh_token")
-        elif refresh_type is RefreshTypes.BOT_REFRESH:
+        elif refresh_type is RefreshTypes.BOT:
             refresh_token = request_data.refresh_token
         else:
             # Raise an error if refresh_type is invalid
@@ -62,11 +62,11 @@ def make_refresh_handler(
         response: JSONResponse | TokenPair
 
         # Assign a response variable to return
-        if refresh_type is RefreshTypes.WEB_REFRESH:
+        if refresh_type is RefreshTypes.WEB:
             response = JSONResponse(content={"access_token": access, "refresh_token": refresh, "expires_in": ttl})
             # Optionally set cookies for web clients
             set_auth_cookies(response, access, refresh, ttl)
-        elif refresh_type is RefreshTypes.BOT_REFRESH:
+        elif refresh_type is RefreshTypes.BOT:
             response = TokenPair(access_token=access, refresh_token=refresh, expires_in=ttl)
         else:
             raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="Invalid refresh type provided")
