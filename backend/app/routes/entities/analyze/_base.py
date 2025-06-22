@@ -25,13 +25,11 @@ def generate_analyze_endpoints(
         name: Optional name for the route
         rate_limit_rule: A string representing the rate limit rule (e.g., "5/minute").
     """
-    route_path = f"/{path}"
-
     if rate_limit_rule:
         handler = rate_limit(rate_limit_rule)(handler)
 
     router.get(
-        route_path,
+        path=path,
         tags=tags,
         name=name,
         summary=f"{tags[0]} - {path.replace('_', ' ').title()}"
