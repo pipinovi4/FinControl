@@ -1,7 +1,7 @@
 from typing import Dict, Tuple, List
 
 from backend.app.permissions import PermissionRole
-from backend.app.routes.auth.login.types import LoginTypes, LoginRequestT
+from backend.app.routes.auth.login.types import LoginTypes
 
 
 ROLE_REGISTRY: Dict[PermissionRole, Tuple[str, List[LoginTypes]]] = {
