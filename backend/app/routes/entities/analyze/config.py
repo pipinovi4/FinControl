@@ -88,7 +88,6 @@ def _build_bundle(
     svc_cls:   Type[BaseService],
     ui_cls:    Type[BaseService],
     flt_cls:   Type[BaseService],
-    utl_cls:   Type[BaseService],
     schema_cls: Type[BaseModel],
 ) -> RoleBundle:
     """Wrap every class in RoleServiceWrapper and pack into RoleBundle."""
@@ -97,7 +96,6 @@ def _build_bundle(
         service=RoleServiceWrapper(svc_cls),
         interface=RoleServiceWrapper(ui_cls),
         filter=RoleServiceWrapper(flt_cls),
-        utils=RoleServiceWrapper(utl_cls),
         schema=schema_cls.Out,
     )
 
