@@ -1,38 +1,47 @@
-# backend/app/utils/decorators/route.py
-
 from fastapi import HTTPException
 from functools import wraps
 from sqlalchemy.exc import SQLAlchemyError
-import inspect
+from typing import Callable, Any, Awaitable
 import logging
+import traceback
 
 logger = logging.getLogger(__name__)
 
-
 def handle_route_exceptions(default_status_code: int = 500):
     """
-    Decorator to handle exceptions in FastAPI routes.
+    Decorator for handling unexpected errors inside FastAPI route handlers.
 
     Args:
-        default_status_code (int): Status code for unexpected errors.
+        default_status_code (int): Fallback HTTP status code for unknown exceptions.
 
     Returns:
-        Decorated route handler with unified error responses.
+        Callable: A decorated async route handler with automatic error handling.
     """
-    def decorator(func):
+    def decorator(func: Callable[..., Awaitable[Any]]):
         @wraps(func)
         async def wrapper(*args, **kwargs):
             try:
-                if inspect.iscoroutinefunction(func):
-                    return await func(*args, **kwargs)
-                return func(*args, **kwargs)
+                return await func(*args, **kwargs)
             except HTTPException:
                 raise
             except SQLAlchemyError as e:
-                logger.exception("Database error in %s: %s", func.__name__, str(e))
-                raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+                logger.error(
+                    "Database error in route '%s': %s\n%s",
+                    func.__name__,
+                    str(e),
+                    traceback.format_exc(),
+                )
+                raise HTTPException(status_code=500, detail="Internal database error")
             except Exception as e:
-                logger.exception("Unhandled error in %s: %s", func.__name__, str(e))
-                raise HTTPException(status_code=default_status_code, detail=f"Unexpected error: {str(e)}")
+                logger.error(
+                    "Unhandled exception in route '%s': %s\n%s",
+                    func.__name__,
+                    str(e),
+                    traceback.format_exc(),
+                )
+                raise HTTPException(
+                    status_code=default_status_code,
+                    detail="An unexpected error occurred"
+                )
         return wrapper
     return decorator
