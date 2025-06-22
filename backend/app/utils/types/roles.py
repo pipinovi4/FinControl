@@ -14,5 +14,4 @@ class RoleBundle:
     service:   RoleServiceWrapper[BaseService]
     interface: RoleServiceWrapper[BaseService]
     filter:    RoleServiceWrapper[BaseService]
-    utils:     RoleServiceWrapper[BaseService]
     schema:    Type[BaseModel]
