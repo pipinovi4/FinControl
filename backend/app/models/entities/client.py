@@ -1,6 +1,6 @@
 import uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import ForeignKey, UUID, String, Text
+from sqlalchemy import ForeignKey, UUID, String, Text, Integer
 from sqlalchemy.dialects.postgresql import JSONB
 from backend.app.models.entities.user import User
 from backend.app.permissions.enums import PermissionRole
@@ -112,6 +112,9 @@ class Client(User):
 
     contact_person: Mapped[str] = mapped_column(Text, nullable=True)
     # Emergency contact (name, phone, relation)
+
+    active_credit: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    # Active credit sum
 
     report_files: Mapped[list[dict]] = mapped_column(JSONB, nullable=True)
     # List of uploaded credit history report file IDs (can be JSON if Postgres)
