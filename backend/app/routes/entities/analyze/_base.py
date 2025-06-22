@@ -1,6 +1,7 @@
-from typing import Awaitable, Callable
-from fastapi import APIRouter
-from backend.app.utils.decorators import handle_route_exceptions
+from typing import Callable, Awaitable
+from fastapi import APIRouter, WebSocket
+
+from backend.app.utils.decorators import handle_route_exceptions, handle_ws_exceptions
 from backend.app.utils.middlewares.limiter import rate_limit
 
 def generate_analyze_endpoints(
@@ -34,3 +35,28 @@ def generate_analyze_endpoints(
         name=name,
         summary=f"{tags[0]} - {path.replace('_', ' ').title()}"
     )(wrapper(handler))
+
+
+def generate_analyze_ws_endpoint(
+    router: APIRouter,
+    *,
+    path: str,
+    handler: Callable[[WebSocket], Awaitable[None]],
+    wrapper: Callable[[Callable[[WebSocket], Awaitable[None]]], Callable[[WebSocket], Awaitable[None]]] = handle_ws_exceptions,
+    name: str | None = None,
+) -> None:
+    """
+    Attaches a WebSocket endpoint to the router with optional decorations.
+
+    - Supports error handling wrappers
+    - Optional rate-limiting (future implementation)
+    - Automatic function naming for introspection/debugging
+    """
+
+    if name:
+        handler.__name__ = name
+
+    router.websocket(f"/{path}")(wrapper(handler))
+
+
+__all__ = ["generate_analyze_ws_endpoint", "generate_analyze_endpoints"]
