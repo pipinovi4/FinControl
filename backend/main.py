@@ -38,14 +38,14 @@ def create_app() -> FastAPI:
         )
 
     # Include API routes
-    app.include_router(create_api_router(), prefix="/api")
+    app.include_router(create_api_router())
 
     # Logging routes and stats
     print("\n📌 Registered routes:\n")
     print(f"{'METHODS':<10} {'PATH':<45} {'NAME':<30} {'TAGS'}")
     print("-" * 110)
 
-    tag_priority = ["ANALYZE", "CRUD", "AUTH", "REFRESH", "RESET"]
+    tag_priority = ["ANALYZE", "CRUD", "AUTH"]
     tag_counter = defaultdict(int)
     total_routes = 0
 
