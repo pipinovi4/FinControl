@@ -1,6 +1,7 @@
 from typing import Optional
 from passlib.context import CryptContext
-from sqlalchemy.orm.session import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 
 from backend.app.models.entities import Admin
 
@@ -15,7 +16,7 @@ class PasswordService:
         db (Session): SQLAlchemy session for database operations.
     """
 
-    def __init__(self, db: Session):
+    def __init__(self, db: AsyncSession):
         """
         Initialize PasswordService with a database session.
 
@@ -51,7 +52,7 @@ class PasswordService:
         """
         return pwd_ctx.verify(plain, hashed)
 
-    def authenticate(self, email: str, password: str) -> Optional[Admin]:
+    async def authenticate(self, email: str, password: str) -> Optional[Admin]:
         """
         Authenticate an Admin by email and password.
 
@@ -65,11 +66,10 @@ class PasswordService:
         Returns:
             Optional[Admin]: The authenticated Admin instance if credentials are valid; otherwise, None.
         """
-        admin = (
-            self.db.query(Admin)
-            .filter_by(email=email, is_deleted=False)
-            .first()
-        )
+        stmt = select(Admin).where(Admin.email == email, Admin.is_deleted == False)
+        result = await self.db.execute(stmt)
+        admin = result.scalar_one_or_none()
+
         if admin and self.verify(password, str(admin.password_hash)):
             return admin
         return None

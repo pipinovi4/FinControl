@@ -1,86 +1,114 @@
-# backend/app/services/entities/refresh_token_service.py
-
 from datetime import datetime, UTC, timedelta
 from uuid import UUID
 from hashlib import sha256
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select, update
 import secrets
 
 from backend.app.models.sessions.refresh_token import RefreshToken
 from backend.app.utils.decorators import handle_exceptions
 
+
 class RefreshTokenService:
     """
-    Service layer for managing refresh token operations:
-    creation, revocation, verification, and rotation.
+    Async service for managing refresh token records in the database.
+
+    Supports creation, validation, revocation, and rotation of secure refresh tokens.
+    Designed for use in FastAPI async workflows.
     """
 
-    def __init__(self, db: Session):
+    def __init__(self, db: AsyncSession):
+        """
+        Initialize the service with an async database session.
+
+        Args:
+            db (AsyncSession): The active async DB session.
+        """
         self.db = db
 
-    # ---- helpers -------------------------------------------------
     @staticmethod
-    def _hash(raw: str) -> str:
+    def hash(raw: str) -> str:
         """
-        Hashes the raw refresh token using SHA-256.
+        Hash a raw refresh token using SHA-256.
+
+        Args:
+            raw (str): The plain text token.
+
+        Returns:
+            str: SHA-256 hash of the token.
         """
         return sha256(raw.encode()).hexdigest()
 
-    # ---- public --------------------------------------------------
-
     @handle_exceptions()
-    def create(
+    async def create(
         self,
         user_id: UUID,
         raw_token: str,
-        ip: str | None,
-        ua: str | None,
+        created_from_ip: str | None,
+        user_agent: str | None,
         ttl_days: int = 30,
     ):
         """
-        Create a new refresh token in the database.
+        Create and persist a new refresh token.
+
+        Args:
+            user_id (UUID): ID of the user.
+            raw_token (str): Raw token to hash.
+            created_from_ip (Optional[str]): IP address.
+            user_agent (Optional[str]): User-Agent string.
+            ttl_days (int): Token lifespan in days.
         """
         token_row = RefreshToken(
             user_id=user_id,
-            token_hash=self._hash(raw_token),
-            created_from_ip=ip,
-            user_agent=ua,
+            token_hash=self.hash(raw_token),
+            created_from_ip=created_from_ip,
+            user_agent=user_agent,
             expires_at=datetime.now(UTC) + timedelta(days=ttl_days),
             is_active=True,
         )
         self.db.add(token_row)
-        self.db.commit()
-        self.db.refresh(token_row)
+        await self.db.commit()
+        await self.db.refresh(token_row)
 
     @handle_exceptions()
-    def revoke(self, token_hash: str) -> None:
+    async def revoke(self, token_hash: str) -> None:
         """
-        Soft-revoke a refresh token by hash.
+        Mark a token as inactive (soft revoke) by its hash.
+
+        Args:
+            token_hash (str): Hashed token string.
         """
-        self.db.query(RefreshToken).filter_by(token_hash=token_hash).update(
-            {"is_active": False}
+        stmt = (
+            update(RefreshToken)
+            .where(RefreshToken.token_hash == token_hash)
+            .values(is_active=False)
         )
-        self.db.commit()
+        await self.db.execute(stmt)
+        await self.db.commit()
 
     @handle_exceptions(default_return=None)
-    def verify(self, raw_token: str) -> RefreshToken | None:
+    async def verify(self, raw_token: str) -> RefreshToken | None:
         """
-        Check that a given raw token is active and not expired,
-        returning the ORM instance or None.
+        Check if a token is active and not expired.
+
+        Args:
+            raw_token (str): Raw token string.
+
+        Returns:
+            Optional[RefreshToken]: Token object if valid, else None.
         """
-        hashed = self._hash(raw_token)
-        return (
-            self.db.query(RefreshToken)
-            .filter(
-                RefreshToken.token_hash == hashed,
-                RefreshToken.is_active.is_(True),
-                RefreshToken.expires_at > datetime.now(UTC),
-            )
-            .first()
+        hashed = self.hash(raw_token)
+
+        stmt = select(RefreshToken).where(
+            RefreshToken.token_hash == hashed,
+            RefreshToken.is_active.is_(True),
+            RefreshToken.expires_at > datetime.now(UTC),
         )
+        result = await self.db.execute(stmt)
+        return result.scalar_one_or_none()
 
     @handle_exceptions()
-    def rotate(
+    async def rotate(
         self,
         stored_token: RefreshToken,
         ip: str | None,
@@ -88,13 +116,22 @@ class RefreshTokenService:
         ttl_days: int = 30,
     ) -> str:
         """
-        Revoke the old token and issue a new one.
+        Soft-revoke the existing token and issue a new one.
+
+        Args:
+            stored_token (RefreshToken): The token being rotated.
+            ip (Optional[str]): New client IP.
+            ua (Optional[str]): New User-Agent.
+            ttl_days (int): New token lifespan.
+
+        Returns:
+            str: The new raw token.
         """
         stored_token.is_active = False
         self.db.add(stored_token)
 
         raw_token = secrets.token_urlsafe(48)
-        hashed = self._hash(raw_token)
+        hashed = self.hash(raw_token)
 
         new_token = RefreshToken(
             user_id=stored_token.user_id,
@@ -105,6 +142,6 @@ class RefreshTokenService:
             is_active=True,
         )
         self.db.add(new_token)
-        self.db.commit()
+        await self.db.commit()
 
         return raw_token

@@ -53,6 +53,9 @@ class TokenManager:
         Returns:
             str: Encoded JWT string.
         """
+        if "sub" not in payload:
+            raise ValueError("Missing `sub` in payload for JWT encoding")
+
         ttl = ttl_minutes or cls._default_ttl[token_type]
         now = datetime.now(UTC)
         claims = {

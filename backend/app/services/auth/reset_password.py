@@ -3,10 +3,11 @@ from backend.app.services.smtp_service import SMTPService
 from backend.app.services.entities.user.user_service import UserService
 from backend.app.core.settings import settings
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import EmailStr
 from uuid import UUID
-import secrets
+
+from backend.app.utils.decorators import handle_route_exceptions
 
 
 class ResetPasswordService:
@@ -21,29 +22,29 @@ class ResetPasswordService:
         - UserService: fetches and updates user by email or ID
     """
 
-    def __init__(self, db: Session):
+    def __init__(self, db: AsyncSession):
         self.db = db
         self.smtp = SMTPService()
         self.user_service = UserService(db)
 
-    def request_reset(self, email: EmailStr) -> None:
+    @handle_route_exceptions()
+    async def request_reset(self, email: EmailStr) -> None:
         """
         Generates a password reset token and sends it to the provided email.
+        Silently fails if no user is found.
 
         Args:
             email (EmailStr): User's registered email.
-
-        Returns:
-            None. Silently fails if no user is found.
         """
-        user = self.user_service.get_user_by_email(email)
+        user = await self.user_service.get_user_by_email(email)
         if not user:
             return
 
         token = self._generate_token(user.id)
-        self._send_reset_email(email, token)
+        await self._send_reset_email(email, token)
 
-    def reset_password(self, token: str, new_password: str) -> bool:
+    @handle_route_exceptions()
+    async def reset_password(self, token: str, new_password: str) -> bool:
         """
         Validates the reset token and updates the password.
 
@@ -54,11 +55,11 @@ class ResetPasswordService:
         Returns:
             bool: True if password was reset, False otherwise.
         """
-        user_id = self._verify_token(token=token)
+        user_id = self._verify_token(token)
         if not user_id:
             return False
 
-        self.user_service.update_password(user_id, new_password)
+        await self.user_service.update_password(user_id, new_password)
         return True
 
     # --------- helpers (private) ------------
@@ -90,9 +91,6 @@ class ResetPasswordService:
 
         Returns:
             UUID | None: User ID if valid, otherwise None.
-
-        Raises:
-            ValueError: If token is invalid or not a reset token.
         """
         try:
             payload = TokenManager.decode(token, expected_type="reset")
@@ -100,15 +98,12 @@ class ResetPasswordService:
         except ValueError:
             return None
 
-    def _send_reset_email(self, email: EmailStr, token: str) -> None:
+    async def _send_reset_email(self, email: EmailStr, token: str) -> None:
         """
         Sends the reset token via email.
 
         Args:
             email (EmailStr): Recipient's email.
             token (str): JWT token to include in the email.
-
-        Returns:
-            None
         """
-        self.smtp.send_password_reset_email(to_email=email, reset_token=token)
+        await self.smtp.send_password_reset_email(to_email=email, reset_token=token)
