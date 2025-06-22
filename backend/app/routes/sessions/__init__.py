@@ -1,10 +1,13 @@
-def create_refresh_router():
-    from .refresh_router import generate_refresh_handler, refresh_router
-    from backend.app.permissions import PermissionRole
+from fastapi import APIRouter
 
-    generate_refresh_handler(PermissionRole.ADMIN, "/admin")
-    generate_refresh_handler(PermissionRole.WORKER, "/worker")
-    generate_refresh_handler(PermissionRole.BROKER, "/broker")
+
+def create_refresh_router() -> APIRouter:
+    refresh_router = APIRouter()
+
+    from .router_factory import create_refresh_routers
+
+    for router in create_refresh_routers():
+        refresh_router.include_router(router)
 
     return refresh_router
 
