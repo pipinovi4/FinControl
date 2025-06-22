@@ -1,7 +1,3 @@
-Окей! Ти хочеш, щоб **бота для аутентифікації** зробити наступною задачею, яку ми зараз будемо виконувати. Давай оновимо статус задачі та додамо **`Custom Auth for Bot`** як наступну задачу, яку потрібно реалізувати.
-
-### Оновлений Task List
-
 ---
 
 ## **Sprint 2025‑06‑16 → 2025‑06‑30**
@@ -22,10 +18,10 @@
    **Status**: ✅ Completed
 
 2. **WebSockets**: Implement WebSocket functionality for analyze endpoints, enabling real-time analytics or live updates.  
-   **Status**: ⬜ In Progress
+   **Status**: ✅ **Currently in Progress** 
 
 3. **Backend Tests**: Write comprehensive tests to validate the backend functionality.  
-   **Status**: ⬜ In Progress
+   **Status**: ✅ **Currently in Progress** 
 
 4. **Bot Development**: Once the backend is fully tested, focus on building the Telegram bot and integrating it with the backend.  
    **Status**: ⬜ Pending
@@ -37,7 +33,7 @@
    **Status**: ⬜ Pending
 
 7. **Custom Auth for Bot**: **Implement custom authentication for the bot** to handle bot-specific authentication logic separately from regular web-based login systems.  
-   **Status**: ✅ **Currently in Progress**
+   **Status**: ✅ Completed
 
 ---
 
