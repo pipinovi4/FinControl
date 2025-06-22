@@ -1,9 +1,9 @@
 from typing import Type, Callable, cast
 from fastapi import APIRouter, Depends, HTTPException, status, Request
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 
-from backend.db.session import get_db
+from backend.db.session import get_async_db
 from backend.app.permissions import PermissionRole
 from backend.app.routes.entities.crud.config import CREATE_MATRIX
 from backend.app.routes.entities.crud._base import generate_crud_endpoints
@@ -18,20 +18,22 @@ def make_create_handler(
 ) -> Callable:
     @handle_route_exceptions()
     async def handler(
-        payload: schema_cls,               # type: ignore
+        payload: schema_cls,  # type: ignore
         request: Request,
-        db: Session = Depends(get_db),
-    ) -> schema_cls:                       # type: ignore
+        db: AsyncSession = Depends(get_async_db),
+    ) -> schema_cls:  # type: ignore
         svc = service_cls(db)
 
-        if svc.get_user_by_telegram_id(payload.telegram_id):
+        if await svc.get_user_by_telegram_id(payload.telegram_id):
             raise HTTPException(
                 status.HTTP_409_CONFLICT,
                 f"{role.value.title()} with this telegram_id already exists",
             )
 
-        return svc.create(payload)         # або .create_user(...)
+        return await svc.create(payload)
+
     return handler
+
 
 def create_router_factory() -> APIRouter:
     router = APIRouter(prefix="/create", tags=["Create Entities"])
@@ -44,8 +46,9 @@ def create_router_factory() -> APIRouter:
             verb="post",
             path=path,
             handler=handler,
-            input_schema=schema_ns,
             tags=[role.value],
+            rate_limit_rule="20/minute",
+            name=f"create_{role.value.lower()}",
         )
 
     return router

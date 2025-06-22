@@ -1,9 +1,9 @@
 from typing import Type, Callable, cast
 from fastapi import APIRouter, Depends, HTTPException, status, Request
-from sqlalchemy.orm import Session
-from pydantic.main import BaseModel
+from sqlalchemy.ext.asyncio import AsyncSession
+from pydantic import BaseModel
 
-from backend.db.session import get_db
+from backend.db.session import get_async_db
 from backend.app.permissions import PermissionRole
 from backend.app.routes.entities.crud.config import UPDATE_MATRIX
 from backend.app.routes.entities.crud._base import generate_crud_endpoints
@@ -21,16 +21,17 @@ def make_update_handler(
         id: str,
         payload: schema_cls,  # type: ignore
         request: Request,
-        db: Session = Depends(get_db),
+        db: AsyncSession = Depends(get_async_db),
     ) -> schema_cls:  # type: ignore
         svc = service_cls(db)
-        entity = svc.update(id, payload)
+        entity = await svc.update(id, payload)
         if not entity:
             raise HTTPException(
                 status.HTTP_404_NOT_FOUND,
                 f"{role.value.title()} with id '{id}' not found",
             )
         return entity
+
     return handler
 
 
@@ -45,8 +46,9 @@ def update_router_factory() -> APIRouter:
             verb="put",
             path=path + "/{id}",
             handler=handler,
-            input_schema=schema_cls,
             tags=[role.value],
+            rate_limit_rule="20/minute",
+            name=f"create_{role.value.lower()}",
         )
 
     return router

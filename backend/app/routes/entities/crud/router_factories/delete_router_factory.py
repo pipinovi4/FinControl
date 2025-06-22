@@ -1,8 +1,8 @@
 from typing import Type, Callable, cast
 from fastapi import APIRouter, Depends, HTTPException, status, Request
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.db.session import get_db
+from backend.db.session import get_async_db
 from backend.app.permissions import PermissionRole
 from backend.app.routes.entities.crud.config import DELETE_MATRIX
 from backend.app.routes.entities.crud._base import generate_crud_endpoints
@@ -16,18 +16,19 @@ def make_delete_handler(
 ) -> Callable:
     @handle_route_exceptions()
     async def handler(
-        id: str,  # ID в URL
+        id: str,
         request: Request,
-        db: Session = Depends(get_db),
+        db: AsyncSession = Depends(get_async_db),
     ) -> dict:
         svc = service_cls(db)
-        success = svc.delete(id)  # або svc.delete_user(id)
+        success = await svc.delete(id)
         if not success:
             raise HTTPException(
                 status.HTTP_404_NOT_FOUND,
                 f"{role.value.title()} with id '{id}' not found",
             )
         return {"detail": f"{role.value.title()} deleted"}
+
     return handler
 
 
@@ -40,10 +41,11 @@ def delete_router_factory() -> APIRouter:
         generate_crud_endpoints(
             router=router,
             verb="delete",
-            path=path + "/{id}",       
+            path=path + "/{id}",
             handler=handler,
-            input_schema=None,
+            rate_limit_rule="20/minute",
             tags=[role.value],
+            name=f"create_{role.value.lower()}",
         )
 
     return router
