@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
-from typing import Awaitable, Callable, Any, List
+from typing import Awaitable, Callable, List
 from fastapi import APIRouter, WebSocket, Depends, WebSocketException, status
 from fastapi.websockets import WebSocketDisconnect
 
 from backend.db.session import get_async_db
+from backend.app.routes.entities.analyze._base import generate_analyze_ws_endpoint
 from backend.app.routes.entities.analyze.types import AnalyzeType
 from backend.app.routes.entities.analyze.config import ROLE_REGISTRY
 from backend.app.utils.protocols import BaseService
@@ -103,7 +104,12 @@ def create_analyze_ws_routers() -> List[APIRouter]:
                 metric=metric,
             )
 
-            router.websocket(f"/{metric.value}")(ws_handler)
+            generate_analyze_ws_endpoint(
+                router=router,
+                path=metric.value,
+                handler=ws_handler,
+                name=ws_handler.__name__,
+            )
 
         routers.append(router)
 
