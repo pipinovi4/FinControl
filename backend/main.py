@@ -7,6 +7,10 @@ from backend.app.routes import create_api_router
 from fastapi.middleware.cors import CORSMiddleware
 from collections import defaultdict
 
+from backend.app.utils.middlewares.access_token import AccessTokenMiddleware
+from backend.app.utils.middlewares.ws_access_token import WebSocketAuthMiddleware
+
+
 class LimiterApp(FastAPI):
     state: dict
 
@@ -28,6 +32,8 @@ def create_app() -> FastAPI:
     # SlowAPI middleware
     app.state.limiter = limiter
     app.add_middleware(SlowAPIMiddleware)
+    # Access token middleware (JWT)
+    app.add_middleware(AccessTokenMiddleware)
 
     # Rate limit exception handler
     @app.exception_handler(RateLimitExceeded)
@@ -78,7 +84,7 @@ def create_app() -> FastAPI:
     return app
 
 
-application = create_app()
+application = WebSocketAuthMiddleware(create_app())
 
 if __name__ == "__main__":
     import uvicorn
