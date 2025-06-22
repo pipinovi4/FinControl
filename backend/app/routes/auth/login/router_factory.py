@@ -5,8 +5,9 @@ from fastapi import APIRouter, HTTPException, Request, Depends, status
 from fastapi.responses import JSONResponse
 from uuid import UUID
 
-from backend.app.routes.auth.login.types import LoginTypes, LoginRequestT
+from backend.app.routes.auth.login.types import LoginTypes
 from backend.app.routes.auth.login.config import ROLE_REGISTRY
+from backend.app.schemas.auth import LoginRequest
 from backend.app.schemas.sessions import TokenPair
 from backend.app.services.auth import PasswordService, generate_token_pair
 from backend.app.utils.cookies import set_auth_cookies
@@ -19,7 +20,7 @@ def make_login_handler(
         login_type: LoginTypes,
 ) -> Callable[..., Awaitable]:
     async def _handler(
-        request_data: LoginRequestT,
+        request_data: LoginRequest,
         request: Request,
         db=Depends(get_async_db),
     ) -> JSONResponse | TokenPair:
