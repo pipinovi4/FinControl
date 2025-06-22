@@ -17,11 +17,11 @@ To mount:
     app.include_router(create_register_router(), prefix="/auth/register", tags=["Auth"])
 """
 
-from .reset_password_router import router as reset_password_router
+from backend.app.routes.auth.reset_password.reset_password_router import router as reset_password_router
 
 def create_login_router():
     # Lazy import to prevent circular dependencies and reduce startup overhead
-    from .login_router import generate_login_handler, login_router
+    from backend.app.routes.auth.login.login_router import generate_login_handler, login_router
     from backend.app.permissions import PermissionRole
 
     # Define login endpoints per role and URL path
@@ -42,7 +42,7 @@ def create_login_router():
 
 def create_register_router():
     # Lazy import to avoid unnecessary module loading and circular deps
-    from .register_router import generate_register_handler, register_router
+    from backend.app.routes.auth.register.register_router import generate_register_handler, register_router
 
     # Import all services and schemas needed for each role registration
     from backend.app.services.entities import (
