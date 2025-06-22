@@ -1,20 +1,8 @@
-# routes/entities/analyze/_base.py
-"""
-Reusable helper to attach analysis endpoints for different user roles.
-Each route is registered under:    /<role>/analyze
-
-Keeps FastAPI-specific glue (path, tags, wrapper) out of the factories.
-"""
-
 from typing import Awaitable, Callable
 from fastapi import APIRouter
-
 from backend.app.utils.decorators import handle_route_exceptions
+from backend.app.utils.middlewares.limiter import rate_limit
 
-
-# ─────────────────────────────────────────────────────────────
-# Wrapper for analysis endpoints (always GET, nobody expected)
-# ─────────────────────────────────────────────────────────────
 def generate_analyze_endpoints(
     router: APIRouter,
     *,
@@ -22,6 +10,8 @@ def generate_analyze_endpoints(
     handler: Callable[..., Awaitable],
     tags: list[str],
     wrapper: Callable[[Callable[..., Awaitable]], Callable[..., Awaitable]] = handle_route_exceptions,
+    name: str = __name__,
+    rate_limit_rule: str | None = None
 ) -> None:
     """
     Attach a GET endpoint at `/<role>/analyze/<path>` to a router.
@@ -32,6 +22,17 @@ def generate_analyze_endpoints(
         handler: Coroutine handling the analysis logic
         tags:    Tags for Swagger UI grouping
         wrapper: Optional decorator for error handling/logging (default enabled)
+        name: Optional name for the route
+        rate_limit_rule: A string representing the rate limit rule (e.g., "5/minute").
     """
-    route_path = f"/analyze/{path}"
-    router.get(route_path, tags=tags)(wrapper(handler))
+    route_path = f"/{path}"
+
+    if rate_limit_rule:
+        handler = rate_limit(rate_limit_rule)(handler)
+
+    router.get(
+        route_path,
+        tags=tags,
+        name=name,
+        summary=f"{tags[0]} - {path.replace('_', ' ').title()}"
+    )(wrapper(handler))
