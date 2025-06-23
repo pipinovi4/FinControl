@@ -10,7 +10,6 @@ from backend.db.session import get_async_db
 router = APIRouter(tags=["Reset Password"])
 
 
-@router.post("/request", status_code=status.HTTP_202_ACCEPTED)
 @rate_limit("2/minute")
 @handle_route_exceptions()
 async def request_reset(
@@ -21,8 +20,11 @@ async def request_reset(
     await service.request_reset(data.email)
     return {"detail": "If that email exists, a reset link has been sent."}
 
+request_reset._meta = {"input_schema": ResetPasswordRequest}
 
-@router.post("/confirm", status_code=status.HTTP_200_OK)
+router.post("/request", status_code=status.HTTP_202_ACCEPTED)(request_reset)
+
+
 @handle_route_exceptions()
 async def reset_password(
     data: ResetPasswordConfirm,
@@ -35,3 +37,7 @@ async def reset_password(
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Invalid or expired token")
 
     return {"detail": "Password successfully updated."}
+
+reset_password._meta = {"input_schema": ResetPasswordConfirm}
+
+router.post("/confirm", status_code=status.HTTP_200_OK)(reset_password)
