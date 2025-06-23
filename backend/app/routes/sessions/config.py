@@ -9,27 +9,27 @@ ROLE_REGISTRY: Dict[PermissionRole, Tuple[str, Dict[RefreshTypes, RefreshRequest
     PermissionRole.ADMIN: (
         "/admin",  # Path for admin refresh endpoint
         {
-            RefreshTypes.WEB: RefreshRequest,  # Admin can refresh via Web
-            RefreshTypes.BOT: None,  # Admin does not use bot refresh
+            RefreshTypes.WEB: None,  # Tokes are inside the cookies
+            RefreshTypes.BOT: RefreshRequest,  # Admin does not use bot refresh
         }
     ),
     PermissionRole.WORKER: (
         "/worker",  # Path for worker refresh endpoint
         {
-            RefreshTypes.WEB: RefreshRequest,  # Worker can refresh via Web
-            RefreshTypes.BOT: None,  # Worker does not use bot refresh
+            RefreshTypes.WEB: None,  # Tokes are inside the cookies
+            RefreshTypes.BOT: RefreshRequest,  # Worker does not use bot refresh
         }
     ),
     PermissionRole.CLIENT: (
         "/client",  # Path for client refresh endpoint
         {
-            RefreshTypes.BOT: None,  # Client only uses bot refresh (if implemented)
+            RefreshTypes.BOT: RefreshRequest,  # Client only uses bot refresh (if implemented)
         }
     ),
     PermissionRole.BROKER: (
         "/broker",  # Path for broker refresh endpoint
         {
-            RefreshTypes.WEB: RefreshRequest,  # Broker can refresh via Web
+            RefreshTypes.WEB: None,  # Tokes are inside the cookies
         }
     ),
 }
