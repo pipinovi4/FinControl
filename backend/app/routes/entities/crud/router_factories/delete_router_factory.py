@@ -35,7 +35,7 @@ def make_delete_handler(
 def delete_router_factory() -> APIRouter:
     router = APIRouter(prefix="/delete", tags=["Delete Entities"])
 
-    for role, path, service_cls, _ in DELETE_MATRIX:
+    for role, path, service_cls, input_schema, output_schema in DELETE_MATRIX:
         handler = make_delete_handler(cast(Type[ServiceT], service_cls), role)
 
         generate_crud_endpoints(
@@ -43,9 +43,11 @@ def delete_router_factory() -> APIRouter:
             verb="delete",
             path=path + "/{id}",
             handler=handler,
+            schema_request=input_schema,
+            schema_response=output_schema,
             rate_limit_rule="20/minute",
             tags=[role.value],
-            name=f"create_{role.value.lower()}",
+            name=f"delete_{role.value.lower()}",
         )
 
     return router
