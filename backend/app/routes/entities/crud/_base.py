@@ -7,11 +7,15 @@ per-action router factories (`create_router_factory.py`, `read_router_factory.py
 remain tiny and role-agnostic.
 """
 
-from typing import Awaitable, Callable, Type
+from typing import Awaitable, Callable, TypeVar, Type, Any
 from fastapi import APIRouter
+from pydantic import BaseModel
 
+from backend.app.schemas import AdminSchema, WorkerSchema, BrokerSchema, ClientSchema, UserSchema
 from backend.app.utils.decorators import handle_route_exceptions
 from backend.app.utils.middlewares import rate_limit
+
+SchemaT = TypeVar("SchemaT", AdminSchema, WorkerSchema, BrokerSchema, ClientSchema)
 
 # Thin wrapper around `router.<verb>()`                                    #
 def generate_crud_endpoints(
@@ -19,9 +23,11 @@ def generate_crud_endpoints(
     *,
     verb: str,
     path: str,
-    handler: Callable[..., Awaitable],   # actual coroutine executed per request
+    handler: Callable[..., Awaitable[Any]],   # actual coroutine executed per request
     tags: list[str],
     wrapper: Callable[[Callable[..., Awaitable]], Callable[..., Awaitable]] = handle_route_exceptions,
+    schema_request: Type[BaseModel],
+    schema_response: Type[BaseModel],
     rate_limit_rule: str | None = None,  # Add rate limit rule
     name: str = __name__,
 ) -> None:
@@ -38,6 +44,8 @@ def generate_crud_endpoints(
                 Decorator applied to the `handler` function before attaching.
                 Used for centralized error handling, logging, etc.
                 Defaults to `handle_route_exceptions`.
+         schema_request:  Schema instance that referencing the body_request of endpoint.
+         schema_response: Schema instance that referencing the body_response of endpoint.
          rate_limit_rule: Rate limit rule.
          name:      Name of route handler.
 
@@ -58,8 +66,13 @@ def generate_crud_endpoints(
     if rate_limit_rule:
         handler = rate_limit(rate_limit_rule)(handler)
 
+    wrapped_handler = wrapper(handler)
+
+    wrapped_handler._meta = {"input_schema": schema_request}
+
     # FastAPI automatically extracts the schema from the handler signature,
     # so we don’t need to pass `input_schema` to the decorator explicitly.
     # The presence of `input_schema` is still useful for static analysis and
     # for factories that might want to branch on “body vs. no-body”.
-    fastapi_decorator(path, tags=tags, name=name, summary=f"{tags[0]} - {path.replace('_', ' ').title()}")(wrapper(handler))
+    fastapi_decorator(path, response_model=schema_response, tags=tags, name=name, summary=f"{tags[0]} - {path.replace('_', ' ').title()}")(
+        wrapped_handler)
