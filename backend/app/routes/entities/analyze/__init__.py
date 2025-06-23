@@ -34,20 +34,20 @@ def create_analyze_router() -> APIRouter:
     return analyze_router
 
 
-def create_analyze_websocket_router() -> APIRouter:
-    """Main router for all WebSocket-based analyze endpoints."""
-    ws_router = APIRouter()
-
-    # Lazy import to avoid circular dependencies
-    from .websocket_factory import create_analyze_ws_routers
-
-    for router in create_analyze_ws_routers():
-        ws_router.include_router(router)
-
-    return ws_router
-
+# def create_analyze_websocket_router() -> APIRouter:
+#     """Main router for all WebSocket-based analyze endpoints."""
+#     ws_router = APIRouter()
+#
+#     # Lazy import to avoid circular dependencies
+#     from .websocket_factory import create_analyze_ws_routers
+#
+#     for router in create_analyze_ws_routers():
+#         ws_router.include_router(router)
+#
+#     return ws_router
+#
 
 __all__ = [
     "create_analyze_router",
-    "create_analyze_websocket_router",
+    # "create_analyze_websocket_router",
 ]
