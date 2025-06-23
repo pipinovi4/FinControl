@@ -1,7 +1,11 @@
-from typing import Awaitable, Callable
+from typing import Awaitable, Callable, Type
 from fastapi import APIRouter
+from pydantic import BaseModel
+
+from backend.app.schemas.sessions import RefreshRequest
 from backend.app.utils.decorators import handle_route_exceptions
 from backend.app.utils.middlewares.limiter import rate_limit
+from backend.app.routes.sessions.types import RefreshRequestT
 
 
 def generate_refresh_endpoints(
@@ -11,6 +15,7 @@ def generate_refresh_endpoints(
         handler: Callable[..., Awaitable],
         tags: list[str],
         wrapper: Callable[[Callable[..., Awaitable]], Callable[..., Awaitable]] = handle_route_exceptions,
+        schemas_response: RefreshRequestT,
         name: str = __name__,
         rate_limit_rule: str | None = None,
 ) -> None:
@@ -34,9 +39,13 @@ def generate_refresh_endpoints(
     if rate_limit_rule:
         handler = rate_limit(rate_limit_rule)(handler)
 
+    wrapped = wrapper(handler)
+    wrapped._meta = {"input_schema": RefreshRequest}
+
     router.get(
         path=path,
         tags=tags,
         name=name,
+        response_model=schemas_response,
         summary=f"{tags[0]} - {path.replace('_', ' ').title()}"
-    )(wrapper(handler))
+    )(wrapped)
