@@ -25,6 +25,21 @@
 3. **Backend Tests**: Write comprehensive tests to validate the backend functionality.
    **Status**: 🟨 In Progress
 
+   * **3.1** **System tests (smoke tests)**: Test basic system endpoints like `/ping` and `/routes-info`
+     **Status**: ✅ Completed
+
+   * **3.2** **Auth tests**: Test login, registration, password reset, token handling, and cookies for all roles (admin, worker, broker, client).
+     **Status**: ✅ Completed
+
+   * **3.3** **CRUD tests for client entities**: Test CRUD functionality for client roles, including creation, reading, updating, deleting, and filters.
+     **Status**: 🟨 In Progress
+
+   * **3.4** **Analyze tests**: Test analytics functionality with role-based restrictions (admin-only analytics, and restricted access for other roles).
+     **Status**: 🟨 Pending
+
+   * **3.5** **WebSocket tests**: Test WebSocket endpoints for real-time analytics and message handling.
+     **Status**: 🟨 Pending
+
 4. **Bot Development**: Once the backend is fully tested, focus on building the Telegram bot and integrating it with the backend.
    **Status**: ⬜ Pending
 
@@ -41,5 +56,12 @@
 * **WebSocket layer** is fully implemented with dedicated middleware, exception handling, and analyze endpoints routing.
 * **Cookies & Tokens** (BE‑AUTH‑002) finalized and functional.
 * **Custom Auth for Bot** (BE‑AUTH‑003) completed with role-based separation.
+* **Backend Tests** (BE‑TESTS‑001) are in progress and should cover:
+
+  * **System tests**: `/ping`, `/routes-info`
+  * **Auth tests**: Login, register, token handling
+  * **CRUD tests**: For clients and other roles
+  * **Analyze tests**: With role-based restrictions
+  * **WebSocket tests**: For real-time endpoints
 
 ---
