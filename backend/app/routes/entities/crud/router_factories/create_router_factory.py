@@ -38,14 +38,16 @@ def make_create_handler(
 def create_router_factory() -> APIRouter:
     router = APIRouter(prefix="/create", tags=["Create Entities"])
 
-    for role, path, service_cls, schema_ns in CREATE_MATRIX:
-        handler = make_create_handler(cast(Type[ServiceT], service_cls), schema_ns, role)
+    for role, path, service_cls, input_schema, output_schema in CREATE_MATRIX:
+        handler = make_create_handler(cast(Type[ServiceT], service_cls), input_schema, role)
 
         generate_crud_endpoints(
             router=router,
             verb="post",
             path=path,
             handler=handler,
+            schema_request=input_schema,
+            schema_response=output_schema,
             tags=[role.value],
             rate_limit_rule="20/minute",
             name=f"create_{role.value.lower()}",
