@@ -15,6 +15,8 @@ def rate_limit(limit: str):
     @rate_limit("5/minute") - Allow 5 requests per minute.
     @rate_limit("10/hour") - Allow 10 requests per hour.
     """
+
+    # Initializing the limiter with enabled flag
     def decorator(func):
         @wraps(func)
         async def wrapper(request: Request, *args, **kwargs):
