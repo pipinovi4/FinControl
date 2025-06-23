@@ -18,10 +18,9 @@ def make_refresh_handler(
     *,
     role: PermissionRole,
     refresh_type: RefreshTypes,
-    request_type: RefreshRequestT,
 ) -> Callable[..., Awaitable]:
     async def _handler(
-        request_data: Type[request_type],
+        request_data: RefreshRequestT,
         request: Request,
         db=Depends(get_async_db),
     ) -> JSONResponse | TokenPair:
@@ -85,7 +84,6 @@ def create_refresh_routers() -> List[APIRouter]:
             handler = make_refresh_handler(
                 role=role,
                 refresh_type=refresh_type,
-                request_type=request_type,
             )
 
             # Enhanced paths and readable tags
@@ -98,6 +96,7 @@ def create_refresh_routers() -> List[APIRouter]:
                 handler=handler,
                 tags=[tag_name],  # Clean tag for better readability
                 rate_limit_rule="10/minute",
+                schemas_response=request_type,
                 name=f"{role.value.lower()}_{refresh_type.name.lower()}",  # Meaningful handler names
             )
 
