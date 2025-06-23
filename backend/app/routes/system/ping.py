@@ -1,8 +1,15 @@
 from fastapi import APIRouter
-from fastapi.responses import JSONResponse
+from pydantic import BaseModel
 
 router = APIRouter()
 
-@router.get("/ping", tags=["System"])
+class PingResponse(BaseModel):
+    status: str
+    message: str
+
+@router.get("/ping", tags=["System"], response_model=PingResponse)
 def ping():
-    return JSONResponse(content={"status": "ok", "message": "Backend is alive"}, status_code=200)
+    return {
+        "status": "ok",
+        "message": "Backend is alive"
+    }
