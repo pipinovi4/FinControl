@@ -24,9 +24,17 @@ class AnalyzeType(str, Enum):
     """
 
     # 📈 Clients
-    CLIENTS_GROWTH = "clients_growth"                    # Client registration trend over time
-    CLIENTS_PER_BROKER = "clients_per_broker"            # Distribution of clients by broker
-    CLIENTS_PER_WORKER = "clients_per_worker"            # Distribution of clients by worker
+    class Client(Enum):
+        CLIENTS_GROWTH = "clients_growth"                    # Client registration trend over time
+        CLIENTS_PER_BROKER = "clients_per_broker"            # Distribution of clients by broker
+        CLIENTS_PER_WORKER = "clients_per_worker"            # Distribution of clients by worker
+
+    class Worker(Enum):
+        pass
+    class Admin(Enum):
+        pass
+    class Broker(Enum):
+        pass
 
     # 🗂 Applications
     APPLICATIONS_SUMMARY = "applications_summary"        # Total, approved, rejected stats
