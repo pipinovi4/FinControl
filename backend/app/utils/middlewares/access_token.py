@@ -1,5 +1,3 @@
-# backend/app/middlewares/access_token.py
-
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 import jwt
@@ -22,18 +20,23 @@ class AccessTokenMiddleware(BaseHTTPMiddleware):
     """
 
     async def dispatch(self, request: Request, call_next) -> Response:
-        token = request.headers.get("Authorization")
+        # Define the paths that need authorization
+        protected_paths = ["/api/entities", "/api/analyze"]  # paths for CRUD and ANALYZE
 
-        # Check format
-        if token and token.startswith("Bearer "):
-            try:
-                # Decode token
-                payload = jwt.decode(token[7:], settings.JWT_SECRET, algorithms=["HS256"])
-                request.state.user = payload
-            except jwt.PyJWTError:
-                return Response(status_code=401, content="Invalid token")
-        else:
-            return Response(status_code=401, content="Missing token")
+        # Check if the path is protected
+        if any(request.url.path.startswith(path) for path in protected_paths):
+            token = request.headers.get("Authorization")
+
+            # Check format
+            if token and token.startswith("Bearer "):
+                try:
+                    # Decode token
+                    payload = jwt.decode(token[7:], settings.JWT_SECRET, algorithms=["HS256"])
+                    request.state.user = payload
+                except jwt.PyJWTError:
+                    return Response(status_code=401, content="Invalid token")
+            else:
+                return Response(status_code=401, content="Missing token")
 
         # Continue processing the request
         return await call_next(request)
