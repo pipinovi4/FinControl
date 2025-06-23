@@ -37,17 +37,19 @@ def make_read_handler(
 def read_router_factory() -> APIRouter:
     router = APIRouter(prefix="/read", tags=["Read Entities"])
 
-    for role, path, service_cls, schema_cls in READ_MATRIX:
-        handler = make_read_handler(cast(Type[ServiceT], service_cls), schema_cls, role)
+    for role, path, service_cls, input_schema, output_schema in READ_MATRIX:
+        handler = make_read_handler(cast(Type[ServiceT], service_cls), input_schema, role)
 
         generate_crud_endpoints(
             router=router,
             verb="get",
             path=path + "/{id}",
             handler=handler,
+            schema_request=input_schema,
+            schema_response=output_schema,
             tags=[role.value],
             rate_limit_rule="20/minute",
-            name=f"create_{role.value.lower()}",
+            name=f"read_{role.value.lower()}",
         )
 
     return router
