@@ -1,0 +1,262 @@
+.
+├── README.md
+├── TASKS.md
+├── __init__.py
+├── alembic.ini
+├── app
+│   ├── __init__.py
+│   ├── config.py
+│   ├── core
+│   │   ├── __init__.py
+│   │   └── settings.py
+│   ├── models
+│   │   ├── __init__.py
+│   │   ├── entities
+│   │   │   ├── __init__.py
+│   │   │   ├── admin.py
+│   │   │   ├── broker.py
+│   │   │   ├── client.py
+│   │   │   ├── user.py
+│   │   │   └── worker.py
+│   │   ├── mixins
+│   │   │   ├── __init__.py
+│   │   │   ├── auth.py
+│   │   │   ├── dynamic_link_auth.py
+│   │   │   ├── soft_delete.py
+│   │   │   ├── telegram_base.py
+│   │   │   ├── timestamp.py
+│   │   │   ├── timestamp_auth.py
+│   │   │   └── uuid.py
+│   │   └── sessions
+│   │       ├── __init__.py
+│   │       └── refresh_token.py
+│   ├── permissions
+│   │   ├── __init__.py
+│   │   ├── checker.py
+│   │   ├── enums.py
+│   │   ├── middleware.py
+│   │   └── models.py
+│   ├── routes
+│   │   ├── __init__.py
+│   │   ├── auth
+│   │   │   ├── __init__.py
+│   │   │   ├── bot
+│   │   │   │   ├── __init__.py
+│   │   │   │   └── bot_register_router.py
+│   │   │   ├── login
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── _base.py
+│   │   │   │   ├── config.py
+│   │   │   │   ├── router_factory.py
+│   │   │   │   └── types.py
+│   │   │   ├── register
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── _base.py
+│   │   │   │   ├── config.py
+│   │   │   │   ├── router_factory.py
+│   │   │   │   └── types.py
+│   │   │   └── reset_password
+│   │   │       ├── __init__.py
+│   │   │       └── reset_password_router.py
+│   │   ├── entities
+│   │   │   ├── __init__.py
+│   │   │   ├── analyze
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── _base.py
+│   │   │   │   ├── config.py
+│   │   │   │   ├── router_factory.py
+│   │   │   │   ├── types.py
+│   │   │   │   └── websocket_factory.py
+│   │   │   └── crud
+│   │   │       ├── __init__.py
+│   │   │       ├── _base.py
+│   │   │       ├── config.py
+│   │   │       ├── router_factories
+│   │   │       │   ├── __init__.py
+│   │   │       │   ├── create_router_factory.py
+│   │   │       │   ├── delete_router_factory.py
+│   │   │       │   ├── read_router_factory.py
+│   │   │       │   └── update_router_factory.py
+│   │   │       └── types.py
+│   │   ├── sessions
+│   │   │   ├── __init__.py
+│   │   │   ├── _base.py
+│   │   │   ├── config.py
+│   │   │   ├── router_factory.py
+│   │   │   └── types.py
+│   │   └── system
+│   │       ├── __init__.py
+│   │       ├── ping.py
+│   │       └── routes_info.py
+│   ├── schemas
+│   │   ├── __init__.py
+│   │   ├── auth
+│   │   │   ├── __init__.py
+│   │   │   ├── login_request.py
+│   │   │   ├── register_request.py
+│   │   │   ├── reset_password_confirm.py
+│   │   │   └── reset_password_request.py
+│   │   ├── base.py
+│   │   ├── entities
+│   │   │   ├── __init__.py
+│   │   │   ├── admin_schema.py
+│   │   │   ├── broker_schema.py
+│   │   │   ├── client_schema.py
+│   │   │   ├── filters
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── admin_filter_schema.py
+│   │   │   │   ├── broker_filter_schema.py
+│   │   │   │   ├── client_filter_schema.py
+│   │   │   │   ├── user_filter_schema.py
+│   │   │   │   └── worker_filter_schema.py
+│   │   │   ├── user_schema.py
+│   │   │   └── worker_schema.py
+│   │   ├── mixins
+│   │   │   ├── Auth
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── base.py
+│   │   │   │   ├── create.py
+│   │   │   │   ├── out.py
+│   │   │   │   └── update.py
+│   │   │   ├── DynamicLinkAuth
+│   │   │   │   ├── __init__.py
+│   │   │   │   └── base.py
+│   │   │   ├── SoftDeleteSchema
+│   │   │   │   ├── __init__.py
+│   │   │   │   └── base.py
+│   │   │   ├── TelegramBase
+│   │   │   │   ├── __init__.py
+│   │   │   │   └── base.py
+│   │   │   ├── TimeStamp
+│   │   │   │   ├── __init__.py
+│   │   │   │   └── base.py
+│   │   │   ├── TimeStampAuth
+│   │   │   │   ├── __init__.py
+│   │   │   │   └── base.py
+│   │   │   ├── UUID
+│   │   │   │   ├── __init__.py
+│   │   │   │   └── base.py
+│   │   │   └── __init__.py
+│   │   └── sessions
+│   │       ├── __init__.py
+│   │       ├── refresh_request.py
+│   │       ├── refresh_token.py
+│   │       └── token_pair.py
+│   ├── services
+│   │   ├── __init__.py
+│   │   ├── auth
+│   │   │   ├── __init__.py
+│   │   │   ├── access_token.py
+│   │   │   ├── password.py
+│   │   │   ├── refresh_token.py
+│   │   │   ├── reset_password.py
+│   │   │   ├── token_manager.py
+│   │   │   └── utils.py
+│   │   ├── entities
+│   │   │   ├── __init__.py
+│   │   │   ├── admin
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── admin_filter.py
+│   │   │   │   ├── admin_interface.py
+│   │   │   │   ├── admin_service.py
+│   │   │   │   └── admin_utils.py
+│   │   │   ├── broker
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── broker_filter.py
+│   │   │   │   ├── broker_interface.py
+│   │   │   │   ├── broker_service.py
+│   │   │   │   └── broker_utils.py
+│   │   │   ├── client
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── client_filter.py
+│   │   │   │   ├── client_interface.py
+│   │   │   │   ├── client_service.py
+│   │   │   │   └── client_utils.py
+│   │   │   ├── user
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── user_filter.py
+│   │   │   │   ├── user_interface.py
+│   │   │   │   ├── user_service.py
+│   │   │   │   └── user_utils.py
+│   │   │   └── worker
+│   │   │       ├── __init__.py
+│   │   │       ├── worker_filter.py
+│   │   │       ├── worker_interface.py
+│   │   │       ├── worker_service.py
+│   │   │       └── worker_utils.py
+│   │   ├── sessions
+│   │   │   ├── __init__.py
+│   │   │   └── refresh_token.py
+│   │   └── smtp_service.py
+│   ├── utils
+│   │   ├── __init__.py
+│   │   ├── cookies
+│   │   │   ├── __init__.py
+│   │   │   └── set_auth_cookies.py
+│   │   ├── decorators
+│   │   │   ├── __init__.py
+│   │   │   ├── db.py
+│   │   │   ├── route.py
+│   │   │   └── websocket.py
+│   │   ├── middlewares
+│   │   │   ├── __init__.py
+│   │   │   ├── access_token.py
+│   │   │   ├── limiter.py
+│   │   │   └── ws_access_token.py
+│   │   ├── protocols
+│   │   │   ├── __init__.py
+│   │   │   ├── base_schema.py
+│   │   │   └── base_service.py
+│   │   ├── types
+│   │   │   ├── __init__.py
+│   │   │   └── roles.py
+│   │   └── wrappers
+│   │       ├── __init__.py
+│   │       └── role_service_wrapper.py
+│   └── websockets
+│       ├── __init__.py
+│       └── connection.py
+├── db
+│   ├── __init__.py
+│   ├── alembic
+│   │   ├── README
+│   │   ├── __init__.py
+│   │   ├── env.py
+│   │   ├── script.py.mako
+│   │   └── versions
+│   │       ├── 9b4aeaed230a_initial_clean_slate.py
+│   │       └── dcb9e89a1c71_rename_password_to_password_hash.py
+│   ├── init_test_db.py
+│   └── session.py
+├── main.py
+├── project_tree.txt
+├── requirements-dev.txt
+├── requirements.txt
+├── tests
+│   ├── __init__.py
+│   ├── conftest.py
+│   ├── crud
+│   │   ├── __init__.py
+│   │   ├── test_broker_crud.py
+│   │   └── test_client_crud.py
+│   ├── factories
+│   │   └── __init__.py
+│   ├── routes
+│   │   ├── __init__.py
+│   │   ├── test_analytics.py
+│   │   ├── test_auth.py
+│   │   ├── test_brokers.py
+│   │   ├── test_clients.py
+│   │   └── test_workers.py
+│   ├── schemas
+│   │   ├── __init__.py
+│   │   └── test_client_schema.py
+│   ├── services
+│   │   ├── __init__.py
+│   │   └── test_client_service.py
+│   └── utils
+│       ├── __init__.py
+│       └── auth.py
+└── tree.txt
+
+60 directories, 200 files
