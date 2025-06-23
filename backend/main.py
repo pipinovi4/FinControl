@@ -1,23 +1,22 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+from slowapi import Limiter
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
-from backend.app.utils.middlewares import limiter
+from backend.app.utils.middlewares import AccessTokenMiddleware, WebSocketAuthMiddleware
 from backend.app.routes import create_api_router
 from fastapi.middleware.cors import CORSMiddleware
 from collections import defaultdict
+from slowapi.util import get_remote_address
+from fastapi import WebSocket
 
-from backend.app.utils.middlewares.access_token import AccessTokenMiddleware
-from backend.app.utils.middlewares.ws_access_token import WebSocketAuthMiddleware
-
-
-class LimiterApp(FastAPI):
-    state: dict
+# Initialize the rate limiter with the key function
+limiter = Limiter(key_func=get_remote_address)
 
 def create_app() -> FastAPI:
-    app = LimiterApp()
+    app = FastAPI()
 
-    # CORS middleware
+    # Add CORS middleware
     app.add_middleware(
         CORSMiddleware,
         allow_origins=[
@@ -29,11 +28,15 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    # SlowAPI middleware
+    # Add SlowAPI middleware for rate-limiting
     app.state.limiter = limiter
     app.add_middleware(SlowAPIMiddleware)
-    # Access token middleware (JWT)
+
+    # Add Access Token Middleware
     app.add_middleware(AccessTokenMiddleware)
+
+    # Add WebSocket Auth Middleware
+    app.add_middleware(WebSocketAuthMiddleware)
 
     # Rate limit exception handler
     @app.exception_handler(RateLimitExceeded)
@@ -54,6 +57,7 @@ def create_app() -> FastAPI:
     tag_priority = ["ANALYZE", "CRUD", "AUTH"]
     tag_counter = defaultdict(int)
     total_routes = 0
+    websocket_routes = 0  # Counter for WebSocket routes
 
     for route in app.routes:
         methods = getattr(route, "methods", set())
@@ -74,17 +78,25 @@ def create_app() -> FastAPI:
         tag_counter[main_tag] += 1
         total_routes += 1
 
+        # Check if route is a WebSocket route
+        # WebSocket routes are created using 'router.websocket'
+        if isinstance(route.endpoint, WebSocket):
+            websocket_routes += 1
+            # Print WebSocket route URL
+            print(f"WS {path}")
+
         print(f"{methods_str:<10} {path:<45} {name:<30} {tags}")
 
     print("\n📊 Route stats:")
     for tag in tag_priority + ["OTHER"]:
         print(f"  • {tag:<8}: {tag_counter[tag]:>3} routes")
-    print(f"  • {'TOTAL':<8}: {total_routes:>3} routes\n")
+    print(f"  • {'TOTAL':<8}: {total_routes:>3} routes")
+    print(f"  • {'WEBSOCKET':<8}: {websocket_routes:>3} routes\n")
 
     return app
 
 
-application = WebSocketAuthMiddleware(create_app())
+application = create_app()
 
 if __name__ == "__main__":
     import uvicorn
