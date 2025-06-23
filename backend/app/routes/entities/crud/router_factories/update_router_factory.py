@@ -38,17 +38,19 @@ def make_update_handler(
 def update_router_factory() -> APIRouter:
     router = APIRouter(prefix="/update", tags=["Update Entities"])
 
-    for role, path, service_cls, schema_cls in UPDATE_MATRIX:
-        handler = make_update_handler(cast(Type[ServiceT], service_cls), schema_cls, role)
+    for role, path, service_cls, input_schema, output_schema in UPDATE_MATRIX:
+        handler = make_update_handler(cast(Type[ServiceT], service_cls), input_schema, role)
 
         generate_crud_endpoints(
             router=router,
             verb="put",
             path=path + "/{id}",
             handler=handler,
+            schema_request=input_schema,
+            schema_response=output_schema,
             tags=[role.value],
             rate_limit_rule="20/minute",
-            name=f"create_{role.value.lower()}",
+            name=f"update_{role.value.lower()}",
         )
 
     return router
