@@ -1,15 +1,22 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import React from "react";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+import type { Metadata } from "next";
+import { ReactQueryProvider } from "@/components/ReactQueryProvider";
+import Topbar from "@/components/layout/Topbar"
+import Sidebar from "@/components/layout/Sidebar"
+import {DM_Sans, Poppins} from "next/font/google";
+
+const dmSans = DM_Sans({
+    variable: "--font-dm-sans",
+    subsets: ["latin", "latin-ext"],
+    weight: ["1000"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const poppins = Poppins({
+    variable: "--font-poppins",
+    subsets: ["latin", "latin-ext"],
+    weight: ["400", "700"],
 });
 
 export const metadata: Metadata = {
@@ -23,9 +30,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
+    <html lang="en" className="h-full">
+      <body
+        className={`${dmSans.variable} ${poppins.variable} antialiased min-h-screen`}
+      >
+      <Topbar/>
+      <Sidebar/>
+      <ReactQueryProvider>
+          {children}
+      </ReactQueryProvider>
       </body>
     </html>
   );

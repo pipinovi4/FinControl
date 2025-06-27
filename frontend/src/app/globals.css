@@ -1,42 +1,47 @@
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@import "tailwindcss";
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css" layer(utilities);
+@tailwind utilities;
+
+
+@theme {
+  --font-poppins: 'Poppins', sans-serif;
+  --font-dmSans: 'DM Sans', sans-serif;
+
+  --color-background: #ffffff;
+  --color-foreground: #2B3674;
+
+  --color-primary: #2B3674;
+  --color-primary-foreground: #ffffff;
+
+  --color-primary-50: #f5f6fb;
+  --color-primary-100: #e3e5f3;
+  --color-primary-200: #c6cae7;
+  --color-primary-300: #a4aad8;
+  --color-primary-400: #7e84c8;
+  --color-primary-500: #2B3674; /* main */
+  --color-primary-600: #1e285e;
+  --color-primary-700: #151d49;
+  --color-primary-800: #0e1434;
+  --color-primary-900: #090d25;
+
+  --color-muted: #A3AED0;
+  --color-muted-foreground: #475569;
+
+  --color-border: #E2E8F0;
+  --color-input: #E2E8F0;
+  --color-ring: #B4C6F8;
+
+  --color-destructive: #EF4444;
+  --color-destructive-foreground: #ffffff;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer utilities {
+  @media (min-width: 764px) {
+    .xs764\:w-\[22\%\] {
+      width: 22%;
+    }
   }
 }
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-}
