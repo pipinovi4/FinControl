@@ -6,6 +6,7 @@ both in offline and online modes.
 """
 
 from pathlib import Path
+import sys
 import importlib
 import os
 from logging.config import fileConfig
@@ -13,6 +14,10 @@ from logging.config import fileConfig
 from sqlalchemy import create_engine, pool
 from alembic import context
 from dotenv import load_dotenv
+
+
+sys.path.append(str(Path(__file__).resolve().parents[3]))
+
 
 # --------------------------------------------------------------------------- #
 # 1)  Locate project root and .env                                            #
@@ -61,6 +66,8 @@ MODEL_MODULES = [
     "backend.app.models.entities.worker",
     "backend.app.models.entities.broker",
     "backend.app.models.entities.admin",
+    "backend.app.models.entities.credit",
+    "backend.app.models.entities.earning"
 ]
 
 for m in MODEL_MODULES:

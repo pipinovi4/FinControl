@@ -27,7 +27,7 @@ def make_delete_handler(
                 status.HTTP_404_NOT_FOUND,
                 f"{role.value.title()} with id '{id}' not found",
             )
-        return {"detail": f"{role.value.title()} deleted"}
+        return {"message": f"{role.value.title()} deleted"}
 
     return handler
 

@@ -67,7 +67,7 @@ const Sidebar = () => {
                             <button
                                 onClick={() => handleNav(href)}
                                 className={clsx(
-                                    "flex items-center gap-2 px-3 py-2 rounded-md transition duration-150 group w-full text-left outline-none",
+                                    "flex items-center gap-3 px-2 py-2 rounded-md transition duration-150 group w-full text-left outline-none cursor-pointer",
                                     isActive
                                         ? "bg-[#F6F8FD] text-primary font-semibold"
                                         : "text-[#A3AED0] hover:bg-gray-100 active:bg-gray-100 active:scale-[0.98]"
@@ -101,7 +101,7 @@ const Sidebar = () => {
         <>
             {/* Burger button (visible only on mobile) */}
             <div className="md:hidden fixed top-4 left-5 z-50">
-                <button onClick={() => setOpen(!open)} aria-label="Open sidebar">
+                <button onClick={() => setOpen(!open)} aria-label="Open sidebar" className="cursor-pointer">
                     <BurgerIcon className="w-6 h-6 text-primary" />
                 </button>
             </div>
@@ -126,7 +126,7 @@ const Sidebar = () => {
                 {/* Overlay the background with blur and soft shadow */}
                 <div
                     className={clsx(
-                        "flex-1 transform transition-transform duration-300 ease-in-out -ml-[80%] z-10",
+                        "flex-1 transform transition-transform duration-300 ease-in-out -ml-[80%] z-10 cursor-pointer",
                         open ? "translate-x-[70%] pointer-events-auto" : "-translate-x-full pointer-events-none"
                     )}
                     style={{

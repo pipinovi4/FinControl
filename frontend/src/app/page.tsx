@@ -1,160 +1,107 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
+import { loadMetaRoutes } from "@/lib/metaFetch";
+import { ZodTypeAny, ZodObject } from "zod";
 
-interface RouteMeta {
-    path: string;
-    methods: string[];
-    name: string;
-    summary: string | null;
-    tags: string[];
-    input_schema: string | null;
-    schema_fields: Record<string, string> | null;
-    output_schema: string | null;
-    output_schema_fields: Record<string, string> | null;
-}
+// 🔍 Рекурсивна трансляція Zod → читабельне представлення
+const zodToReadableType = (zod: ZodTypeAny): any => {
+    if (!zod || typeof zod !== "object" || !("_def" in zod)) return "unknown";
 
-const parseType = (typeStr: string): any => {
-    const cleaned = typeStr.trim();
+    const def = zod._def;
 
-    if (cleaned.includes("||")) {
-        const options = cleaned.split("||").map((s) => s.trim().replace(/^"|"$/g, ""));
-        return options[0] ?? "";
-    }
-
-    if (cleaned.includes("|")) {
-        const parts = cleaned.split("|").map((s) => s.trim());
-        return parseType(parts.find((p) => p !== "null") || "any");
-    }
-
-    if (cleaned.endsWith("[]")) {
-        const baseType = cleaned.slice(0, -2);
-        return [parseType(baseType)];
-    }
-
-    switch (cleaned) {
-        case "string":
-            return "";
-        case "number":
-            return 0;
-        case "boolean":
-            return false;
-        case "null":
-            return null;
-        case "UUID":
-            return "00000000-0000-0000-0000-000000000000";
-        case "datetime":
-            return new Date().toISOString();
-        case "any":
+    switch (def.typeName) {
+        case "ZodString":
+            return "string";
+        case "ZodNumber":
+            return "number";
+        case "ZodBoolean":
+            return "boolean";
+        case "ZodLiteral":
+            return JSON.stringify(def.value);
+        case "ZodArray":
+            return `${zodToReadableType(def.type)}[]`;
+        case "ZodUnion":
+            return def.options.map(zodToReadableType).join(" | ");
+        case "ZodNullable":
+        case "ZodOptional":
+        case "ZodDefault":
+            return `${zodToReadableType(def.innerType)} | null`;
+        case "ZodObject":
+            const shape = typeof def.shape === "function" ? def.shape() : def.shape;
+            const result: Record<string, any> = {};
+            for (const key in shape) {
+                result[key] = zodToReadableType(shape[key]);
+            }
+            return result;
         default:
-            return null;
+            return "any";
     }
 };
 
-const transformFields = (fields: Record<string, string> | null): Record<string, any> => {
-    const transformed: Record<string, any> = {};
-    if (!fields) return transformed;
-
-    for (const [key, type] of Object.entries(fields)) {
-        transformed[key] = parseType(type);
-    }
-
-    return transformed;
-};
-
-export default function Home() {
-    const [routePath, setRoutePath] = useState<string>("");
-    const [routeData, setRouteData] = useState<null | {
+export default function RouteInspector() {
+    const [routePath, setRoutePath] = useState("");
+    const [result, setResult] = useState<null | {
         method: string;
         inputSchema: any;
         outputSchema: any;
     }>(null);
 
-    const fetchAndCacheRoutes = async () => {
-        const res = await fetch("http://127.0.0.1:8000/api/system/routes-info");
-        if (!res.ok) {
-            console.error("❌ Failed to fetch routes info");
-            return;
-        }
+    const handleInspect = async () => {
+        try {
+            const meta = await loadMetaRoutes();
+            if (!(routePath in meta)) {
+                alert("Route not found in meta");
+                return;
+            }
 
-        const allRoutes: RouteMeta[] = await res.json();
-        const parsedMeta: Record<string, any> = {};
+            const route = meta[routePath];
+            const inputParsed = zodToReadableType(route.inputZod);
+            const outputParsed = zodToReadableType(route.outputZod);
 
-        for (const route of allRoutes) {
-            if (!route.input_schema || !route.schema_fields) continue;
-
-            parsedMeta[route.path] = {
-                method: route.methods[0] ?? "POST",
-                inputSchema: transformFields(route.schema_fields),
-                outputSchema: transformFields(route.output_schema_fields),
-            };
-        }
-
-        localStorage.setItem("meta_routes", JSON.stringify(parsedMeta));
-        console.log("✅ Cached routes:", parsedMeta);
-    };
-
-    const handleGetSchema = () => {
-        const raw = localStorage.getItem("meta_routes");
-        if (!raw) {
-            alert("⚠️ No cached data found. Please fetch first.");
-            return;
-        }
-
-        const metaRoutes = JSON.parse(raw);
-        const target = routePath.trim();
-
-        if (target in metaRoutes) {
-            setRouteData(metaRoutes[target]);
-        } else {
-            alert(`❌ Route not found: ${target}`);
+            setResult({
+                method: route.method,
+                inputSchema: inputParsed,
+                outputSchema: outputParsed,
+            });
+        } catch (err) {
+            console.error("❌ Failed to inspect route:", err);
         }
     };
 
     return (
-        <div className="min-h-screen bg-white p-8 flex flex-col items-center gap-6">
-            <h1 className="text-2xl font-bold">Meta Route Fetcher</h1>
+        <div className="min-h-screen p-8 flex flex-col items-center gap-6">
+            <h1 className="text-2xl font-bold">🔍 Route Inspector</h1>
 
-            <div className="flex gap-4">
-                <button
-                    onClick={fetchAndCacheRoutes}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md"
-                >
-                    Fetch & Cache All
-                </button>
-            </div>
+            <input
+                value={routePath}
+                onChange={(e) => setRoutePath(e.target.value)}
+                placeholder="/api/auth/register/client/bot"
+                className="px-4 py-2 border rounded-md w-full max-w-xl"
+            />
 
-            <div className="w-full max-w-2xl mt-4 flex flex-col items-center gap-4">
-                <input
-                    value={routePath}
-                    onChange={(e) => setRoutePath(e.target.value)}
-                    placeholder="/api/entities/read/broker/{id}"
-                    className="w-full px-4 py-2 border rounded-md"
-                />
-                <button
-                    onClick={handleGetSchema}
-                    className="px-4 py-2 bg-black text-white rounded-md"
-                >
-                    Get Schema Info
-                </button>
-            </div>
+            <button
+                onClick={handleInspect}
+                className="px-4 py-2 bg-black text-white rounded-md"
+            >
+                Inspect Route
+            </button>
 
-            {routeData && (
-                <div className="w-full max-w-3xl bg-gray-100 border p-6 rounded-md shadow-sm mt-6">
-                    <h2 className="text-xl font-semibold mb-2">🔗 Endpoint Info</h2>
-                    <p><b>Method:</b> {routeData.method}</p>
+            {result && (
+                <div className="w-full max-w-3xl mt-8 bg-gray-100 border rounded p-6">
+                    <p className="text-lg font-semibold mb-2">📌 Method: {result.method}</p>
 
-                    <div className="mt-4">
-                        <h3 className="font-semibold">📤 Input Schema:</h3>
-                        <pre className="bg-white p-3 mt-1 rounded overflow-auto text-sm">
-                            {JSON.stringify(routeData.inputSchema, null, 2)}
+                    <div className="mb-4">
+                        <h3 className="font-semibold">📤 Input Schema</h3>
+                        <pre className="bg-white p-3 mt-2 rounded text-sm overflow-x-auto">
+                            {JSON.stringify(result.inputSchema, null, 2)}
                         </pre>
                     </div>
 
-                    <div className="mt-4">
-                        <h3 className="font-semibold">📥 Output Schema:</h3>
-                        <pre className="bg-white p-3 mt-1 rounded overflow-auto text-sm">
-                            {JSON.stringify(routeData.outputSchema, null, 2)}
+                    <div>
+                        <h3 className="font-semibold">📥 Output Schema</h3>
+                        <pre className="bg-white p-3 mt-2 rounded text-sm overflow-x-auto">
+                            {JSON.stringify(result.outputSchema, null, 2)}
                         </pre>
                     </div>
                 </div>

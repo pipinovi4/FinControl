@@ -17,19 +17,11 @@ To mount:
     app.include_router(create_register_router(), prefix="/auth/register", tags=["Auth"])
 """
 
-from backend.app.routes.auth.reset_password.reset_password_router import router as reset_password_router
+from .reset_password.reset_password_router import router as reset_password_router
+from .login import login_router
 
 from fastapi import APIRouter
 
-def create_login_router() -> APIRouter:
-    login_router = APIRouter()
-
-    from backend.app.routes.auth.login.router_factory import create_login_routers
-
-    for router in create_login_routers():
-        login_router.include_router(router)
-
-    return login_router
 
 
 def create_register_router() -> APIRouter:
@@ -44,7 +36,7 @@ def create_register_router() -> APIRouter:
 
 # Explicit module exports
 __all__ = [
-    "create_login_router",
+    "login_router",
     "create_register_router",
-    "reset_password_router"
+    "reset_password_router",
 ]

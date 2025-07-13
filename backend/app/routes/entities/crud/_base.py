@@ -13,7 +13,6 @@ from pydantic import BaseModel
 
 from backend.app.schemas import AdminSchema, WorkerSchema, BrokerSchema, ClientSchema, UserSchema
 from backend.app.utils.decorators import handle_route_exceptions
-from backend.app.utils.middlewares import rate_limit
 
 SchemaT = TypeVar("SchemaT", AdminSchema, WorkerSchema, BrokerSchema, ClientSchema)
 
@@ -25,7 +24,7 @@ def generate_crud_endpoints(
     path: str,
     handler: Callable[..., Awaitable[Any]],   # actual coroutine executed per request
     tags: list[str],
-    wrapper: Callable[[Callable[..., Awaitable]], Callable[..., Awaitable]] = handle_route_exceptions,
+    wrapper: Callable[[Callable[..., Awaitable]], Callable[..., Awaitable]] = handle_route_exceptions(default_status_code=500),
     schema_request: Type[BaseModel],
     schema_response: Type[BaseModel],
     rate_limit_rule: str | None = None,  # Add rate limit rule
@@ -62,9 +61,9 @@ def generate_crud_endpoints(
     # `getattr` maps the string verb to the corresponding decorator
     fastapi_decorator = getattr(router, verb)
 
-    # Apply rate limit if provided
-    if rate_limit_rule:
-        handler = rate_limit(rate_limit_rule)(handler)
+    # # Apply rate limit if provided
+    # if rate_limit_rule:
+    #     handler = rate_limit(rate_limit_rule)(handler)
 
     wrapped_handler = wrapper(handler)
 

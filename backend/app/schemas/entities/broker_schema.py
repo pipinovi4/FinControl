@@ -1,15 +1,17 @@
 # backend/app/schemas/entities/broker_schema.py
 from __future__ import annotations
 
-from typing import Optional, List, Type, ForwardRef
-from pydantic import BaseModel, Field
+from typing import Optional, List, Type, TYPE_CHECKING
+from pydantic import BaseModel, Field, EmailStr
 
+from backend.app.permissions import PermissionRole
+from backend.app.schemas import SchemaBase
 from backend.app.schemas.entities.user_schema import UserSchema
-from backend.app.schemas.mixins import TimeStampAuthSchema
+from uuid import UUID
 
-# To avoid circular import with ClientSchema
-ClientOut = ForwardRef("ClientSchema.Out")
-
+if TYPE_CHECKING:
+    from backend.app.schemas.entities.client_schema import ClientShort # noqa 401
+    from backend.app.schemas.entities.credit_schema import CreditShort # noqa 401
 
 class BrokerBase(UserSchema.Base):
     """
@@ -19,7 +21,7 @@ class BrokerBase(UserSchema.Base):
     region: Optional[List[str]] = Field(None, example=["Kyiv", "Lviv"], description="Regions of operation")
 
 
-class BrokerCreate(UserSchema.Create, TimeStampAuthSchema):
+class BrokerCreate(UserSchema.Create):
     """
     Schema for creating a Broker.
     """
@@ -27,7 +29,7 @@ class BrokerCreate(UserSchema.Create, TimeStampAuthSchema):
     region: Optional[List[str]] = Field(None, example=["Kyiv", "Lviv"])
 
 
-class BrokerUpdate(BaseModel):
+class BrokerUpdate(SchemaBase):
     """
     Schema for updating a Broker.
     """
@@ -36,15 +38,49 @@ class BrokerUpdate(BaseModel):
     telegram_username: Optional[str] = Field(None, example="newbroker")
 
 
-class BrokerOut(BrokerBase, TimeStampAuthSchema):
+class BrokerOut(SchemaBase):
     """
     Schema for returning Broker data with related clients.
     """
-    clients: Optional[List["ClientSchema.Out"]] = Field(None, description="List of clients assigned to this broker")
+    clients: Optional[List["ClientShort"]] = Field(None, description="List of clients assigned to this broker")
+    role: PermissionRole = Field(..., description="User role")
+    credits: Optional[List["CreditShort"]] = Field(
+        None, description="List of client's credit records"
+    )
+    company_name: Optional[str] = Field(None, example="Acme Ltd.", description="Broker's company name")
+    region: Optional[List[str]] = Field(None, example=["Kyiv", "Lviv"], description="Regions of operation")
 
+
+class BrokerWebRegisterResponse(UserSchema.Base):
+    """
+    Schema returned after successful broker registration via web.
+    """
+    id: UUID = Field(..., description="Unique broker ID")
+    email: EmailStr = Field(..., description="Email used for login")
+    company_name: Optional[str] = Field(None, description="Name of the broker's company")
+    region: Optional[List[str]] = Field(None, description="List of regions where the broker is active")
+    credits: Optional[List["CreditShort"]] = Field(
+        None, description="List of client's credit records"
+    )
+
+
+class BrokerShort(SchemaBase):
+    id: UUID
+    email: EmailStr
+    company_name: Optional[str] = None
+    region: Optional[List[str]] = Field(None, description="List of regions where the broker is active")
 
 class BrokerSchema:
     Base:   Type[BaseModel] = BrokerBase
     Create: Type[BaseModel] = BrokerCreate
     Update: Type[BaseModel] = BrokerUpdate
     Out:    Type[BaseModel] = BrokerOut
+    Short:  Type[BaseModel] = BrokerShort
+    WebRegisterResponse: Type[BaseModel] = BrokerWebRegisterResponse
+
+from importlib import import_module
+
+_broker_mod = import_module("backend.app.schemas.entities.client_schema")
+globals()["ClientShort"] = _broker_mod.ClientSchema.Short
+_broker_mod = import_module("backend.app.schemas.entities.credit_schema")
+globals()["CreditShort"] = _broker_mod.CreditSchema.Short

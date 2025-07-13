@@ -108,8 +108,6 @@ def get_routes_with_schemas(app: FastAPI) -> List[Dict[str, Any]]:
             route_data["output_schema"] = response_model.__name__
             route_data["output_schema_fields"] = extract_schema_fields(response_model)
 
-        print(f"{route.name}: response_model = {response_model}")
-
         result.append(route_data)
 
     return result

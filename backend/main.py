@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request
+from fastapi.routing import APIRoute
 from fastapi.responses import JSONResponse
 from slowapi import Limiter
 from slowapi.errors import RateLimitExceeded
@@ -37,6 +38,46 @@ def create_app() -> FastAPI:
 
     # Add WebSocket Auth Middleware
     app.add_middleware(WebSocketAuthMiddleware)
+
+    # @app.middleware("http")
+    # async def debug_request_inspector(request: Request, call_next):
+    #     body = await request.body()
+    #     print("\n🪵 [DEBUG] Incoming Request:")u
+    #     print("🔹 Path:", request.url.path)
+    #     print("🔹 Method:", request.method)
+    #     print("🔹 Headers:", dict(request.headers))
+    #     print("🔹 Query Params:", dict(request.query_params))
+    #     print("🔹 Body:", body.decode() if body else "[empty]")
+    #     response = await call_next(request)
+    #     return response
+
+    @app.middleware("http")
+    async def log_expected_request_model(request: Request, call_next):
+        matched_route = None
+
+        for route in app.routes:
+            if isinstance(route, APIRoute) and route.path == request.scope["path"]:
+                matched_route = route
+                break
+
+        if matched_route:
+            endpoint = matched_route.endpoint
+
+            # If we wrapped it – try to get the original one
+            original = getattr(endpoint, "_original_handler", endpoint)
+
+            if hasattr(original, "__annotations__"):
+                print("\n📦 [DEBUG] Expected Input Schema Annotations:")
+                for name, annotation in original.__annotations__.items():
+                    if name != "return":
+                        print(f"🔸 {name}: {annotation}")
+            else:
+                print("\n⚠️ [DEBUG] No annotations on the handler.")
+        else:
+            print("\n⚠️ [DEBUG] No matched APIRoute found for this path")
+
+        response = await call_next(request)
+        return response
 
     # Rate limit exception handler
     @app.exception_handler(RateLimitExceeded)

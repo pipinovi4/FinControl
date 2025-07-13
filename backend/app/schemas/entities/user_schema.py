@@ -21,10 +21,8 @@ class UserCreate(SchemaBase, AuthSchema.Create):
     """
     Schema for creating a new user.
     """
-    telegram_id: str
-    telegram_username: str
-    role: PermissionRole
-    is_active: bool
+    telegram_id: Optional[str]
+    telegram_username: Optional[str]
 
 
 class UserOut(UserBase, AuthSchema.Out):
@@ -34,7 +32,7 @@ class UserOut(UserBase, AuthSchema.Out):
     pass
 
 
-class UserUpdate(BaseModel):
+class UserUpdate(SchemaBase):
     """
     Schema for updating an existing user.
     """

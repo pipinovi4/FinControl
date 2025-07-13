@@ -1,75 +1,55 @@
-from typing import Optional
-from passlib.context import CryptContext
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+# backend/app/services/auth/password_service.py
+from __future__ import annotations
 
-from backend.app.models.entities import Admin
+from typing import Optional
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from passlib.context import CryptContext
+
+from backend.app.models.entities.user import User   # базова модель
 
 pwd_ctx = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-
 class PasswordService:
-    """
-    Service for handling password hashing, verification, and authentication of Admin users.
-
-    Attributes:
-        db (Session): SQLAlchemy session for database operations.
-    """
+    """Hash / verify / authenticate any polymorphic User."""
 
     def __init__(self, db: AsyncSession):
-        """
-        Initialize PasswordService with a database session.
-
-        Args:
-            db (Session): SQLAlchemy session instance.
-        """
         self.db = db
 
-    @classmethod
-    def hash(cls, password: str) -> str:
-        """
-        Hash a plaintext password using bcrypt.
+    # ---------- static helpers ----------
 
-        Args:
-            password (str): The plaintext password to hash.
-
-        Returns:
-            str: The resulting bcrypt hash.
-        """
+    @staticmethod
+    def hash(password: str) -> str:
+        """Return bcrypt-hash for given plain password."""
         return pwd_ctx.hash(password)
 
     @staticmethod
     def verify(plain: str, hashed: str) -> bool:
-        """
-        Verify a plaintext password against a stored bcrypt hash.
-
-        Args:
-            plain (str): The plaintext password to verify.
-            hashed (str): The bcrypt hash to compare against.
-
-        Returns:
-            bool: True if the plaintext matches the hash, False otherwise.
-        """
+        """Check plain password against stored hash."""
         return pwd_ctx.verify(plain, hashed)
 
-    async def authenticate(self, email: str, password: str) -> Optional[Admin]:
+    # ---------- main method ----------
+
+    async def authenticate(
+        self,
+        email: str,
+        password: str,
+    ) -> Optional[User]:
         """
-        Authenticate an Admin by email and password.
-
-        This method looks up the Admin by email, verifies the provided password
-        against the stored password_hash, and returns the Admin instance on success.
-
-        Args:
-            email (str): The Admin's login email.
-            password (str): The plaintext password to authenticate.
-
-        Returns:
-            Optional[Admin]: The authenticated Admin instance if credentials are valid; otherwise, None.
+        Returns polymorphic `User` instance (Admin | Worker | Broker | Client)
+        if credentials are valid, otherwise `None`.
         """
-        stmt = select(Admin).where(Admin.email == email, Admin.is_deleted == False)
+        stmt = (
+            select(User)
+            .where(
+                User.email == email,
+                User.is_deleted.is_(False)   # ignore soft-deleted users
+            )
+            .limit(1)
+        )
         result = await self.db.execute(stmt)
-        admin = result.scalar_one_or_none()
+        user: User | None = result.scalar_one_or_none()
 
-        if admin and self.verify(password, str(admin.password_hash)):
-            return admin
+        if user and self.verify(password, user.password_hash):
+            return user     # automatically loaded as proper subclass
         return None

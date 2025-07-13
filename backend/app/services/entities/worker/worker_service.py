@@ -1,9 +1,11 @@
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 from sqlalchemy import select, update
 from uuid import UUID
 from typing import Sequence, cast, TypeVar
 
 from backend.app.models import Worker, Client
+from backend.app.services.auth import PasswordService
 from backend.app.services.entities import UserService
 from backend.app.utils.decorators import handle_exceptions
 from backend.app.schemas.entities.worker_schema import WorkerSchema
@@ -40,6 +42,9 @@ class WorkerService(UserService):
         Raises 404 if not found.
         """
         stmt = select(Worker).where(Worker.id == worker_id)
+        stmt = stmt.options(
+            selectinload(Worker.earnings), selectinload(Worker.clients)
+        )
         result = await self.db.execute(stmt)
         return cast(WorkerT, result.scalar_one_or_none())
 
@@ -49,16 +54,44 @@ class WorkerService(UserService):
         Fetch a worker by their system username.
         """
         stmt = select(Worker).where(Worker.username == username)
+        stmt = stmt.options(
+            selectinload(Worker.earnings), selectinload(Worker.clients)
+        )
         result = await self.db.execute(stmt)
         return cast(WorkerT, result.scalar_one_or_none())
 
-    @handle_exceptions(default_return=[])
+    @handle_exceptions()
+    async def get_by_telegram_id(self, telegram_id: str) -> WorkerT | None:
+        """
+        Fetch a worker by their system telegram_id.
+        """
+        stmt = select(Worker).where(Worker.username == telegram_id)
+        stmt = stmt.options(
+            selectinload(Worker.earnings), selectinload(Worker.clients)
+        )
+        result = await self.db.execute(stmt)
+        return cast(WorkerT, result.scalar_one_or_none())
+
+    @handle_exceptions()
+    async def get_by_email(self, email: str) -> WorkerT | None:
+        """
+        Fetch a worker by their email.
+        """
+        stmt = select(Worker).where(Worker.username == email)
+        stmt = stmt.options(
+            selectinload(Worker.earnings), selectinload(Worker.clients)
+        )
+        result = await self.db.execute(stmt)
+        return cast(WorkerT, result.scalar_one_or_none())
+
+    @handle_exceptions()
     async def get_clients(self, worker_id: UUID) -> Sequence[Client]:
         """
         Retrieve all clients assigned to the given worker.
         """
-        worker = await self.get_by_id(worker_id)
-        return cast(Sequence[Client], worker.clients if worker else [])
+        stmt = select(Client).where(Client.worker_id == worker_id)
+        result = await self.db.execute(stmt)
+        return result.scalars().all()
 
     @handle_exceptions()
     async def update_username(self, worker_id: UUID, new_username: str) -> None:
@@ -112,9 +145,11 @@ class WorkerService(UserService):
     @handle_exceptions()
     async def create(self, worker_data: WorkerSchema.Create) -> WorkerT:
         """
-        Create a new worker based on the provided schema data.
+        Create a new Worker user. Hashes the password before saving.
         """
-        worker = Worker(**worker_data.model_dump())
+        updated_worker_data = worker_data.model_dump()
+        updated_worker_data["password_hash"] = PasswordService.hash(updated_worker_data.pop("password"))
+        worker = Worker(**updated_worker_data)
         self.db.add(worker)
         await self.db.commit()
         await self.db.refresh(worker)

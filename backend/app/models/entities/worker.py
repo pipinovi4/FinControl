@@ -1,41 +1,42 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import UUID, String, ForeignKey
+
 from backend.app.models.entities.user import User
 from backend.app.models.mixins import TimeStampAuthMixin, DynamicLinkAuthMixin
+from backend.app.permissions import PermissionRole
 
 
 class Worker(User, TimeStampAuthMixin, DynamicLinkAuthMixin):
     """
-    Represents an internal employee who manages client applications
-    and interacts with the system via the admin panel.
+    SQLAlchemy model representing a system worker (internal employee).
+
+    Workers are responsible for managing client applications via the admin panel.
+    They have full access to clients they oversee and may receive earnings
+    based on performance.
 
     Inherits:
-    - User: Base class with UUID, Telegram ID, timestamps, etc.
-    - AuthMixin: Adds email + password_hash authentication
-    - TimeStampAuthMixin: Tracks last login timestamp
-    - DynamicLinkAuthMixin: Enables one-time secure login via dynamic links
-
-    Worker has full access to client data they manage and is
-    distinguishable by `polymorphic_identity='worker'`.
+    - User: Base user model with core fields (ID, telegram_id, role, etc.)
+    - TimeStampAuthMixin: Adds tracking of `last_login_at` timestamp
+    - DynamicLinkAuthMixin: Enables temporary access via a secure dynamic link
     """
 
     __tablename__ = "workers"
 
-    # Primary key UUID, inherits from User table via foreign key
+    # Primary key UUID, inherited from User table (joined-table inheritance)
     id: Mapped[UUID] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("users.id", ondelete="CASCADE"),
         primary_key=True,
     )
 
-    # System-wide internal login username (e.g., "john.smith")
+    # Unique internal system username (e.g., john.smith)
     username: Mapped[str] = mapped_column(
         String(255),
         nullable=False,
         unique=True
     )
 
-    # One-to-many relationship: this worker can have multiple clients
+    # One-to-many relationship: this worker can manage multiple clients
     clients: Mapped[list["Client"]] = relationship(
         "Client",
         back_populates="worker",
@@ -43,12 +44,19 @@ class Worker(User, TimeStampAuthMixin, DynamicLinkAuthMixin):
         cascade="all"
     )
 
-    # Used by SQLAlchemy's polymorphic system to identify the model
+    earnings: Mapped[list["Earning"]] = relationship(
+        "Earning",
+        back_populates="worker",
+    )
+
+    # Used to identify this subclass in SQLAlchemy polymorphic queries
     __mapper_args__ = {
-    "inherit_condition": (id == User.id),
-        "polymorphic_identity": "worker",
+        "inherit_condition": (id == User.id),
+        "polymorphic_identity": PermissionRole.WORKER,
     }
 
     def __repr__(self) -> str:
-        # Developer-friendly string output
+        """
+        Developer-friendly string representation.
+        """
         return f"Worker(id={self.id}, username={self.username})"

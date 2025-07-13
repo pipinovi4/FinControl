@@ -1,31 +1,36 @@
-from __future__ import annotations
-
-from typing import Awaitable, Callable, List, Type
-from fastapi import APIRouter, HTTPException, Request, Depends, status
+from typing import Awaitable, Callable, List, Type, TypeVar
+from fastapi import APIRouter, HTTPException, Request, Depends, status, Body
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel
 from uuid import UUID
 
 from backend.app.routes.auth.login.types import LoginTypes
 from backend.app.routes.auth.login.config import ROLE_REGISTRY
-from backend.app.schemas.auth import LoginRequest
 from backend.app.schemas.sessions import TokenPair
 from backend.app.services.auth import PasswordService, generate_token_pair
 from backend.app.utils.cookies import set_auth_cookies
 from backend.db.session import get_async_db
 from backend.app.routes.auth.login._base import generate_login_endpoints
 from backend.app.permissions import PermissionRole
+from backend.app.models.entities import Admin, Worker, Broker, Client
+
+ModelT = TypeVar("ModelT", Admin, Worker, Broker, Client)
 
 def make_login_handler(
         role: PermissionRole,
         login_type: LoginTypes,
+        input_schema: Type[BaseModel],
+        model: Type[ModelT]
 ) -> Callable[..., Awaitable]:
     async def _handler(
-        request_data: LoginRequest,
         request: Request,
+        data: input_schema = Body(...),
         db=Depends(get_async_db),
     ) -> JSONResponse | TokenPair:
         password_service = PasswordService(db)
-        user = await password_service.authenticate(str(request_data.email), request_data.password)
+        user = await password_service.authenticate(data.email, data.password, model)
+
+        print(user)
 
         if user is None:
             raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
@@ -42,10 +47,10 @@ def make_login_handler(
 
         response: JSONResponse | TokenPair
 
-        if LoginTypes.WEB in login_type:
-            response = JSONResponse(content={"access_token": access, "refresh_token": refresh, "expires_in": ttl})
+        if LoginTypes.WEB is login_type:
+            response = JSONResponse(content={"status": 200})
             set_auth_cookies(response, access, refresh, ttl)
-        elif LoginTypes.BOT in login_type:
+        elif LoginTypes.BOT is login_type:
             return TokenPair(access_token=access, refresh_token=refresh, expires_in=ttl)
         else:
             raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="Invalid login type provided")
@@ -57,16 +62,23 @@ def make_login_handler(
 def create_login_routers() -> List[APIRouter]:
     routers: List[APIRouter] = []
 
-    for role, (path, login_types) in ROLE_REGISTRY.items():
-        router: APIRouter = APIRouter()
+    for role, (path, service, schema, model, login_types_cls) in ROLE_REGISTRY.items():
+        router = APIRouter()
 
-        for login_type in login_types:
+        for login_type_key in ("web", "bot"):
+            login_type_tuple = getattr(login_types_cls, login_type_key)
+            if not login_type_tuple:
+                continue
+
+            login_type, input_schema, response_schema = login_type_tuple
+
             handler = make_login_handler(
                 role=role,
                 login_type=login_type,
+                input_schema=input_schema,
+                model=model
             )
 
-            # Enhanced paths and readable tags
             login_path = f"{path}/{login_type.name.lower()}"
             tag_name = f"{role.value.lower()}-{login_type.name.lower()}"
 
@@ -74,13 +86,13 @@ def create_login_routers() -> List[APIRouter]:
                 router=router,
                 path=login_path,
                 handler=handler,
-                tags=[tag_name],  # Clean tag for better readability
+                tags=[tag_name],
                 rate_limit_rule="10/minute",
-                name=f"login_{role.value.lower()}_{login_type.name.lower()}",  # Meaningful handler names
+                input_model=input_schema,
+                response_model=response_schema,
+                name=f"login_{role.value.lower()}_{login_type.name.lower()}"
             )
 
         routers.append(router)
 
     return routers
-
-# TODO need to make condition for check LoginType and pass to generate_token_pair not headers

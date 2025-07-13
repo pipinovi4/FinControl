@@ -1,40 +1,54 @@
-from typing import Dict, Tuple, List
+from typing import Dict, Tuple, Optional, Type
+from pydantic import BaseModel
 
-from backend.app.schemas import AdminSchema, WorkerSchema, BrokerSchema, ClientSchema
+from backend.app.schemas import AdminSchema, WorkerSchema, BrokerSchema, ClientSchema, UserSchema
+from backend.app.schemas.sessions import TokenPair
 from backend.app.services.entities import AdminService, WorkerService, BrokerService, ClientService
 from backend.app.permissions import PermissionRole
 from backend.app.routes.auth.register.types import RegisterTypes
 from backend.app.utils.protocols import BaseSchemaNamespace, BaseService
 
+class RegisterTypesCls(BaseModel):
+    web: Optional[Tuple[RegisterTypes, Type[BaseModel], Type[BaseModel]]] = None
+    bot: Optional[Tuple[RegisterTypes, Type[BaseModel], Type[BaseModel]]] = None
 
-ROLE_REGISTRY: Dict[PermissionRole, Tuple[str, BaseService, BaseSchemaNamespace, str, List[RegisterTypes]]] = {
+class RegisterWebResponse(BaseModel):
+    status: int = 200
+
+ROLE_REGISTRY: Dict[PermissionRole, Tuple[str, BaseService, BaseSchemaNamespace, RegisterTypesCls]] = {
     PermissionRole.ADMIN: (
-        "/admin",  # Path for admin register
-        AdminService,  # Service for Admin
-        AdminSchema,  # Schema for Admin
-        "create_admin",  # Method name for Admin
-        [RegisterTypes.WEB, RegisterTypes.BOT],  # Register types for Admin
+        "/admin",
+        AdminService,
+        AdminSchema,
+        RegisterTypesCls(
+            web=(RegisterTypes.WEB, AdminSchema.Create, AdminSchema.WebRegisterResponse),
+            bot=(RegisterTypes.BOT, AdminSchema.Create, TokenPair)
+        ),
     ),
     PermissionRole.WORKER: (
-        "/worker",  # Path for worker register
-        WorkerService,  # Service for Worker
-        WorkerSchema,  # Schema for Worker
-        "create_worker",  # Method name for Worker
-        [RegisterTypes.WEB, RegisterTypes.BOT],  # Register types for Worker
-    ),
-    PermissionRole.CLIENT: (
-        "/client",  # Path for client register
-        ClientService,  # Service for Client
-        ClientSchema,  # Schema for Client
-        "create_client",  # Method name for Client
-        [RegisterTypes.BOT],  # Register type for Client
+        "/worker",
+        WorkerService,
+        WorkerSchema,
+        RegisterTypesCls(
+            web=(RegisterTypes.WEB, WorkerSchema.Create, WorkerSchema.WebRegisterResponse),
+            bot=(RegisterTypes.BOT, WorkerSchema.Create, TokenPair)
+        ),
     ),
     PermissionRole.BROKER: (
-        "/broker",  # Path for broker register
-        BrokerService,  # Service for Broker
-        BrokerSchema,  # Schema for Broker
-        "create_broker",  # Method name for Broker
-        [RegisterTypes.WEB],  # Register type for Broker
+        "/broker",
+        BrokerService,
+        BrokerSchema,
+        RegisterTypesCls(
+            web=(RegisterTypes.WEB, BrokerSchema.Create, BrokerSchema.WebRegisterResponse),
+        ),
+    ),
+    PermissionRole.CLIENT: (
+        "/client",
+        ClientService,
+        ClientSchema,
+        RegisterTypesCls(
+            bot=(RegisterTypes.BOT, ClientSchema.Create, TokenPair)
+        ),
     ),
 }
 

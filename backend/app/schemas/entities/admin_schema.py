@@ -1,8 +1,11 @@
 # backend/app/schemas/entities/admin_schema.py
 
-from typing import Optional, Type
-from pydantic import BaseModel, Field
+from typing import Optional, Type, Union
+from pydantic import BaseModel, Field, EmailStr
+from uuid import UUID
 
+from backend.app.permissions import PermissionRole
+from backend.app.schemas import SchemaBase
 from backend.app.schemas.entities.user_schema import UserSchema
 from backend.app.schemas.mixins import TimeStampAuthSchema, DynamicLinkAuthSchema
 
@@ -18,20 +21,15 @@ class AdminBase(UserSchema.Base, TimeStampAuthSchema, DynamicLinkAuthSchema):
     )
 
 
-class AdminCreate(UserSchema.Create, TimeStampAuthSchema, DynamicLinkAuthSchema):
+class AdminCreate(UserSchema.Create):
     """
     Schema for creating a new Admin.
     """
-    display_name: str = Field(
-        default="Unnamed Admin",
-        example="Jane Admin",
-        description="Friendly display name for dashboard or logs"
+    display_name: Union[str, None] = Field(
+        default=None,
+        example="Jane A.",
+        description="Updated friendly display name"
     )
-    is_super_admin: bool = Field(
-        default=False,
-        description="If true, grants full root access to admin features"
-    )
-
 
 class AdminUpdate(UserSchema.Update):
     """
@@ -48,11 +46,20 @@ class AdminOut(AdminBase):
     """
     Public schema for returning Admin data in API responses.
     """
-    pass
+    role: PermissionRole = Field(..., description="User role")
 
+class AdminWebRegisterResponse(UserSchema.Base):
+    id: UUID = Field(..., description="Unique broker ID")
+    email: EmailStr = Field(..., description="Email used for login")
+    display_name: str = Field(
+        default="Unnamed Admin",
+        example="Jane Admin",
+        description="Friendly display name for dashboard or logs"
+    )
 
 class AdminSchema:
     Base:   Type[BaseModel] = AdminBase
     Create: Type[BaseModel] = AdminCreate
     Update: Type[BaseModel] = AdminUpdate
     Out:    Type[BaseModel] = AdminOut
+    WebRegisterResponse: Type[BaseModel] = AdminWebRegisterResponse

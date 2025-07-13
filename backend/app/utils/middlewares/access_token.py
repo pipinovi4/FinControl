@@ -21,7 +21,8 @@ class AccessTokenMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request: Request, call_next) -> Response:
         # Define the paths that need authorization
-        protected_paths = ["/api/entities", "/api/analyze"]  # paths for CRUD and ANALYZE
+        # protected_paths = ["/api/entities", "/api/analyze"]  # paths for CRUD and ANALYZE
+        protected_paths = []
 
         # Check if the path is protected
         if any(request.url.path.startswith(path) for path in protected_paths):

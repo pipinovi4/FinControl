@@ -36,6 +36,7 @@ class Admin(User, TimeStampAuthMixin, DynamicLinkAuthMixin):
     is_super_admin: Mapped[bool] = mapped_column(
         Boolean,
         nullable=False,
+        default=False,
         info={"description": "Whether the admin is super admin"}
     )
 

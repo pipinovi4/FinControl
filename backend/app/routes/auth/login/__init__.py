@@ -1,5 +1,5 @@
-from .router_factory import create_login_routers
+from .login_router import router as login_router
 
 __all__ = [
-    "create_login_routers"
+    "login_router"
 ]

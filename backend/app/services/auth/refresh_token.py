@@ -49,7 +49,7 @@ class RefreshService:
         )
         return raw
 
-    @handle_exceptions
+    @handle_exceptions()
     async def consume(self, token: str, created_from_ip: Optional[str], user_agent: Optional[str]) -> Optional[RefreshToken]:
         """
         Validate and consume a refresh token if it's active and matches the

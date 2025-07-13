@@ -11,6 +11,8 @@ from .entities.admin import Admin
 from .entities.client import Client
 from .entities.broker import Broker
 from .entities.worker import Worker
+from .entities.earning import Earning
+from .entities.credit import Credit
 
 # === Mixins ===
 from .mixins.auth import AuthMixin
@@ -25,7 +27,7 @@ from .sessions.refresh_token import RefreshToken
 
 __all__ = [
     # Entities
-    "User", "Admin", "Client", "Broker", "Worker",
+    "User", "Admin", "Client", "Broker", "Worker", "Earning", "Credit",
 
     # Mixins
     "AuthMixin", "DynamicLinkAuthMixin", "SoftDeleteMixin",

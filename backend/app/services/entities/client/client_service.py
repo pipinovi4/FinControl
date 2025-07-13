@@ -2,8 +2,10 @@ from typing import Sequence, cast, TypeVar, Type
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 
 from backend.app.models import Client
+from backend.app.services.auth import PasswordService
 from backend.app.services.entities import UserService
 from backend.app.utils.decorators import handle_exceptions
 from backend.app.schemas.entities.client_schema import ClientSchema
@@ -38,10 +40,37 @@ class ClientService(UserService):
         :return: Client instance or None.
         """
         stmt = select(self.client_model).where(self.client_model.id == client_id, self.client_model.is_deleted == False)
+        stmt = stmt.options(
+            selectinload(Client.worker), selectinload(Client.broker), selectinload(Client.credits)
+        )
         result = await self.db.execute(stmt)
         return cast(ClientT | None, result.scalar_one_or_none())
 
-    @handle_exceptions(default_return=[])
+    @handle_exceptions()
+    async def get_by_telegram_id(self, telegram_id: str) -> ClientT | None:
+        """
+        Fetch a client by their system telegram_id.
+        """
+        stmt = select(Client).where(Client.telegram_id == telegram_id)
+        stmt = stmt.options(
+            selectinload(Client.worker), selectinload(Client.broker), selectinload(Client.credits)
+        )
+        result = await self.db.execute(stmt)
+        return cast(ClientT, result.scalar_one_or_none())
+
+    @handle_exceptions()
+    async def get_by_email(self, email: str) -> ClientT | None:
+        """
+        Fetch a client by their email.
+        """
+        stmt = select(Client).where(Client.email == email)
+        stmt = stmt.options(
+            selectinload(Client.worker), selectinload(Client.broker), selectinload(Client.credits)
+        )
+        result = await self.db.execute(stmt)
+        return cast(ClientT, result.scalar_one_or_none())
+
+    @handle_exceptions()
     async def get_all_clients(self, is_deleted: bool | None = None) -> Sequence[ClientT]:
         """
         Retrieve all clients, optionally filtering by deletion status.
@@ -118,16 +147,15 @@ class ClientService(UserService):
     @handle_exceptions()
     async def create(self, client_data: ClientSchema.Create) -> ClientT:
         """
-        Create a new client entry in the database.
-
-        :param client_data: Pydantic schema with new client data.
-        :return: Created Client instance.
+        Create a new Client user. Hashes the password before saving.
         """
-        client = Client(**client_data.model_dump())
+        updated_client_data = client_data.model_dump()
+        updated_client_data["password_hash"] = PasswordService.hash(updated_client_data.pop("password"))
+        client = Client(**updated_client_data)
         self.db.add(client)
         await self.db.commit()
         await self.db.refresh(client)
-        return client
+        return cast(ClientT, client)
 
     @handle_exceptions()
     async def update(self, client_id: UUID, client_data: ClientSchema.Update) -> ClientT:

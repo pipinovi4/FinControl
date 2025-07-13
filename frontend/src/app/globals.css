@@ -45,3 +45,5 @@
   }
 }
 
+.rdp { @apply text-[#2B3674] select-none; }
+.rdp-button:not(.rdp-day_selected):hover { @apply bg-[#F0F1F9]; }

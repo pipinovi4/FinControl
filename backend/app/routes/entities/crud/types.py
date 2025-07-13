@@ -52,7 +52,7 @@ class TelegramId(BaseModel):
     telegram_id: UUID
 
 class SuccessfulDeletedUser(BaseModel):
-    message: Type[str]
+    message: str
 
 class CRUDInputSchemas(NamedTuple):
     Create: Type[Union[BrokerSchema.Create, WorkerSchema.Create, BrokerSchema.Update, ClientSchema.Create]]

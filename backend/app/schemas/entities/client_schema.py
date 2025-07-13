@@ -1,21 +1,33 @@
 # backend/app/schemas/entities/client_schema.py
 from __future__ import annotations
 
-from typing import Optional, List, Dict, Type
+from typing import Optional, List, Dict, Type, TYPE_CHECKING
 from uuid import UUID
 from pydantic import BaseModel, Field, EmailStr
 
+from backend.app.schemas import SchemaBase
+from backend.app.schemas.entities.credit_schema import CreditShort
 from backend.app.schemas.entities.user_schema import UserSchema
+
+if TYPE_CHECKING:
+    from backend.app.schemas.entities.worker_schema import WorkerShort # noqa 401
+    from backend.app.schemas.entities.broker_schema import BrokerShort # noqa 401
+    from backend.app.schemas.entities.credit_schema import CreditShort # noqa 401
+
 
 class ClientBase(UserSchema.Base):
     """
     Shared schema for the Client entity.
     """
     worker_id: Optional[UUID] = Field(None, description="UUID of the assigned worker")
-    worker: Optional["WorkerSchema.Base"] = Field(None, description="Nested Worker (if assigned)")
+    worker: Optional["WorkerShort"] = Field(None, description="Nested Worker (if assigned)")
 
     broker_id: Optional[UUID] = Field(None, description="UUID of the assigned broker")
-    broker: Optional["BrokerSchema.Base"] = Field(None, description="Nested Broker (if assigned)")
+    broker: Optional["BrokerShort"] = Field(None, description="Nested Broker (if assigned)")
+
+    credits: Optional[List["CreditShort"]] = Field(
+        None, description="List of client's credit records"
+    )
 
     full_name: str = Field(..., example="Ivan Ivanov")
     phone_number: str = Field(..., example="+380931234567")
@@ -73,7 +85,7 @@ class ClientCreate(UserSchema.Create):
     report_files: Optional[List[Dict]] = Field(None)
 
 
-class ClientUpdate(UserSchema.Update):
+class ClientUpdate(SchemaBase):
     """
     Schema for updating a Client.
     """
@@ -109,9 +121,25 @@ class ClientOut(ClientBase):
     """
     pass
 
+class ClientShort(BaseModel):
+    id: UUID
+    full_name: str
+    phone_number: str
+    email: str
 
 class ClientSchema:
     Base:   Type[BaseModel] = ClientBase
     Create: Type[BaseModel] = ClientCreate
     Update: Type[BaseModel] = ClientUpdate
     Out:    Type[BaseModel] = ClientOut
+    Short:  Type[BaseModel] = ClientShort
+
+
+from importlib import import_module
+
+_client_mod = import_module("backend.app.schemas.entities.broker_schema")
+globals()["BrokerShort"] = _client_mod.BrokerSchema.Short
+_client_mod = import_module("backend.app.schemas.entities.worker_schema")
+globals()["WorkerShort"] = _client_mod.WorkerSchema.Short
+_client_mod = import_module("backend.app.schemas.entities.credit_schema")
+globals()["CreditShort"] = _client_mod.CreditSchema.Short
