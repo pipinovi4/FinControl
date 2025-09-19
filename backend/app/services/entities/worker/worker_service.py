@@ -22,7 +22,6 @@ class WorkerService(UserService):
         - get_by_username(username): Get Worker by username.
         - get_clients(worker_id): Return all clients assigned to a Worker.
         - update_username(worker_id, new_username): Update Worker.username field.
-        - update_telegram_username(worker_id, telegram_username): Update Telegram handle.
         - assign_client(worker_id, client_id): Assign a specific client to a worker.
         - unassign_client(worker_id, client_id): Unassign a client from a worker.
         - bulk_assign_clients(worker_id, client_ids): Assign multiple clients to a worker.
@@ -43,7 +42,8 @@ class WorkerService(UserService):
         """
         stmt = select(Worker).where(Worker.id == worker_id)
         stmt = stmt.options(
-            selectinload(Worker.earnings), selectinload(Worker.clients)
+            selectinload(Worker.clients),
+            selectinload(Worker.credits)
         )
         result = await self.db.execute(stmt)
         return cast(WorkerT, result.scalar_one_or_none())
@@ -55,19 +55,8 @@ class WorkerService(UserService):
         """
         stmt = select(Worker).where(Worker.username == username)
         stmt = stmt.options(
-            selectinload(Worker.earnings), selectinload(Worker.clients)
-        )
-        result = await self.db.execute(stmt)
-        return cast(WorkerT, result.scalar_one_or_none())
-
-    @handle_exceptions()
-    async def get_by_telegram_id(self, telegram_id: str) -> WorkerT | None:
-        """
-        Fetch a worker by their system telegram_id.
-        """
-        stmt = select(Worker).where(Worker.username == telegram_id)
-        stmt = stmt.options(
-            selectinload(Worker.earnings), selectinload(Worker.clients)
+            selectinload(Worker.clients),
+            selectinload(Worker.credits)
         )
         result = await self.db.execute(stmt)
         return cast(WorkerT, result.scalar_one_or_none())
@@ -77,9 +66,10 @@ class WorkerService(UserService):
         """
         Fetch a worker by their email.
         """
-        stmt = select(Worker).where(Worker.username == email)
+        stmt = select(Worker).where(Worker.email == email)
         stmt = stmt.options(
-            selectinload(Worker.earnings), selectinload(Worker.clients)
+            selectinload(Worker.clients),
+            selectinload(Worker.credits)
         )
         result = await self.db.execute(stmt)
         return cast(WorkerT, result.scalar_one_or_none())
@@ -102,14 +92,6 @@ class WorkerService(UserService):
         await self.db.execute(stmt)
         await self.db.commit()
 
-    @handle_exceptions()
-    async def update_telegram_username(self, worker_id: UUID, telegram_username: str) -> None:
-        """
-        Update the Telegram handle of a worker.
-        """
-        stmt = update(Worker).where(Worker.id == worker_id).values(telegram_username=telegram_username)
-        await self.db.execute(stmt)
-        await self.db.commit()
 
     @handle_exceptions()
     async def assign_client(self, worker_id: UUID, client_id: UUID) -> None:

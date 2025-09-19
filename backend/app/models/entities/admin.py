@@ -1,5 +1,9 @@
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import UUID, String, ForeignKey, Boolean
+from sqlalchemy import String, ForeignKey, Boolean
+from sqlalchemy.dialects.postgresql import UUID as PGUUID
+import uuid
+
+
 from backend.app.models.entities import User
 from backend.app.models.mixins import TimeStampAuthMixin, DynamicLinkAuthMixin
 from backend.app.permissions import PermissionRole
@@ -19,8 +23,8 @@ class Admin(User, TimeStampAuthMixin, DynamicLinkAuthMixin):
     __tablename__ = "admins"
 
     # Primary key linked to base User ID
-    id: Mapped[UUID] = mapped_column(
-        UUID(as_uuid=True),
+    id: Mapped[uuid.UUID] = mapped_column(
+        PGUUID(as_uuid=True),
         ForeignKey("users.id", ondelete="CASCADE"),
         primary_key=True
     )

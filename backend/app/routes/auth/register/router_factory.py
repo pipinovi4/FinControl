@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from uuid import UUID
 
+from backend.app.permissions import PermissionRole
 from backend.app.routes.auth.register.types import RegisterTypes
 from backend.app.routes.auth.register.config import ROLE_REGISTRY
 from backend.app.schemas.sessions import TokenPair
@@ -25,6 +26,7 @@ def make_register_handler(
     service_cls: Type[ServiceT],
     schema_cls: Type[SchemaT],
     input_schema: Type[BaseModel],
+    role: PermissionRole,
 ) -> Callable[..., Awaitable[Any]]:
     """
     Factory for creating a FastAPI handler for registration.
@@ -38,31 +40,35 @@ def make_register_handler(
     Returns:
         FastAPI route handler function.
     """
+
     async def handler(
-        request: Request,
-        data: input_schema = Body(...),
-        db=Depends(get_async_db),
+            request: Request,
+            data: input_schema = Body(...),
+            db=Depends(get_async_db),
     ) -> JSONResponse | TokenPair:
-        payload = schema_cls.Create(**data.model_dump())
         service = service_cls(db)
+
+        data_dict = data.model_dump()
+
+        # Обробка worker_username
+        if role == PermissionRole.CLIENT and hasattr(data, "worker_username"):
+            worker = await WorkerService(db=db).get_by_username(cast(str, data.worker_username))
+            data_dict["worker_id"] = worker.id if worker else None
+            data_dict.pop("worker_username", None)
+            print(data_dict)
+
+        # Тепер формуємо payload з очищеним словником
+        payload = schema_cls.Create(**data_dict)
 
         if not payload.email or not payload.password:
             raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Missing email or password")
 
-        # Check if a user already exists
-        if register_type == RegisterTypes.BOT:
-            if await service.get_by_telegram_id(payload.telegram_id):
-                raise HTTPException(status.HTTP_409_CONFLICT, detail="User already exists")
-        elif register_type == RegisterTypes.WEB:
-            if await service.get_by_email(payload.email):
-                raise HTTPException(status.HTTP_409_CONFLICT, detail="User already exists")
+        if await service.get_by_email(payload.email):
+            raise HTTPException(status.HTTP_409_CONFLICT, detail="User already exists")
 
-        # Hash password and create a user
-        user = await service.create(schema_cls.Create(**payload.model_dump()))
-
+        user = await service.create(payload)
         user = await service.get_by_id(user.id)
 
-        # Token generation
         access, refresh, expires_in = await generate_token_pair(
             UUID(str(user.id)),
             db,
@@ -71,8 +77,8 @@ def make_register_handler(
         )
 
         if register_type == RegisterTypes.WEB:
-            response = JSONResponse(content=
-                jsonable_encoder(schema_cls.WebRegisterResponse.model_validate(user))
+            response = JSONResponse(
+                content=jsonable_encoder(schema_cls.WebRegisterResponse.model_validate(user))
             )
             set_auth_cookies(response, access, refresh, expires_in)
             return response
@@ -107,6 +113,7 @@ def create_register_routers() -> List[APIRouter]:
                 service_cls=cast(Type[ServiceT], service_cls),
                 schema_cls=cast(Type[SchemaT], schema_cls),
                 input_schema=input_schema,
+                role=role,
             )
 
             full_path = f"{base_path}/{reg_type.name.lower()}"

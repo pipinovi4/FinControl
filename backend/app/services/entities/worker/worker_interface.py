@@ -65,14 +65,6 @@ class WorkerInterfaceService(UserInterfaceService):
         """
         return self.worker.username
 
-    def get_telegram_username(self) -> str:
-        """
-        Retrieve the worker's Telegram username if available.
-
-        :return: The Telegram username as a string, or an empty string if not set.
-        """
-        return self.worker.telegram_username or ""
-
     def get_clients_count(self) -> int:
         """
         Retrieve the number of clients assigned to the worker.

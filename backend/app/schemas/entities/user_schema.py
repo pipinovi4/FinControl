@@ -11,8 +11,6 @@ class UserBase(SchemaBase, AuthSchema, UUIDSchema, TimeStampSchema, SoftDeleteSc
     """
     Base schema shared across all user-related models.
     """
-    telegram_id: str = Field(..., example="123456789")
-    telegram_username: str = Field(..., example="user")
     role: PermissionRole = Field(..., example=PermissionRole.ADMIN.value)
     is_active: bool = Field(..., example=True)
 
@@ -21,8 +19,6 @@ class UserCreate(SchemaBase, AuthSchema.Create):
     """
     Schema for creating a new user.
     """
-    telegram_id: Optional[str]
-    telegram_username: Optional[str]
 
 
 class UserOut(UserBase, AuthSchema.Out):
@@ -36,7 +32,6 @@ class UserUpdate(SchemaBase):
     """
     Schema for updating an existing user.
     """
-    telegram_username: Optional[str] = Field(None, example="user_updated")
     is_active: Optional[bool] = Field(None, example=True)
 
 

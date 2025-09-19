@@ -1,14 +1,13 @@
 import uuid
-from typing import TYPE_CHECKING
 from datetime import datetime
+from typing import Optional
+
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import ForeignKey, UUID, String, Text, Integer
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import ForeignKey, String, Text, Integer, CheckConstraint, DateTime
+from sqlalchemy.dialects.postgresql import JSONB, UUID as PGUUID
 
 from backend.app.models.entities.user import User
 from backend.app.permissions.enums import PermissionRole
-from backend.app.models.entities.credit import Credit
-from backend.app.models.entities.earning import Earning
 
 class Client(User):
     """
@@ -24,18 +23,42 @@ class Client(User):
 
     __tablename__ = 'clients'
 
+    # ⬇️ Головні інваріанти на рівні БД
+    __table_args__ = (
+        # числове поле не може бути від’ємним
+        CheckConstraint('active_credit >= 0', name='ck_clients_active_credit_nonneg'),
+
+        # не дозволяємо порожнє (тільки пробіли) ім’я
+        CheckConstraint("char_length(btrim(full_name)) > 0", name='ck_clients_full_name_not_blank'),
+
+        # базова E.164-перевірка для телефону (+XXXXXXXX...), 8–15 цифр
+        CheckConstraint(r"phone_number ~ '^\+?[1-9]\d{7,14}$'", name='ck_clients_phone_e164'),
+
+        # дуже базова валідація email (не ідеальна, але тримає формат)
+        CheckConstraint(r"email ~ '^[^@\s]+@[^@\s]+\.[^@\s]+$'", name='ck_clients_email_basic'),
+
+        # якщо є timestamp «взяв у роботу», має існувати worker_id
+        CheckConstraint("(taken_at_worker IS NULL) OR (worker_id IS NOT NULL)",
+                        name='ck_clients_worker_ts_consistency'),
+
+        # якщо є timestamp від брокера, має існувати broker_id
+        CheckConstraint("(taken_at_broker IS NULL) OR (broker_id IS NOT NULL)",
+                        name='ck_clients_broker_ts_consistency'),
+    )
+
     # Inherited primary key mapped to users table (joined-table inheritance)
     id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True),
+        PGUUID(as_uuid=True),
         ForeignKey('users.id', ondelete='CASCADE'),
         primary_key=True
     )
 
     # Reference to the assigned worker (optional, may be null)
     worker_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True),
-        ForeignKey('users.id', ondelete='SET NULL'),
-        nullable=True
+        PGUUID(as_uuid=True),
+        ForeignKey('workers.id', ondelete='SET NULL'),
+        nullable=True,
+        index=True,
     )
     worker: Mapped["Worker"] = relationship(
         "Worker",
@@ -44,13 +67,14 @@ class Client(User):
     )
 
     # Timestamp when the worker took this client into processing
-    taken_at_worker: Mapped[datetime] = mapped_column(nullable=True)
+    taken_at_worker: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
     # Reference to the assigned broker (optional, may be null)
     broker_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True),
-        ForeignKey('users.id', ondelete='SET NULL'),
-        nullable=True
+        PGUUID(as_uuid=True),
+        ForeignKey('brokers.id', ondelete='SET NULL'),
+        nullable=True,
+        index=True,
     )
     broker: Mapped["Broker"] = relationship(
         "Broker",
@@ -59,11 +83,15 @@ class Client(User):
     )
 
     # Timestamp when the broker registered or forwarded this client
-    taken_at_broker: Mapped[datetime] = mapped_column(nullable=True)
+    taken_at_broker: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
     # One-to-many relationship with client's credit history
     credits: Mapped[list["Credit"]] = relationship(
-        "Credit", back_populates="client", cascade="all, delete-orphan"
+        "Credit",
+        back_populates="client",
+        foreign_keys="Credit.client_id",
+        cascade="all",
+        passive_deletes=True,
     )
 
     # ========================
@@ -111,8 +139,11 @@ class Client(User):
     # 📌 Credit Summary
     # =========================
     active_credit: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
-    report_files: Mapped[list[dict]] = mapped_column(JSONB, nullable=True)
-
+    report_files: Mapped[Optional[list[dict]]] = mapped_column(
+        JSONB,
+        nullable=True,
+        default=None
+    )
     # Enables polymorphic identity for the Client role
     __mapper_args__ = {
         "inherit_condition": (id == User.id),

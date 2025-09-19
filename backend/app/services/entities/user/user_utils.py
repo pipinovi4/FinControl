@@ -26,20 +26,6 @@ class UserUtilService:
         These methods are typically used in services, responses, or export utilities
         where model transformation and display-friendly data are needed.
     """
-    @staticmethod
-    def get_display_name(user: User) -> str:
-        """
-        Return a display-friendly name for a user.
-
-        If the user has a Telegram username, return it as '@username'.
-        Otherwise, return a shortened version of their UUID (e.g., 'User#abc123').
-
-        :param user: A User instance.
-        :return: Display name string.
-        """
-        if user.telegram_username:
-            return f"@{user.telegram_username}"
-        return f"User#{str(user.id)[:6]}"
 
     @staticmethod
     def filter_by_role(users: list[User], role: PermissionRole) -> list[User]:

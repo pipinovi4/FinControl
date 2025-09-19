@@ -40,25 +40,23 @@ ServiceT = TypeVar(
 class BaseServiceProtocol(Protocol):
     def __init__(self, db: Session) -> None: ...
 
-    def get_user_by_telegram_id(self, telegram_id: int) -> object: ...
-
     def create(self, data: SchemaT) -> SchemaT: ...
 
     def update(self, id: UUID, data: SchemaT) -> SchemaT: ...
 
     def delete(self, id: UUID) -> SchemaT: ...
 
-class TelegramId(BaseModel):
-    telegram_id: UUID
+class EntityID(BaseModel):
+    id: UUID
 
 class SuccessfulDeletedUser(BaseModel):
     message: str
 
 class CRUDInputSchemas(NamedTuple):
     Create: Type[Union[BrokerSchema.Create, WorkerSchema.Create, BrokerSchema.Update, ClientSchema.Create]]
-    Read: Type[TelegramId]
+    Read: Type[EntityID]
     Update: Type[Union[AdminSchema.Update, WorkerSchema.Update, BrokerSchema.Update, ClientSchema.Update]]
-    Delete: Type[TelegramId]
+    Delete: Type[EntityID]
 
 class CRUDOutputSchemas(NamedTuple):
     Create: Type[Union[BrokerSchema.Out, WorkerSchema.Out, BrokerSchema.Out, ClientSchema.Out]]
@@ -81,7 +79,7 @@ __all__ = [
     "SchemaT",
     "ServiceT",
     "BaseServiceProtocol",
-    "TelegramId",
+    "EntityID",
     "CRUDSchemas",
     "CRUDInputSchemas",
     "CRUDOutputSchemas",

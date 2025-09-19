@@ -19,20 +19,7 @@ class User(Base, AuthMixin, UUIDMixin, TimeStampMixin, SoftDeleteMixin):
 
     __tablename__ = 'users'
 
-    telegram_id: Mapped[str] = mapped_column(
-        String,
-        unique=True,
-        nullable=False
-    )
-    # Telegram internal ID used as external identifier for bots
-
-    telegram_username: Mapped[str] = mapped_column(
-        String(255),
-        unique=True,
-        nullable=False
-    )
     # Username of the user in Telegram, used for display/logging/search
-
     role: Mapped[PermissionRole] = mapped_column(
         Enum(PermissionRole),
         nullable=False
@@ -60,4 +47,4 @@ class User(Base, AuthMixin, UUIDMixin, TimeStampMixin, SoftDeleteMixin):
         """
         Developer-friendly string representation for debugging/logging purposes.
         """
-        return f"<User - {self.telegram_username}: ({self.role.value}). ID: {self.telegram_id} is {self.is_active}>"
+        return f"<User: ({self.role.value}) ID={self.id} active={self.is_active}>"

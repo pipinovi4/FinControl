@@ -24,8 +24,6 @@ class ClientUtilService(UserUtilService):
         """
         if client.full_name:
             return client.full_name
-        if client.telegram_username:
-            return f"@{client.telegram_username}"
         return f"Client#{str(client.id)[:6]}"
 
     @staticmethod

@@ -20,7 +20,6 @@ class UserService:
 
     Methods:
         get_user_by_id(user_id): Fetch user by UUID, raise 404 if not found.
-        get_user_by_telegram_id(telegram_id): Fetch user by Telegram ID.
         get_all(): Return all active (non-deleted) users.
         get_all_soft_deleted(): Return users marked as deleted.
         get_users_by_role(role): Return all active users with given role.
@@ -40,13 +39,6 @@ class UserService:
     async def get_user_by_id(self, user_id: UUID) -> UserT | None:
         # Find a user by UUID (only if not soft-deleted)
         stmt = select(User).where(User.id == user_id, User.is_deleted == False)
-        result = await self.db.execute(stmt)
-        return cast(UserT, result.scalar_one_or_none())
-
-    @handle_exceptions()
-    async def get_user_by_telegram_id(self, telegram_id: str) -> UserT | None:
-        # Get a user by their Telegram ID
-        stmt = select(User).where(User.telegram_id == telegram_id, User.is_deleted == False)
         result = await self.db.execute(stmt)
         return cast(UserT, result.scalar_one_or_none())
 

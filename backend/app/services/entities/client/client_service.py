@@ -47,18 +47,6 @@ class ClientService(UserService):
         return cast(ClientT | None, result.scalar_one_or_none())
 
     @handle_exceptions()
-    async def get_by_telegram_id(self, telegram_id: str) -> ClientT | None:
-        """
-        Fetch a client by their system telegram_id.
-        """
-        stmt = select(Client).where(Client.telegram_id == telegram_id)
-        stmt = stmt.options(
-            selectinload(Client.worker), selectinload(Client.broker), selectinload(Client.credits)
-        )
-        result = await self.db.execute(stmt)
-        return cast(ClientT, result.scalar_one_or_none())
-
-    @handle_exceptions()
     async def get_by_email(self, email: str) -> ClientT | None:
         """
         Fetch a client by their email.

@@ -1,4 +1,4 @@
-// src/components/profile/ProfileModal.tsx
+// src/parts/profile/ProfileModal.tsx
 'use client';
 
 import { useEffect, useState } from 'react';

@@ -47,7 +47,7 @@ ROLE_REGISTRY: Dict[PermissionRole, Tuple[str, BaseService, BaseSchemaNamespace,
         ClientService,
         ClientSchema,
         RegisterTypesCls(
-            bot=(RegisterTypes.BOT, ClientSchema.Create, TokenPair)
+            bot=(RegisterTypes.BOT, ClientSchema.WebRegisterRequest, TokenPair)
         ),
     ),
 }

@@ -1,4 +1,4 @@
-// src/components/profile/useProfileModal.ts
+// src/parts/profile/useProfileModal.ts
 'use client';
 
 import { createContext, useContext, useState, ReactNode } from 'react';

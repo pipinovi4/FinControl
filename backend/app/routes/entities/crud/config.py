@@ -2,8 +2,8 @@
 from typing import Tuple, List, Type, cast, Dict
 from pydantic import BaseModel
 
-from .types import BaseServiceProtocol, CRUDSchemas, TelegramId, CRUDOutputSchemas, CRUDInputSchemas, MatrixRow, \
-    SuccessfulDeletedUser
+from .types import BaseServiceProtocol, CRUDSchemas, CRUDOutputSchemas, CRUDInputSchemas, MatrixRow, \
+    SuccessfulDeletedUser, EntityID
 from backend.app.permissions import PermissionRole
 from backend.app.services.entities import (
     AdminService,
@@ -31,9 +31,9 @@ ROLE_REGISTRY: Dict[
         CRUDSchemas(
             input=CRUDInputSchemas(
                 Create=AdminSchema.Create,
-                Read=TelegramId,
+                Read=EntityID,
                 Update=AdminSchema.Update,
-                Delete=TelegramId,
+                Delete=EntityID,
             ),
             output=CRUDOutputSchemas(
                 Create=AdminSchema.Out,
@@ -49,14 +49,14 @@ ROLE_REGISTRY: Dict[
         CRUDSchemas(
             input=CRUDInputSchemas(
                 Create=WorkerSchema.Create,
-                Read=TelegramId,
+                Read=EntityID,
                 Update=WorkerSchema.Update,
-                Delete=TelegramId,
+                Delete=EntityID,
             ),
             output=CRUDOutputSchemas(
-                Create=WorkerSchema.Out,
-                Read=WorkerSchema.Out,
-                Update=WorkerSchema.Out,
+                Create=WorkerSchema.Short,
+                Read=WorkerSchema.Short,
+                Update=WorkerSchema.Short,
                 Delete=SuccessfulDeletedUser,
             ),
         ),
@@ -67,14 +67,14 @@ ROLE_REGISTRY: Dict[
         CRUDSchemas(
             input=CRUDInputSchemas(
                 Create=BrokerSchema.Create,
-                Read=TelegramId,
+                Read=EntityID,
                 Update=BrokerSchema.Update,
-                Delete=TelegramId,
+                Delete=EntityID,
             ),
             output=CRUDOutputSchemas(
-                Create=BrokerSchema.Out,
-                Read=BrokerSchema.Out,
-                Update=BrokerSchema.Out,
+                Create=BrokerSchema.Short,
+                Read=BrokerSchema.Short,
+                Update=BrokerSchema.Short,
                 Delete=SuccessfulDeletedUser,
             ),
         ),
@@ -85,14 +85,14 @@ ROLE_REGISTRY: Dict[
         CRUDSchemas(
             input=CRUDInputSchemas(
                 Create=ClientSchema.Create,
-                Read=TelegramId,
+                Read=EntityID,
                 Update=ClientSchema.Update,
-                Delete=TelegramId,
+                Delete=EntityID,
             ),
             output=CRUDOutputSchemas(
-                Create=ClientSchema.Out,
-                Read=ClientSchema.Out,
-                Update=ClientSchema.Out,
+                Create=ClientSchema.Short,
+                Read=ClientSchema.Short,
+                Update=ClientSchema.Short,
                 Delete=SuccessfulDeletedUser,
             ),
         ),

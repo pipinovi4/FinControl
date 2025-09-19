@@ -14,7 +14,6 @@ class UserFilterService:
 
     Methods:
         - by_role(role): Filter users by their role (e.g., ADMIN, BROKER).
-        - by_telegram_id(telegram_id): Filter users by their Telegram ID.
         - apply(): Finalize and retrieve the built query.
     """
     def __init__(self):
@@ -29,16 +28,6 @@ class UserFilterService:
         :return: Self for fluent chaining.
         """
         self.query = self.query.where(User.role == role)
-        return self
-
-    def by_telegram_id(self, telegram_id: int):
-        """
-        Add a filter clause for users by Telegram ID.
-
-        :param telegram_id: The Telegram ID to match.
-        :return: Self for fluent chaining.
-        """
-        self.query = self.query.where(User.telegram_id == telegram_id)
         return self
 
     def apply(self) -> Select:

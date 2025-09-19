@@ -67,7 +67,7 @@ MODEL_MODULES = [
     "backend.app.models.entities.broker",
     "backend.app.models.entities.admin",
     "backend.app.models.entities.credit",
-    "backend.app.models.entities.earning"
+    "backend.app.models.entities.promotion",
 ]
 
 for m in MODEL_MODULES:

@@ -78,15 +78,3 @@ class UserInterfaceService:
         :return: True if the user is marked as deleted.
         """
         return self.user.is_deleted
-
-    def get_display_name(self) -> str:
-        """
-        Return a user-friendly display name.
-
-        Prefers the Telegram username, falls back to a partial UUID-based identifier.
-
-        :return: The display name string.
-        """
-        if self.user.telegram_username:
-            return f"@{self.user.telegram_username}"
-        return f"User#{str(self.user.id)[:6]}"

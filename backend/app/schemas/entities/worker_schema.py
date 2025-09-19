@@ -1,15 +1,17 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Optional, List, TYPE_CHECKING
 from pydantic import BaseModel, Field, EmailStr
 from uuid import UUID
 
 from backend.app.permissions import PermissionRole
+from backend.app.schemas import SchemaBase
 from backend.app.schemas.entities.user_schema import UserSchema
 
 if TYPE_CHECKING:
-    from backend.app.schemas.entities.client_schema import ClientShort # noqa 401
-    from backend.app.schemas.entities.earning_schema import EarningShort # noqa 401
+    from backend.app.schemas.entities.client_schema import ClientShort  # noqa: F401
+    from backend.app.schemas.entities.credit_schema import CreditShort  # noqa: F401
 
 
 # ───────────── BASE ─────────────
@@ -25,14 +27,15 @@ class WorkerCreate(UserSchema.Create):
 # ───────────── UPDATE ─────────────
 class WorkerUpdate(BaseModel):
     username: Optional[str] = Field(None, description="Нове значення логіну")
-    telegram_username: Optional[str] = Field(None, description="Нове значення telegram @username")
+    email: Optional[EmailStr] = None
 
 
 # ───────────── OUT (API full view) ─────────────
 class WorkerOut(WorkerBase):
     clients: Optional[List["ClientShort"]] = Field(default_factory=list)
-    earnings: Optional[List["EarningShort"]] = Field(default_factory=list)
+    credits: Optional[List["CreditShort"]] = Field(default_factory=list)
     role: PermissionRole = Field(..., description="Роль користувача")
+    is_deleted: bool = False
 
 
 # ───────────── WEB REGISTER RESPONSE ─────────────
@@ -40,14 +43,28 @@ class WorkerWebRegisterResponse(UserSchema.Base):
     id: UUID
     email: EmailStr
     username: Optional[str]
-    earnings: Optional[List["EarningShort"]] = Field(default_factory=list)
+    credits: Optional[List["CreditShort"]] = Field(default_factory=list)
+    clients: Optional[List["ClientShort"]] = Field(default_factory=list)
+    is_deleted: bool = False
 
 
 # ───────────── SHORT ─────────────
-class WorkerShort(BaseModel):
+class WorkerShort(SchemaBase):
     id: UUID
     username: str
     email: EmailStr
+    is_deleted: bool = False
+
+
+class WorkerAdminOut(SchemaBase):
+    """
+    Schema for a Worker as seen by Admin.
+    """
+    id: UUID
+    username: str
+    email: EmailStr
+    created_at: datetime
+    is_deleted: bool = False
 
 
 # ───────────── WRAPPER ─────────────
@@ -60,9 +77,11 @@ class WorkerSchema:
     WebRegisterResponse = WorkerWebRegisterResponse
 
 
+# resolve forward refs without circular imports at import time
 from importlib import import_module
 
-_worker_mod = import_module("backend.app.schemas.entities.client_schema")
-globals()["ClientShort"] = _worker_mod.ClientSchema.Short
-_worker_mod = import_module("backend.app.schemas.entities.earning_schema")
-globals()["EarningShort"] = _worker_mod.EarningSchema.Short
+_client_mod = import_module("backend.app.schemas.entities.client_schema")
+globals()["ClientShort"] = _client_mod.ClientSchema.Short
+
+_credit_mod = import_module("backend.app.schemas.entities.credit_schema")
+globals()["CreditShort"] = _credit_mod.CreditSchema.Short

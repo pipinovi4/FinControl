@@ -19,6 +19,7 @@ To mount:
 
 from .reset_password.reset_password_router import router as reset_password_router
 from .login import login_router
+from .register import register_invite_router
 
 from fastapi import APIRouter
 
@@ -39,4 +40,5 @@ __all__ = [
     "login_router",
     "create_register_router",
     "reset_password_router",
+    "register_invite_router"
 ]

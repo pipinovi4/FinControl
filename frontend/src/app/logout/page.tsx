@@ -34,14 +34,14 @@ export default function LogoutPage() {
 
                         <button
                             onClick={doLogout}
-                            className="w-full rounded-xl bg-[#4B22F4] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#3818c7]"
+                            className="cursor-pointer w-full rounded-xl bg-[#4B22F4] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#3818c7]"
                         >
                             Выйти из аккаунта
                         </button>
 
                         <button
                             onClick={() => router.push('/dashboard')}
-                            className="w-full rounded-xl border border-[#4B22F4] px-4 py-2 text-sm font-medium text-[#4B22F4] transition hover:bg-[#F3F3FF]"
+                            className="cursor-pointer w-full rounded-xl border border-[#4B22F4] px-4 py-2 text-sm font-medium text-[#4B22F4] transition hover:bg-[#F3F3FF]"
                         >
                             Вернуться на главную
                         </button>

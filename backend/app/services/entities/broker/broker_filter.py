@@ -52,16 +52,6 @@ class BrokerFilterService(UserFilterService):
         self.query = self.query.where(Broker.company_name.ilike(f"%{company}%"))
         return self
 
-    def by_display_name(self, name: str):
-        """
-        Filter brokers by Telegram display name substring (case-insensitive).
-
-        :param name: Telegram username fragment.
-        :return: Self (chainable).
-        """
-        self.query = self.query.where(Broker.telegram_username.ilike(f"%{name}%"))
-        return self
-
     def by_region(self, region: str):
         """
         Filter brokers that operate in a specific region.

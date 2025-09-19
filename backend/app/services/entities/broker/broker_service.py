@@ -33,15 +33,6 @@ class BrokerService(UserService):
         return cast(BrokerT, result.scalar_one_or_none())
 
     @handle_exceptions()
-    async def get_by_telegram_id(self, telegram_id: str) -> BrokerT | None:
-        """
-        Fetch a broker by their system telegram_id.
-        """
-        stmt = select(Broker).where(Broker.telegram_id == telegram_id)
-        result = await self.db.execute(stmt)
-        return cast(BrokerT, result.scalar_one_or_none())
-
-    @handle_exceptions()
     async def get_by_email(self, email: str) -> BrokerT | None:
         """
         Fetch a broker by their email.

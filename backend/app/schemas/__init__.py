@@ -13,7 +13,7 @@ from backend.app.schemas.entities import (
     ClientSchema,  # Pydantic schema for the Client entity
     WorkerSchema,  # Pydantic schema for the Worker entity
     BrokerSchema,  # Pydantic schema for the Broker entity
-    AdminSchema, EarningSchema  # Pydantic schema for the Admin entity
+    AdminSchema  # Pydantic schema for the Admin entity
 )
 
 # Mixin schemas (reusable blocks for auth, soft deletion, etc.)

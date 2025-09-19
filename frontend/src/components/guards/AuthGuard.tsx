@@ -1,4 +1,4 @@
-// src/components/guards/AuthGuard.tsx
+// src/parts/guards/AuthGuard.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -48,5 +48,5 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
         setReady(true);
     }, [pathname, router]);
 
-    return ready ? <>{children}</> : <LoadingScreen />;
+    return ready ? <>{children}</> : null;
 }

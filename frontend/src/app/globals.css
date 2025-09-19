@@ -47,3 +47,21 @@
 
 .rdp { @apply text-[#2B3674] select-none; }
 .rdp-button:not(.rdp-day_selected):hover { @apply bg-[#F0F1F9]; }
+
+@keyframes gradientPan {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.bg-animated-gradient {
+    background: linear-gradient(120deg, #7144ff33, #1B255944, #47338E22);
+    background-size: 200% 200%;
+    animation: gradientPan 8s ease-in-out infinite;
+}

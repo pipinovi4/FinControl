@@ -18,7 +18,6 @@ class WorkerUtilService:
         - DRY utility layer for schema conversion or display name formatting.
 
     Methods:
-        - get_display_name(worker): Returns a readable display name.
         - filter_by_clients_count(workers, min_clients): Filters workers by client count.
         - to_schema(workers, schema): Converts list of Workers to schema objects.
         - to_schema_one(worker, schema): Converts a single Worker to schema object.
@@ -29,17 +28,6 @@ class WorkerUtilService:
         schemas = WorkerUtilService.to_schema(filtered, WorkerSchema.Out)
         display = WorkerUtilService.get_display_name(filtered[0])
     """
-    @staticmethod
-    def get_display_name(worker: Worker) -> str:
-        """
-        Return a display-friendly name for a worker.
-        Prefer Telegram username if available, otherwise use the system username.
-        :param worker: A Worker instance.
-        :return: Display name string.
-        """
-        if worker.telegram_username:
-            return f"@{worker.telegram_username}"
-        return worker.username
 
     @staticmethod
     def filter_by_clients_count(workers: List[Worker], min_clients: int) -> List[Worker]:

@@ -1,13 +1,12 @@
-// src/components/layout/NavProvider.tsx
+// src/parts/layout/NavProvider.tsx
 'use client';
 
 import { usePathname } from 'next/navigation';
 import Topbar   from '@/components/layout/Topbar';
 import Sidebar  from '@/components/layout/Sidebar';
-import AuthGuard from '@/components/guards/AuthGuard';
 import React from "react";
 
-const SHOW_PREFIXES = ['/dashboard', '/analyze', '/settings'];
+const SHOW_PREFIXES = ['/dashboard', '/analyze'];
 
 export default function NavProvider({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();

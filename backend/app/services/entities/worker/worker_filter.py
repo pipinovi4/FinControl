@@ -10,7 +10,6 @@ class WorkerFilterService:
 
     Methods:
         - by_username(username): Filter workers by their system username.
-        - by_telegram_username(telegram_username): Filter by Telegram username.
         - by_email(email): Filter workers by email address (partial match).
         - by_has_clients(has_clients): Filter workers based on presence of assigned clients.
         - by_role(): Filter only users with WORKER role.
@@ -35,13 +34,6 @@ class WorkerFilterService:
         Filter workers by the system username.
         """
         self.filters.append(Worker.username == username)
-        return self
-
-    def by_telegram_username(self, telegram_username: str):
-        """
-        Filter workers by Telegram username.
-        """
-        self.filters.append(Worker.telegram_username == telegram_username)
         return self
 
     def by_email(self, email: str):

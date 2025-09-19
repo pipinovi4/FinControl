@@ -3,12 +3,15 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
+from backend.app.models.entities.registration_invite import RegistrationInvite
 from backend.app.services.auth import PasswordService
+from backend.app.services.auth.invite_service import InviteService
 from backend.app.services.entities import UserService
 from backend.app.permissions import PermissionRole
 from backend.app.models.entities import Admin
 from backend.app.utils.decorators import handle_exceptions
 from backend.app.schemas.entities.admin_schema import AdminSchema
+from backend.db.session import get_async_db
 
 AdminT = TypeVar("AdminT", bound=Admin)
 
@@ -36,15 +39,6 @@ class AdminService(UserService):
         result = await self.db.execute(
             select(Admin).where(Admin.id == admin_id, Admin.is_deleted == False)
         )
-        return cast(AdminT, result.scalar_one_or_none())
-
-    @handle_exceptions()
-    async def get_by_telegram_id(self, telegram_id: str) -> AdminT | None:
-        """
-        Fetch a broker by their system telegram_id.
-        """
-        stmt = select(Admin).where(Admin.telegram_id == telegram_id)
-        result = await self.db.execute(stmt)
         return cast(AdminT, result.scalar_one_or_none())
 
     @handle_exceptions()

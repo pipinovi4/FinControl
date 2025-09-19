@@ -3,9 +3,13 @@ import UserStorage from "@/services/UserStorage";
 
 /* ─────────── roles & helpers ─────────── */
 
+const api = (path: string) => `http://localhost:8000${path}`;
+
 type Role = 'admin' | 'worker' | 'broker' | 'client';
-const makePath = (action: 'login' | 'register', role: Role) =>
+const makePath  = (action: 'login' | 'register', role: Role) =>
     `/api/auth/${action}/${role}/web`;
+const makeInvite = (role: 'worker' | 'broker', token: string) =>
+    `/api/auth/register/invite/${role}/${token}`;
 
 /* ─────────── DTO-type helpers ─────────── */
 
@@ -15,6 +19,22 @@ type RegisterInput<R extends Role> = InputOf<`/api/auth/register/${R}/web`>;
 type RegisterOutput<R extends Role>= OutputOf<`/api/auth/register/${R}/web`>;
 type RefreshOutput                 = OutputOf<'/api/auth/refresh'>;
 
+async function fetchJson<T>(
+    path: string,
+    opts: RequestInit = {},
+): Promise<T> {
+    const res = await fetch(api(path), {
+        headers: { 'Content-Type': 'application/json', ...(opts.headers || {}) },
+        credentials: 'include',
+        ...opts,
+    });
+
+    if (!res.ok) {
+        const errTxt = await res.text().catch(() => '');
+        throw new Error(`${res.status}: ${errTxt || res.statusText}`);
+    }
+    return await res.json() as Promise<T>;
+}
 /* ─────────── AuthService ─────────── */
 
 export const authService = {
@@ -51,8 +71,24 @@ export const authService = {
 
         if (res.status === 200) {
             localStorage.removeItem('user');
+            localStorage.removeItem('analyzeCache');
+            localStorage.removeItem('analyzeState');
         } else {
             console.error('Logout failed', await res.json());
         }
-    }
+    },
+
+    /** /api/auth/register/invite/<role>/<token> */
+    async registerWithToken<R extends 'worker' | 'broker'>(
+        role: R,
+        token: string,
+        data: RegisterInput<R>,
+    ): Promise<RegisterOutput<R>> {
+        const res = await fetchJson<RegisterOutput<R>>(makeInvite(role, token), {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+        UserStorage.set(res);
+        return res;
+    },
 };

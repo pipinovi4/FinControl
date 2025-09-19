@@ -1,10 +1,11 @@
 from dataclasses import Field
 from uuid import UUID
 from pydantic import BaseModel
-from typing import List
-from backend.app.schemas.entities.client_schema import ClientOut
-from backend.app.schemas.entities.broker_schema import BrokerOut
-from backend.app.schemas.entities.worker_schema import WorkerOut
+from typing import List, Literal
+from backend.app.schemas.entities.client_schema import ClientOut, ClientWorkerOut, ClientBrokerOut, ClientAdminOut
+from backend.app.schemas.entities.broker_schema import BrokerOut, BrokerAdminOut
+from backend.app.schemas.entities.worker_schema import WorkerOut, WorkerAdminOut
+
 
 class SimpleIntOut(BaseModel):
     value: int
@@ -16,11 +17,11 @@ class StatusMessage(BaseModel):
     status: str
 
 class WorkerClientListOut(BaseModel):
-    clients: List[ClientOut]
+    clients: List[ClientWorkerOut]
     total: int
 
 class BrokerClientListOut(BaseModel):
-    clients: List[ClientOut]
+    clients: List[ClientBrokerOut]
     total: int
 
 class ClientIdIn(BaseModel):
@@ -65,18 +66,18 @@ class BucketIn(BaseModel):
 
 
 # ─── PAGINATED OUTPUTS ──────────────────
-class PaginatedClientsOut(BaseModel):
-    clients: List[ClientOut]  # можна замінити на ClientShort
+class AdminPaginatedClientsOut(BaseModel):
+    clients: List[ClientAdminOut]
     total: int
 
 
-class PaginatedWorkersOut(BaseModel):
-    workers: List[WorkerOut]  # можна замінити на WorkerShort
+class AdminPaginatedWorkersOut(BaseModel):
+    clients: List[WorkerAdminOut]
     total: int
 
 
-class PaginatedBrokersOut(BaseModel):
-    brokers: List[BrokerOut]
+class AdminPaginatedBrokersOut(BaseModel):
+    clients: List[BrokerAdminOut]
     total: int
 
 
@@ -85,8 +86,9 @@ class AdminDashboardSummaryOut(BaseModel):
     clients: int
     brokers: int
     credits: int
-    earnings: float
     active_credits: int
     completed_credits: int
     issued_amount: int
     paid_amount: int
+
+DeletedFilter = Literal["active", "only", "all"]

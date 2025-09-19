@@ -1,12 +1,13 @@
 # backend/app/schemas/entities/client_schema.py
 from __future__ import annotations
 
+import datetime
 from typing import Optional, List, Dict, Type, TYPE_CHECKING
 from uuid import UUID
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, Field, EmailStr, field_validator
+from datetime import datetime
 
 from backend.app.schemas import SchemaBase
-from backend.app.schemas.entities.credit_schema import CreditShort
 from backend.app.schemas.entities.user_schema import UserSchema
 
 if TYPE_CHECKING:
@@ -52,18 +53,19 @@ class ClientBase(UserSchema.Base):
     extra_income: Optional[str] = Field(None, example="Freelance")
     contact_person: Optional[str] = Field(None, example="Olga Petrova, +380631234567, sister")
     active_credit: int = Field(0, ge=0, example=100000)
+    is_deleted: bool = False
     report_files: Optional[List[Dict]] = Field(None, description="Uploaded report file metadata")
 
-
-class ClientCreate(UserSchema.Create):
+class ClientWebRegisterRequest(UserSchema.Create):
     """
-    Schema for registering a new Client.
-    """
+      Schema for registering a new Client.
+      """
     worker_id: Optional[UUID] = Field(None)
     broker_id: Optional[UUID] = Field(None)
-    full_name: str = Field(..., example="Ivan Ivanov")
-    phone_number: str = Field(..., example="+380931234567")
-    email: EmailStr = Field(..., example="client@example.com")
+    worker_username: Optional[str] = Field(None)
+    full_name: str
+    phone_number: str
+    email: EmailStr
     amount: Optional[str] = Field(None, example="10000")
     snils: Optional[str] = Field(None, example="123-456-789 00")
     inn: Optional[str] = Field(None, example="1234567890")
@@ -84,13 +86,39 @@ class ClientCreate(UserSchema.Create):
     contact_person: Optional[str] = Field(None, example="Olga Petrova, +380631234567, sister")
     report_files: Optional[List[Dict]] = Field(None)
 
+class ClientCreate(UserSchema.Create):
+    """
+    Schema for registering a new Client.
+    """
+    worker_id: Optional[UUID] = Field(None)
+    broker_id: Optional[UUID] = Field(None)
+    full_name: str
+    phone_number: str
+    email: EmailStr
+    amount: Optional[str] = Field(None, example="10000")
+    snils: Optional[str] = Field(None, example="123-456-789 00")
+    inn: Optional[str] = Field(None, example="1234567890")
+    reg_address: Optional[str] = Field(None, example="123 Main St")
+    fact_address: Optional[str] = Field(None, example="123 Main St")
+    reg_date: Optional[str] = Field(None, example="01.01.2020")
+    family_status: Optional[str] = Field(None, example="Married")
+    workplace: Optional[str] = Field(None, example="ACME Corp")
+    org_legal_address: Optional[str] = Field(None, example="456 Elm St")
+    org_fact_address: Optional[str] = Field(None, example="456 Elm St")
+    position: Optional[str] = Field(None, example="Engineer")
+    income: Optional[str] = Field(None, example="5000")
+    income_proof: Optional[str] = Field(None, example="2-NDFL")
+    employment_date: Optional[str] = Field(None, example="01.01.2020")
+    org_activity: Optional[str] = Field(None, example="IT")
+    assets: Optional[str] = Field(None, example="Yes")
+    extra_income: Optional[str] = Field(None, example="Freelance")
+    contact_person: Optional[str] = Field(None, example="Olga Petrova, +380631234567, sister")
+
 
 class ClientUpdate(SchemaBase):
     """
     Schema for updating a Client.
     """
-    worker_id: Optional[UUID] = Field(None)
-    broker_id: Optional[UUID] = Field(None)
     full_name: Optional[str] = Field(None, example="Ivan Ivanov")
     phone_number: Optional[str] = Field(None, example="+380931234567")
     email: Optional[EmailStr] = Field(None, example="client@example.com")
@@ -121,11 +149,98 @@ class ClientOut(ClientBase):
     """
     pass
 
-class ClientShort(BaseModel):
+class ClientShort(SchemaBase):
     id: UUID
     full_name: str
     phone_number: str
     email: str
+
+class WorkerClientNewToday(SchemaBase):
+    id: UUID
+    taken_at_worker: datetime
+
+class BrokerClientNewToday(SchemaBase):
+    id: UUID
+    taken_at_broker: datetime
+
+class UserNewToday(SchemaBase):
+    id: UUID
+    created_at: datetime
+
+class ClientWorkerOut(SchemaBase):
+    """
+    Schema for a Client as seen by a Worker — includes broker info.
+    """
+    id: UUID
+    full_name: Optional[str] = Field(None)
+    phone_number: Optional[str] = Field(None)
+    email: Optional[EmailStr] = Field(None)
+    fact_address: Optional[str] = Field(None)
+    workplace: Optional[str] = Field(None)
+    taken_at_worker: Optional[datetime] = Field(None)
+    is_deleted: bool = False
+
+
+class ClientBrokerOut(SchemaBase):
+    """
+    Schema for a Client as seen by a Broker — includes worker info.
+    """
+    id: UUID
+    full_name: Optional[str] = Field(None)
+    phone_number: Optional[str] = Field(None)
+    email: Optional[EmailStr] = Field(None)
+    amount: Optional[str] = Field(None)
+    snils: Optional[str] = Field(None)
+    inn: Optional[str] = Field(None)
+    reg_address: Optional[str] = Field(None)
+    fact_address: Optional[str] = Field(None)
+    reg_date: Optional[str] = Field(None)
+    family_status: Optional[str] = Field(None)
+    workplace: Optional[str] = Field(None)
+    org_legal_address: Optional[str] = Field(None)
+    org_fact_address: Optional[str] = Field(None)
+    position: Optional[str] = Field(None)
+    income: Optional[str] = Field(None)
+    income_proof: Optional[str] = Field(None)
+    employment_date: Optional[str] = Field(None)
+    org_activity: Optional[str] = Field(None)
+    assets: Optional[str] = Field(None)
+    extra_income: Optional[str] = Field(None)
+    contact_person: Optional[str] = Field(None)
+    taken_at_broker: Optional[datetime] = Field(None)
+    is_deleted: bool = False
+
+
+class ClientAdminOut(SchemaBase):
+    """
+    Schema for a Client as seen by a Broker — includes worker info.
+    """
+    id: UUID
+    full_name: Optional[str] = Field(None)
+    phone_number: Optional[str] = Field(None)
+    email: Optional[EmailStr] = Field(None)
+    amount: Optional[str] = Field(None)
+    snils: Optional[str] = Field(None)
+    inn: Optional[str] = Field(None)
+    reg_address: Optional[str] = Field(None)
+    fact_address: Optional[str] = Field(None)
+    reg_date: Optional[str] = Field(None)
+    family_status: Optional[str] = Field(None)
+    workplace: Optional[str] = Field(None)
+    org_legal_address: Optional[str] = Field(None)
+    org_fact_address: Optional[str] = Field(None)
+    position: Optional[str] = Field(None)
+    income: Optional[str] = Field(None)
+    income_proof: Optional[str] = Field(None)
+    employment_date: Optional[str] = Field(None)
+    org_activity: Optional[str] = Field(None)
+    assets: Optional[str] = Field(None)
+    extra_income: Optional[str] = Field(None)
+    contact_person: Optional[str] = Field(None)
+    taken_at_worker: Optional[datetime] = Field(None)
+    taken_at_broker: Optional[datetime] = Field(None)
+    created_at: datetime
+    is_deleted: bool = False
 
 class ClientSchema:
     Base:   Type[BaseModel] = ClientBase
@@ -133,7 +248,9 @@ class ClientSchema:
     Update: Type[BaseModel] = ClientUpdate
     Out:    Type[BaseModel] = ClientOut
     Short:  Type[BaseModel] = ClientShort
-
+    WorkerOut: Type[BaseModel] = ClientWorkerOut
+    BrokerOut: Type[BaseModel] = ClientBrokerOut
+    WebRegisterRequest: Type[BaseModel] = ClientWebRegisterRequest
 
 from importlib import import_module
 

@@ -14,16 +14,6 @@ class UserFilterSchema(BaseModel):
     - Role type
     - Active status
     """
-    telegram_id: Optional[str] = Field(
-        None,
-        example="123456789",
-        description="Filter by Telegram ID"
-    )
-    telegram_username: Optional[str] = Field(
-        None,
-        example="user",
-        description="Filter by Telegram username"
-    )
     role: Optional[PermissionRole] = Field(
         None,
         example=PermissionRole.ADMIN,

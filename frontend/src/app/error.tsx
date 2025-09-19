@@ -15,7 +15,7 @@ export default function Error({
     }, [error]);
 
     return (
-        <div className="relative min-h-screen flex flex-col items-center justify-center text-center px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <div className="bg-white relative min-h-screen flex flex-col items-center justify-center text-center px-4 sm:px-6 lg:px-8 overflow-hidden z-9999">
             {/* 💥 Background 500 */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
         <span className="text-[clamp(12rem,45vw,32rem)] font-black text-primary opacity-5 leading-none">
@@ -35,13 +35,13 @@ export default function Error({
 
             <div className="flex flex-col sm:flex-row gap-4 mt-6 z-10">
                 <button
-                    onClick={resetAction}
+                    onClick={() => window.location.reload()}
                     className="rounded-xl bg-primary text-primary-foreground px-5 py-2.5 text-sm sm:text-base font-semibold transition hover:opacity-90"
                 >
-                    Попробовать снова
+                    Перезагрузить страницу
                 </button>
                 <Link
-                    href="/"
+                    href="/auth/login"
                     className="rounded-xl border border-primary text-primary px-5 py-2.5 text-sm sm:text-base font-semibold transition hover:bg-primary hover:text-white"
                 >
                     На главную

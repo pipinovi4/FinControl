@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from typing import Optional, List, Type, TYPE_CHECKING
 from pydantic import BaseModel, Field, EmailStr
+from datetime import datetime
 
 from backend.app.permissions import PermissionRole
 from backend.app.schemas import SchemaBase
@@ -35,7 +36,7 @@ class BrokerUpdate(SchemaBase):
     """
     company_name: Optional[str] = Field(None, example="New Name Ltd.")
     region: Optional[List[str]] = Field(None, example=["Dnipro", "Odessa"])
-    telegram_username: Optional[str] = Field(None, example="newbroker")
+    email: Optional[EmailStr] = None
 
 
 class BrokerOut(SchemaBase):
@@ -49,6 +50,7 @@ class BrokerOut(SchemaBase):
     )
     company_name: Optional[str] = Field(None, example="Acme Ltd.", description="Broker's company name")
     region: Optional[List[str]] = Field(None, example=["Kyiv", "Lviv"], description="Regions of operation")
+    is_deleted: bool = False
 
 
 class BrokerWebRegisterResponse(UserSchema.Base):
@@ -62,6 +64,8 @@ class BrokerWebRegisterResponse(UserSchema.Base):
     credits: Optional[List["CreditShort"]] = Field(
         None, description="List of client's credit records"
     )
+    clients: Optional[List["ClientShort"]] = Field(None, description="List of clients assigned to this broker")
+    is_deleted: bool = False
 
 
 class BrokerShort(SchemaBase):
@@ -69,6 +73,19 @@ class BrokerShort(SchemaBase):
     email: EmailStr
     company_name: Optional[str] = None
     region: Optional[List[str]] = Field(None, description="List of regions where the broker is active")
+    is_deleted: bool = False
+
+class BrokerAdminOut(SchemaBase):
+    """
+    Schema for a Client as seen by a Broker — includes worker info.
+    """
+    id: UUID
+    email: EmailStr
+    company_name: Optional[str] = None
+    region: Optional[List[str]] = Field(None, description="List of regions where the broker is active")
+    created_at: datetime
+    is_deleted: bool = False
+
 
 class BrokerSchema:
     Base:   Type[BaseModel] = BrokerBase

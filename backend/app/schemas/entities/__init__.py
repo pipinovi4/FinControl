@@ -8,7 +8,6 @@ Use it to import all entity-level schemas from a single access point.
 # Admin schema — full-access user with system-wide control
 from backend.app.schemas.entities.admin_schema import AdminSchema
 from backend.app.schemas.entities.credit_schema import CreditSchema
-from backend.app.schemas.entities.earning_schema import EarningSchema
 
 # User schema — base representation of any system user
 from backend.app.schemas.entities.user_schema import UserSchema
@@ -25,14 +24,16 @@ from backend.app.schemas.entities.broker_schema import BrokerSchema
 for cls in (
     WorkerSchema.Out,  WorkerSchema.Short,
     ClientSchema.Out,  ClientSchema.Short,
-    EarningSchema.Out, EarningSchema.Short,
     BrokerSchema.Out,  BrokerSchema.Short, BrokerSchema.WebRegisterResponse,
+    CreditSchema.Out, CreditSchema.Short  # ← оце додай
 ):
     cls.model_rebuild()
 
 BrokerSchema.Out.model_rebuild()
-
 BrokerSchema.WebRegisterResponse.model_rebuild()
+
+CreditSchema.Out.model_rebuild()
+CreditSchema.Short.model_rebuild()
 
 # Public API of the entity schemas package
 __all__ = [
@@ -41,5 +42,4 @@ __all__ = [
     "WorkerSchema",
     "BrokerSchema",
     "UserSchema",
-    "EarningSchema"
 ]

@@ -24,10 +24,10 @@ def make_create_handler(
     ) -> schema_cls:  # type: ignore
         svc = service_cls(db)
 
-        if await svc.get_user_by_telegram_id(payload.telegram_id):
+        if await svc.get_by_email(payload.email):
             raise HTTPException(
                 status.HTTP_409_CONFLICT,
-                f"{role.value.title()} with this telegram_id already exists",
+                f"{role.value.title()} with this email already exists",
             )
 
         return await svc.create(payload)

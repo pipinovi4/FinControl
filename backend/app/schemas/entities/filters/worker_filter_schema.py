@@ -20,11 +20,6 @@ class WorkerFilterSchema(WorkerSchema.Base, UserFilterSchema):
         example="john.smith",
         description="Filter workers by internal username"
     )
-    telegram_username: Optional[str] = Field(
-        None,
-        example="pipin",
-        description="Filter workers by Telegram handle"
-    )
     email: Optional[str] = Field(
         None,
         example="worker@example.com",

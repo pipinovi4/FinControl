@@ -32,7 +32,12 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en" className="h-full">
-        <body className={`${dmSans.variable} ${poppins.variable} antialiased min-h-screen`}>
+        <body
+            className={` 
+    ${dmSans.variable} ${poppins.variable} 
+    antialiased min-h-screen bg-[#F8FAFF] overflow-x-hidden   /* базовий фон, як у Splash */ 
+  `}
+        >
         <ReactQueryProvider>
             <ProfileProvider>
                 {/* глобальна модалка (рендериться/ховається сама) */}

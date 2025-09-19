@@ -9,431 +9,497 @@ import {
 import StatCard         from '@/app/dashboard/components/StatCard';
 import IncomeChart      from '@/app/dashboard/components/IncomeChart';
 import DailyTrafficCard from '@/app/dashboard/components/DailyTraffic';
-import UserTable        from '@/app/dashboard/components/UserTable';
+import UserTable        from '@/app/dashboard/components/UserTable/UserTable';
 import PieStatusCard    from '@/app/dashboard/components/PieStatusCard';
-import CalendarCard     from '@/app/dashboard/components/CalendarCard';
+import {
+    mapAdminClient,
+    mapBroker,
+    mapBrokerClient,
+    mapWorker,
+    mapWorkerClient
+} from "@/app/dashboard/components/UserTable/types";
+import InviteGenerator from "@/app/dashboard/components/InviteGenerator";
+import CreateUser from "@/app/dashboard/components/CreateUser/CreateUser";
+import AdminPromotions from "@/app/dashboard/components/Promotion/Promotion";
+
+import CreditsCenter from "@/app/dashboard/components/CreditsNode";
 
 /* ---------- types ---------- */
-export type ComponentFactory = (v: any) => React.ReactNode;
+/* ---------- types ---------- */
+export type ComponentFactory = () => React.ReactNode;
 
 export type StaticMetric = {
-    fetchUrl: string;
-    render: ComponentFactory;
-};
-
-export type EnhancedStaticMetric = {
-    fetchUrl: string;
     requiresId: boolean;
     render: ComponentFactory;
 };
 
+// 🔧 ДОДАЙ creditsNode у тип ролі
 type RoleConfig = {
-    static?: Record<string, EnhancedStaticMetric>;
+    static?: Record<string, StaticMetric>;
     graphic?: Record<string, StaticMetric>;
-    tables?: Record<string, StaticMetric>;
+    tables?:  Record<string, StaticMetric>;
+    actionCards?:  Record<string, StaticMetric>;
+    creditsNode?: Record<string, StaticMetric>;            // ← нове
 };
 
 export type DashboardConfig = Record<'worker' | 'broker' | 'admin', RoleConfig>;
 
-/* ---------- config ---------- */
+/* ---------- configs ---------- */
 const dashboardConfig: DashboardConfig = {
+    /* ─── WORKER ───────────────────────────────────────────── */
     worker: {
         static: {
-            totalClients: {
-                fetchUrl: 'http://localhost:8000/api/dashboard/worker/client/sum/',
-                requiresId: true,
-                render: (v) => <StatCard icon={<DealIcon className="w-11 h-11" />} label="Всего клиентов" value={v} />,
-            },
-            totalEarned: {
-                fetchUrl: 'http://localhost:8000/api/dashboard/worker/client/earnings/total/',
-                requiresId: true,
-                render: (v) => <StatCard icon={<DollarIcon className="w-11 h-11" />} label="Всего заработано" value={v} />,
-            },
-            earnedMonthly: {
-                fetchUrl: 'http://localhost:8000/api/dashboard/worker/client/earnings/month/',
-                requiresId: true,
-                render: (v) => <StatCard icon={<AnalyzeIcon className="w-5 h-5 text-primary" />} label="Заработано за месяц" value={v} />,
-            },
-            totalDeals: {
-                fetchUrl: 'http://localhost:8000/api/dashboard/worker/client/deals-sum/',
-                requiresId: true,
-                render: (v) => <StatCard icon={<CompletedIcon className="w-11 h-11 text-white" />} label="Всего сделок" value={v} />,
-            },
+            // totalClients: {
+            //     requiresId: true,
+            //     render: () => (
+            //         <StatCard
+            //             icon={<DealIcon className="w-11 h-11" />}
+            //             labels={['Всего клиентов', 'Новых клиентов']}
+            //             fetchUrls={['http://localhost:8000/api/dashboard/worker/client/sum/', 'http://localhost:8000/api/dashboard/worker/client/new-today/count/']}
+            //             requiresId
+            //         />
+            //     ),
+            // },
+            // totalEarned: {
+            //     requiresId: true,
+            //     render: () => (
+            //         <StatCard
+            //             icon={<DollarIcon className="w-11 h-11" />}
+            //             labels={['Всего заработано']}
+            //             fetchUrls={['http://localhost:8000/api/dashboard/worker/client/earnings/total/']}
+            //             requiresId
+            //         />
+            //     ),
+            // },
+            // earnedMonthly: {
+            //     requiresId: true,
+            //     render: () => (
+            //         <StatCard
+            //             icon={<AnalyzeIcon className="w-5 h-5 text-primary" />}
+            //             labels={['Заработано за месяц']}
+            //             fetchUrls={['http://localhost:8000/api/dashboard/worker/client/earnings/month/']}
+            //             requiresId
+            //         />
+            //     ),
+            // },
+            // totalDeals: {
+            //     requiresId: true,
+            //     render: () => (
+            //         <StatCard
+            //             icon={<CompletedIcon className="w-11 h-11 text-white" />}
+            //             labels={['Всего сделок']}
+            //             fetchUrls={['http://localhost:8000/api/dashboard/worker/client/deals-sum/']}
+            //             requiresId
+            //         />
+            //     ),
+            // },
         },
+
         graphic: {
-            incomeChart: {
-                fetchUrl: '',
-                render: (v) => <IncomeChart  />,
-            },
-            dailyTraffic: {
-                fetchUrl: '',
-                render: (v) => <DailyTrafficCard />,
-            },
+            // incomeChart: {
+            //     requiresId: true,
+            //     render: () => (
+            //         <IncomeChart
+            //             labels={['Заработано']}
+            //             monthUrls={[`http://localhost:8000/api/dashboard/worker/client/earnings/sum/monthly/`]}
+            //             yearUrls={[`http://localhost:8000/api/dashboard/worker/client/earnings/sum/yearly/`]}
+            //             requiresId
+            //         />
+            //     )
+            // },
+            // dailyTraffic: {
+            //     requiresId: true,
+            //     render: () => (
+            //         <DailyTrafficCard
+            //             labels={['Новые клиенты']}
+            //             fetchUrls={['http://localhost:8000/api/dashboard/worker/client/new-today/']}
+            //             yesterdayUrls={['http://localhost:8000/api/dashboard/worker/client/new-today/']}
+            //             requiresId
+            //         />
+            //     )
+            // },
         },
+
         tables: {
-            userTable: {
-                fetchUrl: '',
-                render: (v) => <UserTable  />,
+            userTable:  {
+                requiresId: true,
+                render: () => (
+                    <UserTable
+                        labels={['Клиенты']}
+                        userBucketURL={['http://localhost:8000/api/dashboard/worker/client/bucket/']}
+                        getFullUserURL={['http://localhost:8000/api/dashboard/worker/client/']}
+                        tableHeads={[
+                            ['ФИО', 'Телефон', 'Адрес', 'Взят в роботу'],
+                        ]}
+                        // buttonActionLabel={['Отписать клиента']}
+                        // buttonActionURL={['http://localhost:8000/api/dashboard/worker/client/unsign/']}
+                        // requiresButton={true}
+                        rowMappers={[mapWorkerClient]}
+                        colKeys={[
+                            ['name', 'phone', 'fact_address', 'date'],
+                        ]}
+                        requiresId
+                        pageSize={20}
+                    />
+                )
             },
-            statusPie: {
-                fetchUrl: '',
-                render: (v) => <PieStatusCard  />,
-            },
-            calendar: {
-                fetchUrl: '',
-                render: (v) => <CalendarCard  />,
-            },
+            // statusPie:  {
+            //     requiresId: true,
+            //     render: () => (
+            //         <PieStatusCard
+            //             labels={['Статус клиентов']}
+            //             labelsActive={['В процессе']}
+            //             labelsCompleted={['Закрытые']}
+            //             activeUrls={['http://localhost:8000/api/dashboard/worker/client/active/count/']}
+            //             completedUrls={['http://localhost:8000/api/dashboard/worker/client/completed/count/']}
+            //             requiresId
+            //         />
+            //     )
+            // },
         },
     },
 
+    /* ─── BROKER ───────────────────────────────────────────── */
     broker: {
         static: {
             totalCommission: {
-                fetchUrl: 'http://localhost:8000/api/dashboard/broker/client/credits/sum/',
                 requiresId: true,
-                render: (v) => <StatCard icon={<DollarIcon className="w-11 h-11" />} label="Всего комиссий" value={v} />,
+                render: () => (
+                    <StatCard
+                        icon={<DollarIcon className="w-11 h-11" />}
+                        labels={['Комиссий', 'Комиссий за месяц']}
+                        fetchUrls={['http://localhost:8000/api/dashboard/broker/client/credits/sum/total/', 'http://localhost:8000/api/dashboard/broker/client/credits/sum/month/']}
+                        requiresId
+                    />
+                ),
             },
-            commissionMonth: {
-                fetchUrl: 'http://localhost:8000/api/dashboard/broker/client/credits/month/',
+            commissionsCount: {
                 requiresId: true,
-                render: (v) => <StatCard icon={<AnalyzeIcon className="w-5 h-5 text-primary" />} label="Комиссия за месяц" value={v} />,
+                render: () => (
+                    <StatCard
+                        icon={<AnalyzeIcon className="w-5 h-5 text-primary" />}
+                        labels={['Всего комиссий', 'Комиссий за месяц']}
+                        fetchUrls={['http://localhost:8000/api/dashboard/broker/client/credits/count/total/', 'http://localhost:8000/api/dashboard/broker/client/credits/count/month/']}
+                        requiresId
+                    />
+                ),
             },
-            activeCredits: {
-                fetchUrl: 'http://localhost:8000/api/dashboard/broker/client/credits/active/',
+            creditsStatus: {
                 requiresId: true,
-                render: (v) => <StatCard icon={<DealIcon className="w-11 h-11" />} label="Активные кредиты" value={v} />,
+                render: () => (
+                    <StatCard
+                        icon={<DealIcon className="w-11 h-11" />}
+                        labels={['Активные кредиты', 'Завершено кредитов']}
+                        fetchUrls={['http://localhost:8000/api/dashboard/broker/client/credits/count/active/', 'http://localhost:8000/api/dashboard/broker/client/credits/count/completed/']}
+                        requiresId
+                    />
+                ),
             },
             completedCredits: {
-                fetchUrl: 'http://localhost:8000/api/dashboard/broker/client/credits/completed/',
                 requiresId: true,
-                render: (v) => <StatCard icon={<CompletedIcon className="w-11 h-11 text-white" />} label="Завершено кредитов" value={v} />,
+                render: () => (
+                    <StatCard
+                        icon={<CompletedIcon className="w-11 h-11 text-white" />}
+                        labels={['Комиссии активных кредитов', 'Комиссии не активных кредитов']}
+                        fetchUrls={[
+                            'http://localhost:8000/api/dashboard/broker/client/credits/sum/active/',
+                            'http://localhost:8000/api/dashboard/broker/client/credits/sum/completed/',
+                        ]}
+                        requiresId
+                    />
+                ),
             },
         },
+
         graphic: {
             incomeChart: {
-                fetchUrl: '',
-                render: (v) => <IncomeChart  />,
+                requiresId: true,
+                render: () => (
+                    <IncomeChart
+                        labels={['Заработано']}
+                        monthUrls={[`http://localhost:8000/api/dashboard/broker/client/credits/sum/monthly/`]}
+                        yearUrls={[`http://localhost:8000/api/dashboard/broker/client/credits/sum/yearly/`]}
+                        requiresId
+                    />
+                )
             },
             dailyTraffic: {
-                fetchUrl: '',
-                render: (v) => <DailyTrafficCard  />,
+                requiresId: true,
+                render: () => (
+                    <DailyTrafficCard
+                        labels={['Новые клиенты']}
+                        fetchUrls={['http://localhost:8000/api/dashboard/broker/client/new-today/']}
+                        yesterdayUrls={['http://localhost:8000/api/dashboard/broker/client/new-yesterday/sum/']}
+                        requiresId
+                    />
+                )
             },
         },
+
         tables: {
-            userTable: {
-                fetchUrl: '',
-                render: (v) => <UserTable  />,
+            creditsNode: {
+                requiresId: false,
+                render: () => <CreditsCenter />
             },
-            statusPie: {
-                fetchUrl: '',
-                render: (v) => <PieStatusCard  />,
+            statusPie:  {
+                requiresId: true,
+                render: () => (
+                    <PieStatusCard
+                        labels={['Статус клиентов']}
+                        labelsActive={['В процессе']}
+                        labelsCompleted={['Закрытые']}
+                        activeUrls={['http://localhost:8000/api/dashboard/broker/client/credits/count/active/']}
+                        completedUrls={['http://localhost:8000/api/dashboard/broker/client/credits/count/completed/']}
+                        requiresId
+                    />
+                )
+            },
+        },
+        creditsNode: {
+            userTable:  {
+                requiresId: true,
+                render: () => (
+                    <UserTable
+                        labels={['Клиенты']}
+                        userBucketURL={['http://localhost:8000/api/dashboard/broker/client/signed/bucket/']}
+                        getFullUserURL={['http://localhost:8000/api/dashboard/broker/client/']}
+                        tableHeads={[
+                            ['ФИО', 'Телефон', 'Адрес', 'Взят в роботу'],
+                        ]}
+                        colKeys={[
+                            ['name', 'phone', 'fact_address', 'date'],
+                        ]}
+                        rowMappers={[mapBrokerClient]}
+                        requiresId
+                        pageSize={20}
+                    />
+                )
             },
         },
     },
 
+    /* ─── ADMIN ────────────────────────────────────────────── */
     admin: {
         static: {
-            totalSum: {
-                fetchUrl: 'http://localhost:8000/api/dashboard/admin/earnings/total/',
+            totalSums: {
                 requiresId: false,
-                render: (v) => <StatCard icon={<DollarIcon className="w-11 h-11" />} label="Всего заработано" value={v} />,
+                render: () => (
+                    <StatCard
+                        icon={<DollarIcon className="w-11 h-11" />}
+                        labels={['Всего выдано']}
+                        fetchUrls={['http://localhost:8000/api/dashboard/admin/credits/total/']}
+                    />
+                ),
             },
-            monthlySum: {
-                fetchUrl: 'http://localhost:8000/api/dashboard/admin/earnings/month/',
+            monthlySums: {
                 requiresId: false,
-                render: (v) => <StatCard icon={<AnalyzeIcon className="w-5 h-5 text-primary" />} label="Заработано за месяц" value={v} />,
+                render: () => (
+                    <StatCard
+                        // Или вместо выдано можна написать "Комиссий за месяц"
+                        icon={<AnalyzeIcon className="w-5 h-5 text-primary" />}
+                        labels={['Выдано за месяц']}
+                        fetchUrls={['http://localhost:8000/api/dashboard/admin/credits/month/']}
+                    />
+                ),
             },
             totalAccounts: {
-                fetchUrl: 'http://localhost:8000/api/dashboard/admin/clients/total',
                 requiresId: false,
-                render: (v) => <StatCard icon={<DealIcon className="w-11 h-11" />} label="Всего аккаунтов" value={v} />,
-            },
-            totalCredits: {
-                fetchUrl: 'http://localhost:8000/api/dashboard/admin/credits/total/',
-                requiresId: false,
-                render: (v) => <StatCard icon={<CompletedIcon className="w-11 h-11 text-white" />} label="Всего комиссий" value={v} />,
-            },
-            monthlyCredits: {
-                fetchUrl: 'http://localhost:8000/api/dashboard/admin/credits/month/',
-                requiresId: false,
-                render: (v) => <StatCard icon={<CompletedIcon className="w-11 h-11 text-white" />} label="Комиссий за месяц" value={v} />,
+                render: () => (
+                    <StatCard
+                        icon={<DealIcon className="w-11 h-11 text-white" />}
+                        labels={[
+                            'Всего пользователей',
+                            'Всего клиентов',
+                            'Всего брокеров',
+                            'Всего работников',
+                        ]}
+                        fetchUrls={[
+                            'http://localhost:8000/api/dashboard/admin/users/total',    // <- змініть на свої, якщо різні
+                            'http://localhost:8000/api/dashboard/admin/clients/total',
+                            'http://localhost:8000/api/dashboard/admin/brokers/total',
+                            'http://localhost:8000/api/dashboard/admin/workers/total',
+                        ]}
+                    />
+                ),
             },
             totalDeals: {
-                fetchUrl: 'http://localhost:8000/api/dashboard/admin/deals/count/',
                 requiresId: false,
-                render: (v) => <StatCard icon={<CompletedIcon className="w-11 h-11 text-white" />} label="Всего сделок" value={v} />,
+                render: () => (
+                    <StatCard
+                        icon={<CompletedIcon className="w-11 h-11 text-white" />}
+                        labels={['Всего комиссий']}
+                        fetchUrls={['http://localhost:8000/api/dashboard/admin/credits/count/']}
+                    />
+                ),
             },
         },
+
         graphic: {
             incomeChart: {
-                fetchUrl: '',
-                render: (v) => <IncomeChart  />,
+                requiresId: false,
+                render: () => (
+                    <IncomeChart
+                        labels={['Комиссий всего']}
+                        monthUrls={[`http://localhost:8000/api/dashboard/admin/credits/sum/monthly/`]}
+                        yearUrls={[`http://localhost:8000/api/dashboard/admin/credits/sum/yearly/`]}
+                        requiresId={false}
+                    />
+                )
             },
             dailyTraffic: {
-                fetchUrl: '',
-                render: (v) => <DailyTrafficCard  />,
+                requiresId: true,
+                render: () => (
+                    <DailyTrafficCard
+                        labels={['Новых работников', 'Новых брокеров', 'Новые клиенты (Работники)', "Новые клиенты (Брокеры)"]}
+                        fetchUrls={['http://localhost:8000/api/dashboard/admin/workers/new-today/', 'http://localhost:8000/api/dashboard/admin/brokers/new-today/', 'http://localhost:8000/api/dashboard/admin/workers/clients/new-today/', 'http://localhost:8000/api/dashboard/admin/brokers/clients/new-today/']}
+                        yesterdayUrls={['http://localhost:8000/api/dashboard/admin/workers/new-yesterday/', 'http://localhost:8000/api/dashboard/admin/brokers/new-yesterday/','http://localhost:8000/api/dashboard/admin/workers/clients/new-yesterday/', 'http://localhost:8000/api/dashboard/admin/brokers/clients/new-today/']}
+                        requiresId
+                    />
+                )
             },
         },
+
         tables: {
-            userTable: {
-                fetchUrl: '',
-                render: (v) => <UserTable  />,
+            creditsNode: {
+                requiresId: false,
+                render: () => <CreditsCenter />
             },
-            statusPie: {
-                fetchUrl: '',
-                render: (v) => <PieStatusCard  />,
+            generateLink: {
+                requiresId: true,
+                render: () => (
+                    <InviteGenerator/>
+                )
             },
-            calendar: {
-                fetchUrl: '',
-                render: (v) => <CalendarCard  />,
+        },
+        actionCards: {
+            statusPie:  {
+                requiresId: true,
+                render: () => (
+                    <PieStatusCard
+                        labels={['Статус кредитов']}
+                        labelsActive={['В процессе']}
+                        labelsCompleted={['Закрытые']}
+                        activeUrls={['http://localhost:8000/api/dashboard/admin/credits/count/active/']}
+                        completedUrls={['http://localhost:8000/api/dashboard/admin/credits/count/completed/']}
+                        requiresId
+                    />
+                )
+            },
+            createUser: {
+                requiresId: false,
+                render: () => (
+                    <CreateUser
+                        defaultRole="CLIENT"
+
+                        /* список полів — 4 масиви у порядку WORKER, BROKER, CLIENT, ADMIN */
+                        fieldsList={[
+                            // ────────── WORKER ──────────
+                            [
+                                { name: "email",  label: "Email",  type: "email" },
+                                { name: "password", label: "Пароль", type: "text" },
+                                { name: "username", label: "Логин", type: "text" },
+                                { name: "community", label: "Сообщество", type: "select", options: ["Helix", "Union"] },
+                            ],
+                            // ────────── BROKER ──────────
+                            [
+                                { name: "email",  label: "Email",  type: "email" },
+                                { name: "password", label: "Пароль", type: "text" },
+                                { name: "region",  label: "Регион (список)", type: "array" },
+                                { name: "company_name", label: "Компания", type: "text" },
+                            ],
+                            // ────────── CLIENT ──────────
+                            [
+                                /* — обов’язкові — */
+                                { name: "worker_username", label: "Логин работника",      type: "text" },
+                                { name: "full_name",       label: "ФИО",                    type: "text" },
+                                { name: "phone_number",    label: "Телефон",                type: "text" },
+                                { name: "email",           label: "Почта",                  type: "email" },
+                                { name: "password",        label: "Пароль",                 type: "password" },
+
+                                /* — сума, якщо вже відома — */
+                                { name: "amount",          label: "Сумма кредита",          type: "int",    optional: true },
+
+                                /* — паспорт / податкові дані — */
+                                { name: "snils",           label: "СНИЛС",                  type: "text",   optional: true },
+                                { name: "inn",             label: "ИНН",                    type: "text",   optional: true },
+
+                                /* — адреси — */
+                                { name: "reg_address",     label: "Адреса прописки",        type: "text",   optional: true },
+                                { name: "fact_address",    label: "Факт. адреса",           type: "text",   optional: true },
+
+                                /* — особисті дані — */
+                                { name: "reg_date",        label: "Дата регистрации",       type: "text",   optional: true },
+                                { name: "family_status",   label: "Семейное положение",     type: "text",   optional: true },
+
+                                /* — робота клієнта — */
+                                { name: "workplace",           label: "Место работы",           type: "text", optional: true },
+                                { name: "org_legal_address",   label: "Юр. адрес организации",  type: "text", optional: true },
+                                { name: "org_fact_address",    label: "Факт. адрес организации",type: "text", optional: true },
+                                { name: "position",            label: "Должность",              type: "text", optional: true },
+                                { name: "income",              label: "Доход (₽)",            type: "int",  optional: true },
+                                { name: "income_proof",        label: "Подтверждение дохода",    type: "text", optional: true },
+                                { name: "employment_date",     label: "Дата трудоустройства",    type: "text", optional: true },
+                                { name: "org_activity",        label: "Сфера деятельности орг.", type: "text", optional: true },
+
+                                /* — активи та дод. прибуток — */
+                                { name: "assets",        label: "Активы",        type: "text", optional: true },
+                                { name: "extra_income",  label: "Доп. доход",    type: "text", optional: true },
+
+                                /* — контакти та файли — */
+                                { name: "contact_person", label: "Контактное лицо", type: "text",  optional: true },
+                                { name: "report_files",   label: "Файлы отчёта",    type: "array", optional: true }
+                            ],
+                            // ────────── ADMIN ───────────
+                            [
+                                { name: "email",  label: "Email",  type: "email" },
+                                { name: "password", label: "Пароль", type: "text" },
+                                { name: "display_name", label: "Display Name", type: "text" },
+                            ],
+                        ]}
+
+                        /* ендпоїнти у тому ж порядку */
+                        registrationUrls={[
+                            "http://localhost:8000/api/entities/create/worker",
+                            "http://localhost:8000/api/entities/create/broker",
+                            "http://localhost:8000/api/entities/create/client",
+                            "http://localhost:8000/api/entities/create/admin",
+                        ]}
+                    />
+                ),
+            },
+            promotion: {
+                requiresId: true,
+                render: () => (
+                    <AdminPromotions/>
+                ),
+            },
+        },
+        creditsNode: {
+            userTable:  {
+                requiresId: true,
+                render: () => (
+                    <UserTable
+                        labels={['Работники', 'Брокеры', 'Клиенты']}
+                        userBucketURL={['http://localhost:8000/api/dashboard/admin/workers/', 'http://localhost:8000/api/dashboard/admin/brokers/', 'http://localhost:8000/api/dashboard/admin/clients/']}
+                        getFullUserURL={['http://localhost:8000/api/dashboard/admin/worker/', 'http://localhost:8000/api/dashboard/admin/broker/', 'http://localhost:8000/api/dashboard/admin/client/']}
+                        tableHeads={[
+                            ['Почта', 'Никнейм', 'Создан'],           // Workers
+                            ['Почта', 'Компания', 'Регионы', 'Создан'],           // Brokers
+                            ['ФИО', 'Телефон', 'Адрес', 'Создан'],    // Clients
+                        ]}
+                        colKeys={[
+                            ['email', 'username', 'date'],          // Brokers
+                            ['email', 'company', 'region', 'date'],          // Brokers
+                            ['name', 'phone', 'fact_address', 'date'],       // Clients  ✅
+                        ]}
+                        pageSize={10}
+                        rowMappers={[mapWorker, mapBroker, mapAdminClient]}
+                        requiresId
+                    />
+                )
             },
         },
     },
 };
 
 export default dashboardConfig;
-
-
-// import React from 'react';
-// import {
-//     DollarIcon,
-//     AnalyzeIcon,
-//     DealIcon,
-//     CompletedIcon,
-// } from '@/components/icons';
-//
-// import StatCard         from '@/app/dashboard/components/StatCard';
-// import IncomeChart      from '@/app/dashboard/components/IncomeChart';
-// import DailyTrafficCard from '@/app/dashboard/components/DailyTraffic';
-// import UserTable        from '@/app/dashboard/components/UserTable';
-// import PieStatusCard    from '@/app/dashboard/components/PieStatusCard';
-// import CalendarCard     from '@/app/dashboard/components/CalendarCard';
-//
-// /* ---------- types ---------- */
-// export type ComponentFactory = (v: any) => React.ReactNode;
-//
-// export type StaticMetric = {
-//     fetchUrl: string;
-//     render: ComponentFactory;
-// };
-//
-// type RoleConfig = {
-//     static?: Record<string, StaticMetric>;
-//     graphic?: Record<string, StaticMetric>;
-//     tables?: Record<string, StaticMetric>;
-// };
-//
-// export type DashboardConfig = Record<'worker' | 'broker' | 'admin', RoleConfig>;
-//
-// /* ---------- config ---------- */
-// const dashboardConfig: DashboardConfig = {
-//     worker: {
-//         static: {
-//             totalClients: {
-//                 fetchUrl: 'http://localhost:8000/api/dashboard/worker/client/sum/',
-//                 render: (v) => (
-//                     <StatCard
-//                         icon={<DealIcon className="w-11 h-11" />}
-//                         values={[{ key: 'clients', label: 'Всего клиентов', value: v }]}
-//                     />
-//                 ),
-//             },
-//             totalEarned: {
-//                 fetchUrl: 'http://localhost:8000/api/dashboard/worker/client/earnings/total/',
-//                 render: (v) => (
-//                     <StatCard
-//                         icon={<DollarIcon className="w-11 h-11" />}
-//                         values={[{ key: 'earned_total', label: 'Всего заработано', value: v }]}
-//                     />
-//                 ),
-//             },
-//             earnedMonthly: {
-//                 fetchUrl: 'http://localhost:8000/api/dashboard/worker/client/earnings/month/',
-//                 render: (v) => (
-//                     <StatCard
-//                         icon={<AnalyzeIcon className="w-5 h-5 text-primary" />}
-//                         values={[{ key: 'earned_month', label: 'Заработано за месяц', value: v }]}
-//                     />
-//                 ),
-//             },
-//             totalDeals: {
-//                 fetchUrl: 'http://localhost:8000/api/dashboard/worker/client/deals-sum/',
-//                 render: (v) => (
-//                     <StatCard
-//                         icon={<CompletedIcon className="w-11 h-11 text-white" />}
-//                         values={[{ key: 'deals', label: 'Всего сделок', value: v }]}
-//                     />
-//                 ),
-//             },
-//         },
-//         graphic: {
-//             incomeChart: {
-//                 fetchUrl: '',
-//                 render: (v) => <IncomeChart />,
-//             },
-//             dailyTraffic: {
-//                 fetchUrl: '',
-//                 render: (v) => <DailyTrafficCard />,
-//             },
-//         },
-//         tables: {
-//             userTable: {
-//                 fetchUrl: '',
-//                 render: (v) => <UserTable />,
-//             },
-//             statusPie: {
-//                 fetchUrl: '',
-//                 render: (v) => <PieStatusCard />,
-//             },
-//             calendar: {
-//                 fetchUrl: '',
-//                 render: (v) => <CalendarCard />,
-//             },
-//         },
-//     },
-//
-//     broker: {
-//         static: {
-//             totalCommission: {
-//                 fetchUrl: 'http://localhost:8000/api/dashboard/broker/client/credits/sum/',
-//                 render: (v) => (
-//                     <StatCard
-//                         icon={<DollarIcon className="w-11 h-11" />}
-//                         values={[{ key: 'commission', label: 'Всего комиссий', value: v }]}
-//                     />
-//                 ),
-//             },
-//             commissionMonth: {
-//                 fetchUrl: 'http://localhost:8000/api/dashboard/broker/client/credits/month/',
-//                 render: (v) => (
-//                     <StatCard
-//                         icon={<AnalyzeIcon className="w-5 h-5 text-primary" />}
-//                         values={[{ key: 'commission_month', label: 'Комиссия за месяц', value: v }]}
-//                     />
-//                 ),
-//             },
-//             activeCredits: {
-//                 fetchUrl: 'http://localhost:8000/api/dashboard/broker/client/credits/active/',
-//                 render: (v) => (
-//                     <StatCard
-//                         icon={<DealIcon className="w-11 h-11" />}
-//                         values={[{ key: 'active', label: 'Активные кредиты', value: v }]}
-//                     />
-//                 ),
-//             },
-//             completedCredits: {
-//                 fetchUrl: 'http://localhost:8000/api/dashboard/broker/client/credits/completed/',
-//                 render: (v) => (
-//                     <StatCard
-//                         icon={<CompletedIcon className="w-11 h-11 text-white" />}
-//                         values={[{ key: 'completed', label: 'Завершено кредитов', value: v }]}
-//                     />
-//                 ),
-//             },
-//         },
-//         graphic: {
-//             incomeChart: {
-//                 fetchUrl: '',
-//                 render: (v) => <IncomeChart />,
-//             },
-//             dailyTraffic: {
-//                 fetchUrl: '',
-//                 render: (v) => <DailyTrafficCard />,
-//             },
-//         },
-//         tables: {
-//             userTable: {
-//                 fetchUrl: '',
-//                 render: (v) => <UserTable />,
-//             },
-//             statusPie: {
-//                 fetchUrl: '',
-//                 render: (v) => <PieStatusCard />,
-//             },
-//         },
-//     },
-//
-//     admin: {
-//         static: {
-//             totalSum: {
-//                 fetchUrl: 'http://localhost:8000/api/dashboard/admin/earnings/total/',
-//                 render: (v) => (
-//                     <StatCard
-//                         icon={<DollarIcon className="w-11 h-11" />}
-//                         values={[{ key: 'sum', label: 'Всего заработано', value: v }]}
-//                     />
-//                 ),
-//             },
-//             monthlySum: {
-//                 fetchUrl: 'http://localhost:8000/api/dashboard/admin/earnings/month/',
-//                 render: (v) => (
-//                     <StatCard
-//                         icon={<AnalyzeIcon className="w-5 h-5 text-primary" />}
-//                         values={[{ key: 'monthly', label: 'Заработано за месяц', value: v }]}
-//                     />
-//                 ),
-//             },
-//             totalAccounts: {
-//                 fetchUrl: 'http://localhost:8000/api/dashboard/admin/clients/total/',
-//                 render: (v) => (
-//                     <StatCard
-//                         icon={<DealIcon className="w-11 h-11" />}
-//                         values={[
-//                             { key: 'users', label: 'Всего пользователей', value: v },
-//                             { key: 'brokers', label: 'Всего брокеров', value: v },
-//                             { key: 'workers', label: 'Всего работников', value: v },
-//                             { key: 'clients', label: 'Всего клиентов', value: v },
-//                         ]}
-//                         defaultKey="users"
-//                     />
-//                 ),
-//             },
-//             totalCredits: {
-//                 fetchUrl: 'http://localhost:8000/api/dashboard/admin/credits/total/',
-//                 render: (v) => (
-//                     <StatCard
-//                         icon={<CompletedIcon className="w-11 h-11 text-white" />}
-//                         // values={[{ key: 'credits', label: 'Всего кредитов', value: v }]}
-//                         value={v}
-//                     />
-//                 ),
-//             },
-//             totalDeals: {
-//                 fetchUrl: 'http://localhost:8000/api/dashboard/admin/deals/count/',
-//                 render: (v) => (
-//                     <StatCard
-//                         icon={<CompletedIcon className="w-11 h-11 text-white" />}
-//                         // values={[{ key: 'deals', label: 'Всего сделок', value: v }]}
-//                         value={v}
-//                     />
-//                 ),
-//             },
-//         },
-//         graphic: {
-//             incomeChart: {
-//                 fetchUrl: '',
-//                 render: (v) => <IncomeChart />,
-//             },
-//             dailyTraffic: {
-//                 fetchUrl: '',
-//                 render: (v) => <DailyTrafficCard />,
-//             },
-//         },
-//         tables: {
-//             userTable: {
-//                 fetchUrl: '',
-//                 render: (v) => <UserTable />,
-//             },
-//             statusPie: {
-//                 fetchUrl: '',
-//                 render: (v) => <PieStatusCard />,
-//             },
-//             calendar: {
-//                 fetchUrl: '',
-//                 render: (v) => <CalendarCard />,
-//             },
-//         },
-//     },
-// };
-//
-// export default dashboardConfig;

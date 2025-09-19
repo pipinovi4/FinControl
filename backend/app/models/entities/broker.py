@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import UUID, String, ForeignKey
-from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy import String, ForeignKey
+from sqlalchemy.dialects.postgresql import ARRAY, UUID as PGUUID
+import uuid
 
 from backend.app.models.entities.user import User
-from backend.app.models.entities.credit import Credit # noqa 401
 from backend.app.models.mixins import TimeStampAuthMixin
 from backend.app.permissions import PermissionRole
 
@@ -23,8 +23,8 @@ class Broker(User, TimeStampAuthMixin):
     __tablename__ = "brokers"
 
     # Primary key inherited from users table (joined-table inheritance)
-    id: Mapped[UUID] = mapped_column(
-        UUID(as_uuid=True),
+    id: Mapped[uuid.UUID] = mapped_column(
+        PGUUID(as_uuid=True),
         ForeignKey("users.id", ondelete="CASCADE"),
         primary_key=True
     )
@@ -48,11 +48,16 @@ class Broker(User, TimeStampAuthMixin):
         "Client",
         back_populates="broker",
         foreign_keys="Client.broker_id",
-        cascade="all"
+        cascade="save-update, merge",
+        passive_deletes=True,
     )
 
     credits: Mapped[list["Credit"]] = relationship(
-        "Credit", back_populates="broker", foreign_keys="Credit.broker_id", cascade="all, delete-orphan"
+        "Credit",
+        back_populates="broker",
+        foreign_keys="Credit.broker_id",
+        cascade="all",
+        passive_deletes=True,
     )
 
     # SQLAlchemy discriminator config to distinguish this subclass of User

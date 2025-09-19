@@ -1,56 +1,90 @@
+from __future__ import annotations
 from uuid import UUID
 from datetime import datetime
+from typing import Optional, List
 from pydantic import BaseModel, Field
-from typing import Optional
 
+from backend.app.models.entities.credit import CreditStatus
 from backend.app.schemas import SchemaBase
 
 
-# ─────────────── BASE ───────────────
-class CreditBase(SchemaBase):
-    amount: int = Field(..., description="Загальна сума кредиту")
-    paid_amount: int = Field(..., description="Вже виплачена сума")
-    status: str = Field(..., description="Статус кредиту", example="active")
-    issued_at: datetime = Field(..., description="Дата видачі кредиту")
-    last_payment_at: Optional[datetime] = Field(None, description="Дата останньої оплати")
+class CreditBase(BaseModel):
+    amount: float = Field(..., description="Сума із заявки")
+    approved_amount: Optional[float] = Field(None, description="Схвалена сума (ставить адмін)")
+    monthly_payment: Optional[float] = Field(None, description="Місячний платіж (ставить адмін)")
+    bank_name: Optional[str] = Field(None, max_length=120, description="Банк (ставить адмін)")
+    first_payment_date: Optional[datetime] = Field(None, description="Перша дата платежу (ставить адмін)")
+    status: CreditStatus = Field(..., description="Статус заявки")
+    comment: Optional[str] = Field(None, description="Єдиний текстовий коментар")
 
 
-# ─────────────── CREATE ───────────────
-class CreditCreate(SchemaBase):
+class CreditCreate(BaseModel):
     client_id: UUID
-    broker_id: UUID
     amount: float
 
-# ─────────────── UPDATE ───────────────
+
 class CreditUpdate(BaseModel):
-    amount: Optional[int] = None
-    paid_amount: Optional[int] = None
-    status: Optional[str] = None
-    last_payment_at: Optional[datetime] = None
+    # для адміна: оновлення фінпараметрів і/або статусу
+    amount: Optional[float] = None
+    approved_amount: Optional[float] = None
+    monthly_payment: Optional[float] = None
+    bank_name: Optional[str] = None
+    first_payment_date: Optional[datetime] = None
+    status: Optional[CreditStatus] = None
+    comment: Optional[str] = None
 
-    model_config = {
-        "from_attributes": True
-    }
+
+class CreditStatusUpdate(BaseModel):
+    # для брокера: міняє лише статус
+    status: CreditStatus
 
 
-# ─────────────── OUT ───────────────
+class CreditCommentIn(BaseModel):
+    text: str = Field(..., min_length=1)  # довжина довільна (Postgres TEXT без ліміту)
+
+
 class CreditOut(CreditBase):
     id: UUID
     client_id: UUID
+    broker_id: Optional[UUID]
+    worker_id: Optional[UUID]
+    issued_at: datetime
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+    is_deleted: bool
+
+    class Config:
+        from_attributes = True
 
 
-# ─────────────── SHORT ───────────────
-class CreditShort(BaseModel):
+class AdminPaginatedCreditsOut(BaseModel):
+    credits: List[CreditOut]
+    total: int
+
+
+class BrokerPaginatedCreditsOut(BaseModel):
+    credits: List[CreditOut]
+    total: int
+
+
+class CreditShort(SchemaBase):
     id: UUID
-    amount: int
-    paid_amount: int
-    status: str
+    client_id: UUID
+    broker_id: Optional[UUID] = None
+    worker_id: Optional[UUID] = None
+    amount: float
+    status: CreditStatus
+    issued_at: datetime
 
 
-# ─────────────── WRAPPER ───────────────
+# ───────────── WRAPPER ─────────────
 class CreditSchema:
     Base = CreditBase
     Create = CreditCreate
     Update = CreditUpdate
+    StatusUpdate = CreditStatusUpdate
+    CommentIn = CreditCommentIn
     Out = CreditOut
     Short = CreditShort
+    AdminPaginatedOut = AdminPaginatedCreditsOut
+    BrokerPaginatedOut = BrokerPaginatedCreditsOut

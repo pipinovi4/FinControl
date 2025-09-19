@@ -33,13 +33,13 @@ export class MetaFetchError extends Error {
 const statusToUser = (s: number | undefined): string => {
     switch (s) {
         case 400:
-        case 422: return 'Дані відправлено у невірному форматі.';
-        case 401: return 'Спочатку авторизуйтесь.';
-        case 403: return 'Недостатньо прав для цієї дії.';
-        case 404: return 'Сервіс тимчасово недоступний.';
-        case 409: return 'Такі дані вже існують.';
-        case undefined: return 'Нема зв’язку з сервером.';
-        default: return 'На сервері сталася помилка.';
+        case 422: return 'Данные отправлены в неверном формате.';
+        case 401: return 'Сначала авторизуйтесь.';
+        case 403: return 'Недостаточно прав для данного действия.';
+        case 404: return 'Сервис временно недоступен.';
+        case 409: return 'Такие данные уже существуют.';
+        case undefined: return 'Нет связи с сервером.';
+        default: return 'На сервере произошла ошибка.';
     }
 };
 

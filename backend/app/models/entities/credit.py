@@ -1,44 +1,66 @@
-# models/entities/credit.py
+from __future__ import annotations
+from datetime import datetime
+from enum import StrEnum
+from uuid import UUID, uuid4
 
-import uuid
-from datetime import datetime, timedelta
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import UUID, ForeignKey, Integer, String, DateTime
+from sqlalchemy import ForeignKey, Numeric, Enum, DateTime, String, Text, text
+from sqlalchemy.dialects.postgresql import UUID as PGUUID
+from sqlalchemy.orm import relationship, Mapped, mapped_column
+
 from backend.db.session import Base
+from backend.app.models.mixins.soft_delete import SoftDeleteMixin
 
-class Credit(Base):
-    __tablename__ = 'credits'
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True),
+class CreditStatus(StrEnum):
+    NEW = "new"              # Заявка створена, ще не оброблена
+    APPROVED = "approved"    # Схвалено брокером (адмін перевіряє та заносить фінпараметри)
+    REJECTED = "rejected"    # Відхилено (лікувати клієнта)
+    TREATMENT = "treatment"  # В роботі з клієнтом (лікування)
+    COMPLETED = "completed"  # Заявка завершена
+
+
+class Credit(Base, SoftDeleteMixin):
+    __tablename__ = "credits"
+
+    id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
         primary_key=True,
-        default=uuid.uuid4
+        default=uuid4,                         # Python-side (зручно в коді)
+        server_default=text("gen_random_uuid()"),  # DB-side (надійно й уніфіковано)
+        nullable=False,
+    )
+    client_id: Mapped[UUID] = mapped_column(ForeignKey("clients.id", ondelete="CASCADE"), nullable=False)
+    broker_id: Mapped[UUID] = mapped_column(ForeignKey("brokers.id", ondelete="SET NULL"), nullable=True)
+    worker_id: Mapped[UUID] = mapped_column(ForeignKey("workers.id", ondelete="SET NULL"), nullable=True)
+
+    # сума із заявки (створює адмін)
+    amount: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False)
+
+    # фінпараметри, які заповнює ТІЛЬКИ адмін після схвалення брокером
+    approved_amount: Mapped[float | None] = mapped_column(Numeric(12, 2), nullable=True)
+    monthly_payment: Mapped[float | None] = mapped_column(Numeric(12, 2), nullable=True)
+    bank_name: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    first_payment_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    status: Mapped[CreditStatus] = mapped_column(
+        Enum(CreditStatus, name="credit_status"),
+        default=CreditStatus.NEW,
+        nullable=False,
+        index=True,
     )
 
-    client_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True),
-        ForeignKey('clients.id', ondelete='CASCADE'),
-        nullable=False
+    # issued_at: зберігаємо naive UTC (для стабільної роботи з Pydantic)
+    issued_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=False),
+        default=datetime.utcnow,
+        nullable=False,
+        index=True,
     )
 
-    client: Mapped["Client"] = relationship("Client", back_populates="credits")
+    # єдиний довільно довгий коментар (брокер/адмін можуть переписувати)
+    comment: Mapped[str | None] = mapped_column(Text, nullable=True)
 
-    broker_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True),
-        ForeignKey('brokers.id', ondelete='CASCADE'),
-        nullable=False
-    )
-
-    broker: Mapped["Broker"] = relationship("Broker", back_populates="credits")
-
-    amount: Mapped[int] = mapped_column(Integer, nullable=False)
-    paid_amount: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
-    status: Mapped[str] = mapped_column(String(50), nullable=False, default="active")
-    issued_at: Mapped[datetime] = mapped_column(DateTime, nullable=False,     default=datetime.utcnow())
-    last_payment_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-
-    def __repr__(self):
-        return (
-            f"<Credit id={self.id} client_id={self.client_id} "
-            f"total={self.total_amount} paid={self.paid_amount} status={self.status}>"
-        )
+    # Relationships
+    client = relationship("Client", back_populates="credits")
+    broker = relationship("Broker", back_populates="credits")
+    worker = relationship("Worker", back_populates="credits")

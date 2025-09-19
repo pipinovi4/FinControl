@@ -93,13 +93,6 @@ const LoginPage = () => {
                     >
                         {loading ? 'Загрузка…' : 'Войти'}
                     </button>
-
-                    <p className="text-center text-sm text-[#8F9BBA] mt-2">
-                        Нет аккаунта?{' '}
-                        <Link href="/auth/register" className="text-[#2B3674] hover:underline font-medium">
-                            Зарегистрироваться
-                        </Link>
-                    </p>
                 </form>
             </div>
         </div>
