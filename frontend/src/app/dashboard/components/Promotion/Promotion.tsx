@@ -20,7 +20,7 @@ import PromotionDetailsModal from './parts/PromotionDetailsModal';
 import ConfirmDialog from './parts/ConfirmDialog';
 import { fetchJSON } from './utils';
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
+const API = process.env.NEXT_PUBLIC_API_URL ?? "";
 const PAGE_STEP = 8 as const;
 
 export default function AdminPromotions() {

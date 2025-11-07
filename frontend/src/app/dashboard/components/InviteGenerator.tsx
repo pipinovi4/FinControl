@@ -9,7 +9,7 @@ import { ChevronDown, Copy, Loader2 } from 'lucide-react';
 /*  CONFIG                                             */
 /* --------------------------------------------------- */
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
+const API = process.env.NEXT_PUBLIC_API_URL ?? "";
 
 /** Ролі, яким можна видати інвайт */
 enum Role {

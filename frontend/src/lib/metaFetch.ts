@@ -11,9 +11,10 @@
  */
 
 import { z, ZodTypeAny, ZodSchema, ZodObject } from 'zod';
+import { API } from "./api";
 
 /* ————————————————— CONSTANTS ————————————————— */
-const API_ROOT      = 'http://127.0.0.1:8000';
+const API_ROOT      = API;
 const META_ENDPOINT = '/api/system/routes-info';
 const CACHE_TTL     = 1_000 * 60 * 10;           // 10 хв.
 const uuidRe        = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi;

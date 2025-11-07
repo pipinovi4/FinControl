@@ -10,7 +10,7 @@ export default async function Page({ params }: { params: Promise<Params> }) {
 
     // ✦ 2. перевіряємо токен на бекенді
     const res = await fetch(
-        `http://localhost:8000/api/auth/register/invite/meta/${token}`,
+        `${API}/api/auth/register/invite/meta/${token}`,
         { cache: 'no-store' }
     );
 

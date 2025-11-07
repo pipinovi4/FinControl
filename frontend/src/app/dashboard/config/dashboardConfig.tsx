@@ -5,6 +5,7 @@ import {
     DealIcon,
     CompletedIcon,
 } from '@/components/icons';
+import { API } from "@/lib/api";
 
 import StatCard         from '@/app/dashboard/components/StatCard';
 import IncomeChart      from '@/app/dashboard/components/IncomeChart';
@@ -55,7 +56,7 @@ const dashboardConfig: DashboardConfig = {
             //         <StatCard
             //             icon={<DealIcon className="w-11 h-11" />}
             //             labels={['Всего клиентов', 'Новых клиентов']}
-            //             fetchUrls={['http://localhost:8000/api/dashboard/worker/client/sum/', 'http://localhost:8000/api/dashboard/worker/client/new-today/count/']}
+            //             fetchUrls={['${API}/api/dashboard/worker/client/sum/', '${API}/api/dashboard/worker/client/new-today/count/']}
             //             requiresId
             //         />
             //     ),
@@ -66,7 +67,7 @@ const dashboardConfig: DashboardConfig = {
             //         <StatCard
             //             icon={<DollarIcon className="w-11 h-11" />}
             //             labels={['Всего заработано']}
-            //             fetchUrls={['http://localhost:8000/api/dashboard/worker/client/earnings/total/']}
+            //             fetchUrls={['${API}/api/dashboard/worker/client/earnings/total/']}
             //             requiresId
             //         />
             //     ),
@@ -77,7 +78,7 @@ const dashboardConfig: DashboardConfig = {
             //         <StatCard
             //             icon={<AnalyzeIcon className="w-5 h-5 text-primary" />}
             //             labels={['Заработано за месяц']}
-            //             fetchUrls={['http://localhost:8000/api/dashboard/worker/client/earnings/month/']}
+            //             fetchUrls={['${API}/api/dashboard/worker/client/earnings/month/']}
             //             requiresId
             //         />
             //     ),
@@ -88,7 +89,7 @@ const dashboardConfig: DashboardConfig = {
             //         <StatCard
             //             icon={<CompletedIcon className="w-11 h-11 text-white" />}
             //             labels={['Всего сделок']}
-            //             fetchUrls={['http://localhost:8000/api/dashboard/worker/client/deals-sum/']}
+            //             fetchUrls={['${API}/api/dashboard/worker/client/deals-sum/']}
             //             requiresId
             //         />
             //     ),
@@ -101,8 +102,8 @@ const dashboardConfig: DashboardConfig = {
             //     render: () => (
             //         <IncomeChart
             //             labels={['Заработано']}
-            //             monthUrls={[`http://localhost:8000/api/dashboard/worker/client/earnings/sum/monthly/`]}
-            //             yearUrls={[`http://localhost:8000/api/dashboard/worker/client/earnings/sum/yearly/`]}
+            //             monthUrls={[`${API}/api/dashboard/worker/client/earnings/sum/monthly/`]}
+            //             yearUrls={[`${API}/api/dashboard/worker/client/earnings/sum/yearly/`]}
             //             requiresId
             //         />
             //     )
@@ -112,8 +113,8 @@ const dashboardConfig: DashboardConfig = {
             //     render: () => (
             //         <DailyTrafficCard
             //             labels={['Новые клиенты']}
-            //             fetchUrls={['http://localhost:8000/api/dashboard/worker/client/new-today/']}
-            //             yesterdayUrls={['http://localhost:8000/api/dashboard/worker/client/new-today/']}
+            //             fetchUrls={['${API}/api/dashboard/worker/client/new-today/']}
+            //             yesterdayUrls={['${API}/api/dashboard/worker/client/new-today/']}
             //             requiresId
             //         />
             //     )
@@ -126,13 +127,13 @@ const dashboardConfig: DashboardConfig = {
                 render: () => (
                     <UserTable
                         labels={['Клиенты']}
-                        userBucketURL={['http://localhost:8000/api/dashboard/worker/client/bucket/']}
-                        getFullUserURL={['http://localhost:8000/api/dashboard/worker/client/']}
+                        userBucketURL={['${API}/api/dashboard/worker/client/bucket/']}
+                        getFullUserURL={['${API}/api/dashboard/worker/client/']}
                         tableHeads={[
                             ['ФИО', 'Телефон', 'Адрес', 'Взят в роботу'],
                         ]}
                         // buttonActionLabel={['Отписать клиента']}
-                        // buttonActionURL={['http://localhost:8000/api/dashboard/worker/client/unsign/']}
+                        // buttonActionURL={['${API}/api/dashboard/worker/client/unsign/']}
                         // requiresButton={true}
                         rowMappers={[mapWorkerClient]}
                         colKeys={[
@@ -150,8 +151,8 @@ const dashboardConfig: DashboardConfig = {
             //             labels={['Статус клиентов']}
             //             labelsActive={['В процессе']}
             //             labelsCompleted={['Закрытые']}
-            //             activeUrls={['http://localhost:8000/api/dashboard/worker/client/active/count/']}
-            //             completedUrls={['http://localhost:8000/api/dashboard/worker/client/completed/count/']}
+            //             activeUrls={['${API}/api/dashboard/worker/client/active/count/']}
+            //             completedUrls={['${API}/api/dashboard/worker/client/completed/count/']}
             //             requiresId
             //         />
             //     )
@@ -168,7 +169,7 @@ const dashboardConfig: DashboardConfig = {
                     <StatCard
                         icon={<DollarIcon className="w-11 h-11" />}
                         labels={['Комиссий', 'Комиссий за месяц']}
-                        fetchUrls={['http://localhost:8000/api/dashboard/broker/client/credits/sum/total/', 'http://localhost:8000/api/dashboard/broker/client/credits/sum/month/']}
+                        fetchUrls={['${API}/api/dashboard/broker/client/credits/sum/total/', '${API}/api/dashboard/broker/client/credits/sum/month/']}
                         requiresId
                     />
                 ),
@@ -179,7 +180,7 @@ const dashboardConfig: DashboardConfig = {
                     <StatCard
                         icon={<AnalyzeIcon className="w-5 h-5 text-primary" />}
                         labels={['Всего комиссий', 'Комиссий за месяц']}
-                        fetchUrls={['http://localhost:8000/api/dashboard/broker/client/credits/count/total/', 'http://localhost:8000/api/dashboard/broker/client/credits/count/month/']}
+                        fetchUrls={['${API}/api/dashboard/broker/client/credits/count/total/', '${API}/api/dashboard/broker/client/credits/count/month/']}
                         requiresId
                     />
                 ),
@@ -190,7 +191,7 @@ const dashboardConfig: DashboardConfig = {
                     <StatCard
                         icon={<DealIcon className="w-11 h-11" />}
                         labels={['Активные кредиты', 'Завершено кредитов']}
-                        fetchUrls={['http://localhost:8000/api/dashboard/broker/client/credits/count/active/', 'http://localhost:8000/api/dashboard/broker/client/credits/count/completed/']}
+                        fetchUrls={['${API}/api/dashboard/broker/client/credits/count/active/', '${API}/api/dashboard/broker/client/credits/count/completed/']}
                         requiresId
                     />
                 ),
@@ -202,8 +203,8 @@ const dashboardConfig: DashboardConfig = {
                         icon={<CompletedIcon className="w-11 h-11 text-white" />}
                         labels={['Комиссии активных кредитов', 'Комиссии не активных кредитов']}
                         fetchUrls={[
-                            'http://localhost:8000/api/dashboard/broker/client/credits/sum/active/',
-                            'http://localhost:8000/api/dashboard/broker/client/credits/sum/completed/',
+                            '${API}/api/dashboard/broker/client/credits/sum/active/',
+                            '${API}/api/dashboard/broker/client/credits/sum/completed/',
                         ]}
                         requiresId
                     />
@@ -217,8 +218,8 @@ const dashboardConfig: DashboardConfig = {
                 render: () => (
                     <IncomeChart
                         labels={['Заработано']}
-                        monthUrls={[`http://localhost:8000/api/dashboard/broker/client/credits/sum/monthly/`]}
-                        yearUrls={[`http://localhost:8000/api/dashboard/broker/client/credits/sum/yearly/`]}
+                        monthUrls={[`${API}/api/dashboard/broker/client/credits/sum/monthly/`]}
+                        yearUrls={[`${API}/api/dashboard/broker/client/credits/sum/yearly/`]}
                         requiresId
                     />
                 )
@@ -228,8 +229,8 @@ const dashboardConfig: DashboardConfig = {
                 render: () => (
                     <DailyTrafficCard
                         labels={['Новые клиенты']}
-                        fetchUrls={['http://localhost:8000/api/dashboard/broker/client/new-today/']}
-                        yesterdayUrls={['http://localhost:8000/api/dashboard/broker/client/new-yesterday/sum/']}
+                        fetchUrls={['${API}/api/dashboard/broker/client/new-today/']}
+                        yesterdayUrls={['${API}/api/dashboard/broker/client/new-yesterday/sum/']}
                         requiresId
                     />
                 )
@@ -248,8 +249,8 @@ const dashboardConfig: DashboardConfig = {
                         labels={['Статус клиентов']}
                         labelsActive={['В процессе']}
                         labelsCompleted={['Закрытые']}
-                        activeUrls={['http://localhost:8000/api/dashboard/broker/client/credits/count/active/']}
-                        completedUrls={['http://localhost:8000/api/dashboard/broker/client/credits/count/completed/']}
+                        activeUrls={['${API}/api/dashboard/broker/client/credits/count/active/']}
+                        completedUrls={['${API}/api/dashboard/broker/client/credits/count/completed/']}
                         requiresId
                     />
                 )
@@ -261,8 +262,8 @@ const dashboardConfig: DashboardConfig = {
                 render: () => (
                     <UserTable
                         labels={['Клиенты']}
-                        userBucketURL={['http://localhost:8000/api/dashboard/broker/client/signed/bucket/']}
-                        getFullUserURL={['http://localhost:8000/api/dashboard/broker/client/']}
+                        userBucketURL={['${API}/api/dashboard/broker/client/signed/bucket/']}
+                        getFullUserURL={['${API}/api/dashboard/broker/client/']}
                         tableHeads={[
                             ['ФИО', 'Телефон', 'Адрес', 'Взят в роботу'],
                         ]}
@@ -287,7 +288,7 @@ const dashboardConfig: DashboardConfig = {
                     <StatCard
                         icon={<DollarIcon className="w-11 h-11" />}
                         labels={['Всего выдано']}
-                        fetchUrls={['http://localhost:8000/api/dashboard/admin/credits/total/']}
+                        fetchUrls={['${API}/api/dashboard/admin/credits/total/']}
                     />
                 ),
             },
@@ -298,7 +299,7 @@ const dashboardConfig: DashboardConfig = {
                         // Или вместо выдано можна написать "Комиссий за месяц"
                         icon={<AnalyzeIcon className="w-5 h-5 text-primary" />}
                         labels={['Выдано за месяц']}
-                        fetchUrls={['http://localhost:8000/api/dashboard/admin/credits/month/']}
+                        fetchUrls={['${API}/api/dashboard/admin/credits/month/']}
                     />
                 ),
             },
@@ -314,10 +315,10 @@ const dashboardConfig: DashboardConfig = {
                             'Всего работников',
                         ]}
                         fetchUrls={[
-                            'http://localhost:8000/api/dashboard/admin/users/total',    // <- змініть на свої, якщо різні
-                            'http://localhost:8000/api/dashboard/admin/clients/total',
-                            'http://localhost:8000/api/dashboard/admin/brokers/total',
-                            'http://localhost:8000/api/dashboard/admin/workers/total',
+                            '${API}/api/dashboard/admin/users/total',    // <- змініть на свої, якщо різні
+                            '${API}/api/dashboard/admin/clients/total',
+                            '${API}/api/dashboard/admin/brokers/total',
+                            '${API}/api/dashboard/admin/workers/total',
                         ]}
                     />
                 ),
@@ -328,7 +329,7 @@ const dashboardConfig: DashboardConfig = {
                     <StatCard
                         icon={<CompletedIcon className="w-11 h-11 text-white" />}
                         labels={['Всего комиссий']}
-                        fetchUrls={['http://localhost:8000/api/dashboard/admin/credits/count/']}
+                        fetchUrls={['${API}/api/dashboard/admin/credits/count/']}
                     />
                 ),
             },
@@ -340,8 +341,8 @@ const dashboardConfig: DashboardConfig = {
                 render: () => (
                     <IncomeChart
                         labels={['Комиссий всего']}
-                        monthUrls={[`http://localhost:8000/api/dashboard/admin/credits/sum/monthly/`]}
-                        yearUrls={[`http://localhost:8000/api/dashboard/admin/credits/sum/yearly/`]}
+                        monthUrls={[`${API}/api/dashboard/admin/credits/sum/monthly/`]}
+                        yearUrls={[`${API}/api/dashboard/admin/credits/sum/yearly/`]}
                         requiresId={false}
                     />
                 )
@@ -351,8 +352,8 @@ const dashboardConfig: DashboardConfig = {
                 render: () => (
                     <DailyTrafficCard
                         labels={['Новых работников', 'Новых брокеров', 'Новые клиенты (Работники)', "Новые клиенты (Брокеры)"]}
-                        fetchUrls={['http://localhost:8000/api/dashboard/admin/workers/new-today/', 'http://localhost:8000/api/dashboard/admin/brokers/new-today/', 'http://localhost:8000/api/dashboard/admin/workers/clients/new-today/', 'http://localhost:8000/api/dashboard/admin/brokers/clients/new-today/']}
-                        yesterdayUrls={['http://localhost:8000/api/dashboard/admin/workers/new-yesterday/', 'http://localhost:8000/api/dashboard/admin/brokers/new-yesterday/','http://localhost:8000/api/dashboard/admin/workers/clients/new-yesterday/', 'http://localhost:8000/api/dashboard/admin/brokers/clients/new-today/']}
+                        fetchUrls={['${API}/api/dashboard/admin/workers/new-today/', '${API}/api/dashboard/admin/brokers/new-today/', '${API}/api/dashboard/admin/workers/clients/new-today/', '${API}/api/dashboard/admin/brokers/clients/new-today/']}
+                        yesterdayUrls={['${API}/api/dashboard/admin/workers/new-yesterday/', '${API}/api/dashboard/admin/brokers/new-yesterday/','${API}/api/dashboard/admin/workers/clients/new-yesterday/', '${API}/api/dashboard/admin/brokers/clients/new-today/']}
                         requiresId
                     />
                 )
@@ -379,8 +380,8 @@ const dashboardConfig: DashboardConfig = {
                         labels={['Статус кредитов']}
                         labelsActive={['В процессе']}
                         labelsCompleted={['Закрытые']}
-                        activeUrls={['http://localhost:8000/api/dashboard/admin/credits/count/active/']}
-                        completedUrls={['http://localhost:8000/api/dashboard/admin/credits/count/completed/']}
+                        activeUrls={['${API}/api/dashboard/admin/credits/count/active/']}
+                        completedUrls={['${API}/api/dashboard/admin/credits/count/completed/']}
                         requiresId
                     />
                 )
@@ -459,10 +460,10 @@ const dashboardConfig: DashboardConfig = {
 
                         /* ендпоїнти у тому ж порядку */
                         registrationUrls={[
-                            "http://localhost:8000/api/entities/create/worker",
-                            "http://localhost:8000/api/entities/create/broker",
-                            "http://localhost:8000/api/entities/create/client",
-                            "http://localhost:8000/api/entities/create/admin",
+                            `${API}/api/entities/create/worker`,
+                            `${API}/api/entities/create/broker`,
+                            `${API}/api/entities/create/client`,
+                            `${API}/api/entities/create/admin`  ,
                         ]}
                     />
                 ),
@@ -480,8 +481,8 @@ const dashboardConfig: DashboardConfig = {
                 render: () => (
                     <UserTable
                         labels={['Работники', 'Брокеры', 'Клиенты']}
-                        userBucketURL={['http://localhost:8000/api/dashboard/admin/workers/', 'http://localhost:8000/api/dashboard/admin/brokers/', 'http://localhost:8000/api/dashboard/admin/clients/']}
-                        getFullUserURL={['http://localhost:8000/api/dashboard/admin/worker/', 'http://localhost:8000/api/dashboard/admin/broker/', 'http://localhost:8000/api/dashboard/admin/client/']}
+                        userBucketURL={['${API}/api/dashboard/admin/workers/', '${API}/api/dashboard/admin/brokers/', '${API}/api/dashboard/admin/clients/']}
+                        getFullUserURL={['${API}/api/dashboard/admin/worker/', '${API}/api/dashboard/admin/broker/', '${API}/api/dashboard/admin/client/']}
                         tableHeads={[
                             ['Почта', 'Никнейм', 'Создан'],           // Workers
                             ['Почта', 'Компания', 'Регионы', 'Создан'],           // Brokers

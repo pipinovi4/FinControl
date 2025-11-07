@@ -24,7 +24,11 @@ class Settings(BaseSettings):
     MAIL_STARTTLS: bool
     MAIL_SSL_TLS: bool
     USE_CREDENTIALS: bool
+
+    # Servers
+    BACKEND_URL: str
     FRONTEND_URL: str
+    ALLOWED_ORIGINS: str
 
     # --- computed ---
     @property

@@ -1,9 +1,9 @@
 import { metaFetch, InputOf, OutputOf } from '@/lib/metaFetch';
 import UserStorage from "@/services/UserStorage";
+import { api } from "@/lib/api";
+
 
 /* ─────────── roles & helpers ─────────── */
-
-const api = (path: string) => `http://localhost:8000${path}`;
 
 type Role = 'admin' | 'worker' | 'broker' | 'client';
 const makePath  = (action: 'login' | 'register', role: Role) =>
@@ -64,7 +64,7 @@ export const authService = {
 
     /** `/api/auth/logout` */
     async logout(): Promise<void> {
-        const res = await fetch('http://localhost:8000/api/session/logout', {
+        const res = await fetch('${API}/api/session/logout', {
             method: 'POST',
             credentials: 'include',
         });

@@ -25,7 +25,7 @@ import type {
     CreditStatus,
 } from "@/app/dashboard/components/CreditsNode/configs/types";
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api";
+const API = process.env.NEXT_PUBLIC_API_URL ?? "";
 type Tab = "credits" | "clients";
 type DeletedFilter = "active" | "only" | "all";
 const LIMIT = 30;

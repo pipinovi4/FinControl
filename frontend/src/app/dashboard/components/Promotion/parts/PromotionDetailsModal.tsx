@@ -17,7 +17,7 @@ import ConfirmDialog from './ConfirmDialog';
 import type { PromotionOut } from './CreatePromotionModal';
 import { fetchJSON } from '../utils';
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
+const API = process.env.NEXT_PUBLIC_API_URL ?? "";
 
 type TopWorker = { worker_id: string; username: string; credits_count: number };
 
