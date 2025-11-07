@@ -1,0 +1,58 @@
+services:
+  frontend:
+    build: ./frontend
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+
+  backend:
+    build: ./backend
+    restart: always
+    expose:
+      - "5000"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - mangedDatabase
+      - objectStorage
+    volumes:
+      - ./backend:/app
+
+  bot:
+    build: ./bot
+    restart: always
+    env_file:
+      - ./bot/.env
+    depends_on:
+      - mangedDatabase
+      - objectStorage
+    volumes:
+      - ./bot:app
+
+  managedDatabase:
+    image: postgres:17
+    restart: always
+    environment:
+      POSTGRESQL_ROOT_PASSWORD: password
+      POSTGRESQL_DATABASE: fincontrol
+    volumes:
+      - postgresql:/var/lib/mysql
+    healthcheck:
+      # TODO write good healthcheck test
+      test: []
+      interval: 10s
+      retries: 5
+
+# TODO rent an objectStorage and update this layer
+#  objectStorage:
+
+volumes:
+  mysql_data:
+# TODO uncomment this line after you will rent objectStorage
+#  minio_data:
