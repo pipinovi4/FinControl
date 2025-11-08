@@ -1,47 +1,38 @@
-# ---------- 1️⃣ BUILD STAGE ----------
-# Use a minimal Python 3.12 image to install dependencies
+# ---------- BUILD ----------
 FROM python:3.12-slim AS build
 
-# Disable bytecode generation and enable unbuffered output for clean logging
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Define working directory inside the container
 WORKDIR /app
 
-# Copy only the requirements file first to leverage Docker layer caching
 COPY requirements.txt .
-
-# Upgrade pip and install dependencies
-# --no-cache-dir keeps the image smaller by removing package caches
-RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir -r requirements.txt
-
-
-# ---------- 2️⃣ RUNTIME STAGE ----------
-# Use a fresh, lightweight Python runtime image for production
-FROM python:3.12-slim
-
-# Install minimal system tools (required for SSL certificates or DNS resolution)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        ca-certificates curl \
+    build-essential libpq-dev \
+    && pip install --no-cache-dir -r requirements.txt \
+    && apt-get purge -y build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Set the working directory
-WORKDIR /app
-
-# Copy installed Python libraries from the build stage
-COPY --from=build /usr/local/lib/python3.12 /usr/local/lib/python3.12
-
-# Copy the entire bot source code into the runtime container
 COPY . .
 
-# Create a non-root user for security and assign ownership
+# ---------- RUNTIME ----------
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=build /usr/local /usr/local
+COPY --from=build /app /app
+
 RUN adduser --disabled-password appuser && chown -R appuser /app
 USER appuser
 
-# Expose port 4000 (optional, useful if bot uses webhooks or HTTP callbacks)
-EXPOSE 4000
+EXPOSE 8000
 
-# Define the default startup command
-CMD ["python", "main.py"]
+CMD ["uvicorn", "main:application", "--host", "0.0.0.0", "--port", "8000"]
