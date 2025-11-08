@@ -1,6 +1,7 @@
 /* ------------------------------------------------------------------
  * Конфиг страницы «Аналитика».
  * -----------------------------------------------------------------*/
+import { API } from "@/lib/api";
 
 export type SearchField = { label: string; param: string };
 export type Column      = { label: string; key: string };
@@ -53,11 +54,11 @@ const workerCols: Column[] = [
 
 /* endpoints */
 
-const workerBase  = '${API}/api/dashboard/worker/client/filter/bucket/';
-const brokerBase  = '${API}/api/dashboard/broker/client/filter/bucket/';
-const adminClBase = '${API}/api/dashboard/admin/clients/filter/bucket/';
-const adminBrBase = '${API}/api/dashboard/admin/brokers/filter/bucket/';
-const adminWrBase = '${API}/api/dashboard/admin/workers/filter/bucket/';
+const workerBase  = `${API}/api/dashboard/worker/client/filter/bucket/`;
+const brokerBase  = `${API}/api/dashboard/broker/client/filter/bucket/`;
+const adminClBase = `${API}/api/dashboard/admin/clients/filter/bucket/`;
+const adminBrBase = `${API}/api/dashboard/admin/brokers/filter/bucket/`;
+const adminWrBase = `${API}/api/dashboard/admin/workers/filter/bucket/`;
 
 /* final cfg */
 
@@ -82,7 +83,7 @@ export const ANALYZE_CFG: Record<RoleKey, RoleCfg> = {
                 endpoint   : adminClBase,
                 fields     : clientSearch,
                 columns    : clientCols,
-                detailEndpoint: '${API}/api/dashboard/admin/client/',
+                detailEndpoint: `${API}/api/dashboard/admin/client/`,
             },
             brokers: {
                 entityLabel: 'Брокеры',
@@ -92,7 +93,7 @@ export const ANALYZE_CFG: Record<RoleKey, RoleCfg> = {
                     { label: 'Компания', param: 'company_name' },
                     { label: 'Регионы',  param: 'region' },
                 ],
-                detailEndpoint: '${API}/api/dashboard/admin/broker/',
+                detailEndpoint: `${API}/api/dashboard/admin/broker/`,
                 columns    : brokerCols,
             },
             workers: {
@@ -102,7 +103,7 @@ export const ANALYZE_CFG: Record<RoleKey, RoleCfg> = {
                     { label: 'Почта',   param: 'email' },
                     { label: 'Никнейм', param: 'username' },
                 ],
-                detailEndpoint: '${API}/api/dashboard/admin/worker/',
+                detailEndpoint: `${API}/api/dashboard/admin/worker/`,
                 columns    : workerCols,
             },
         },

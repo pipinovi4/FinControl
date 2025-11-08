@@ -1,6 +1,6 @@
 import { metaFetch, InputOf, OutputOf } from '@/lib/metaFetch';
 import UserStorage from "@/services/UserStorage";
-import { api } from "@/lib/api";
+import { API, api } from "@/lib/api";
 
 
 /* ─────────── roles & helpers ─────────── */
@@ -64,7 +64,7 @@ export const authService = {
 
     /** `/api/auth/logout` */
     async logout(): Promise<void> {
-        const res = await fetch('${API}/api/session/logout', {
+        const res = await fetch(`${API}/api/session/logout`, {
             method: 'POST',
             credentials: 'include',
         });

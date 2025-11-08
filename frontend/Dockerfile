@@ -3,16 +3,16 @@ FROM node:22-alpine AS build
 
 WORKDIR /app
 
-# Кеш для залежностей
+# Кеш залежностей
 COPY package*.json ./
-RUN npm install --omit=dev
+RUN npm install
 
+# Копіюємо решту коду
 COPY . .
 
-# Включає Next.js прод-режим під час білду
 ENV NODE_ENV=production
 
-# Продукційний білд зі standalone вкладенням
+# Білд зі standalone
 RUN npm run build
 
 
@@ -24,11 +24,13 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3000
 
-# Копіюємо standalone сервер
+# Копіюємо standalone сервер (всередині вже є node_modules)
 COPY --from=build /app/.next/standalone ./
-# Копіюємо статичні ресурси
+# Копіюємо статичні файли (ті, що обробляє next)
 COPY --from=build /app/.next/static ./.next/static
-COPY --from=build /app/public ./public
+
+# ❌ Видалено, бо public/ тобі не потрібний
+# COPY --from=build /app/public ./public
 
 EXPOSE 3000
 

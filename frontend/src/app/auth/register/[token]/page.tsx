@@ -1,6 +1,7 @@
 // app/auth/register/[token]/page.tsx
 import { notFound } from 'next/navigation';
 import RegisterPage from '@/components/RegisterPage';
+import { API } from "@/lib/api";
 
 type Params = { token: string };
 
