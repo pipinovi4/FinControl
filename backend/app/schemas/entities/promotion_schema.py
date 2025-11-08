@@ -4,8 +4,8 @@ from typing import Optional
 from pydantic import Field, computed_field
 from uuid import UUID
 
-from backend.app.schemas import SchemaBase
-from backend.app.models.entities.promotion import PromotionEnum
+from app.schemas import SchemaBase
+from app.models.entities.promotion import PromotionEnum
 
 
 # ───────────── BASE ─────────────

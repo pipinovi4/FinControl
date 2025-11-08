@@ -4,8 +4,8 @@ from datetime import datetime
 from typing import Optional, List
 from pydantic import BaseModel, Field
 
-from backend.app.models.entities.credit import CreditStatus
-from backend.app.schemas import SchemaBase
+from app.models.entities.credit import CreditStatus
+from app.schemas import SchemaBase
 
 
 class CreditBase(BaseModel):

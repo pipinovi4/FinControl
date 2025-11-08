@@ -17,7 +17,7 @@ To mount:
 """
 
 from fastapi import APIRouter
-from backend.app.routes.entities.crud.dashboard import (
+from app.routes.entities.crud.dashboard import (
     admin_dashboard_router,
     broker_dashboard_router,
     worker_dashboard_router

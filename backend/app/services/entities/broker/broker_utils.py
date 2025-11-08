@@ -1,4 +1,4 @@
-from backend.app.models.entities import Broker
+from app.models.entities import Broker
 from typing import Optional
 
 

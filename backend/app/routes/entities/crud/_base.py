@@ -11,8 +11,8 @@ from typing import Awaitable, Callable, TypeVar, Type, Any
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from backend.app.schemas import AdminSchema, WorkerSchema, BrokerSchema, ClientSchema, UserSchema
-from backend.app.utils.decorators import handle_route_exceptions
+from app.schemas import AdminSchema, WorkerSchema, BrokerSchema, ClientSchema, UserSchema
+from app.utils.decorators import handle_route_exceptions
 
 SchemaT = TypeVar("SchemaT", AdminSchema, WorkerSchema, BrokerSchema, ClientSchema)
 

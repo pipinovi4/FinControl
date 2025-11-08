@@ -7,23 +7,23 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Query, Body, Response, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.app.routes.entities.crud.dashboard.types import DeletedFilter
-from backend.app.schemas import WorkerSchema, BrokerSchema, ClientSchema
-from backend.app.schemas.auth.invite_schema import InviteIn, InviteOut
-from backend.app.schemas.entities.client_schema import WorkerClientNewToday, UserNewToday
-from backend.app.services.auth.invite_service import InviteService
+from app.routes.entities.crud.dashboard.types import DeletedFilter
+from app.schemas import WorkerSchema, BrokerSchema, ClientSchema
+from app.schemas.auth.invite_schema import InviteIn, InviteOut
+from app.schemas.entities.client_schema import WorkerClientNewToday, UserNewToday
+from app.services.auth.invite_service import InviteService
 from backend.db.session import get_async_db
-from backend.app.services.entities.admin.admin_dashboard import AdminDashboard
-from backend.app.models.entities.promotion import PromotionEnum
-from backend.app.services.entities.promotion.promotion_service import PromotionService
-from backend.app.services.entities.credit.credit_service import CreditService, CreditStatus
-from backend.app.schemas.entities.credit_schema import (
+from app.services.entities.admin.admin_dashboard import AdminDashboard
+from app.models.entities.promotion import PromotionEnum
+from app.services.entities.promotion.promotion_service import PromotionService
+from app.services.entities.credit.credit_service import CreditService, CreditStatus
+from app.schemas.entities.credit_schema import (
     CreditOut, CreditCreate, CreditUpdate, CreditCommentIn, AdminPaginatedCreditsOut
 )
-from backend.app.schemas.entities.promotion_schema import (
+from app.schemas.entities.promotion_schema import (
     PromotionCreate, PromotionUpdate, PromotionOut, PromotionSummaryOut, TopWorkerOut
 )
-from backend.app.routes.entities.crud.dashboard.types import (
+from app.routes.entities.crud.dashboard.types import (
     SimpleIntOut,
     StatusMessage,
     AdminPaginatedClientsOut,

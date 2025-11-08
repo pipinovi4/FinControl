@@ -9,8 +9,8 @@ from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.app.models.entities.registration_invite import RegistrationInvite
-from backend.app.permissions import PermissionRole
+from app.models.entities.registration_invite import RegistrationInvite
+from app.permissions import PermissionRole
 
 class InviteService:
     """

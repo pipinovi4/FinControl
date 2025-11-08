@@ -4,11 +4,11 @@ from sqlalchemy import select, update
 from uuid import UUID
 from typing import Sequence, cast, TypeVar
 
-from backend.app.models import Worker, Client
-from backend.app.services.auth import PasswordService
-from backend.app.services.entities import UserService
-from backend.app.utils.decorators import handle_exceptions
-from backend.app.schemas.entities.worker_schema import WorkerSchema
+from app.models import Worker, Client
+from app.services.auth import PasswordService
+from app.services.entities import UserService
+from app.utils.decorators import handle_exceptions
+from app.schemas.entities.worker_schema import WorkerSchema
 
 WorkerT = TypeVar("WorkerT", bound=Worker)
 

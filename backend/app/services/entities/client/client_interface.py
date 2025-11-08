@@ -1,5 +1,5 @@
-from backend.app.models import Client
-from backend.app.services.entities import UserInterfaceService
+from app.models import Client
+from app.services.entities import UserInterfaceService
 
 
 class ClientInterfaceService(UserInterfaceService):

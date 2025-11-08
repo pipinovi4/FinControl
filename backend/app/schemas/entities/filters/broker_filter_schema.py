@@ -1,6 +1,6 @@
 # backend/app/schemas/entities/filters/broker_filter_schema.py
 
-from backend.app.schemas.entities.broker_schema import BrokerSchema
+from app.schemas.entities.broker_schema import BrokerSchema
 from pydantic import Field
 
 

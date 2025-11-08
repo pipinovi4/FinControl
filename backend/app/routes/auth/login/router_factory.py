@@ -4,15 +4,15 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from uuid import UUID
 
-from backend.app.routes.auth.login.types import LoginTypes
-from backend.app.routes.auth.login.config import ROLE_REGISTRY
-from backend.app.schemas.sessions import TokenPair
-from backend.app.services.auth import PasswordService, generate_token_pair
-from backend.app.utils.cookies import set_auth_cookies
+from app.routes.auth.login.types import LoginTypes
+from app.routes.auth.login.config import ROLE_REGISTRY
+from app.schemas.sessions import TokenPair
+from app.services.auth import PasswordService, generate_token_pair
+from app.utils.cookies import set_auth_cookies
 from backend.db.session import get_async_db
-from backend.app.routes.auth.login._base import generate_login_endpoints
-from backend.app.permissions import PermissionRole
-from backend.app.models.entities import Admin, Worker, Broker, Client
+from app.routes.auth.login._base import generate_login_endpoints
+from app.permissions import PermissionRole
+from app.models.entities import Admin, Worker, Broker, Client
 
 ModelT = TypeVar("ModelT", Admin, Worker, Broker, Client)
 

@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 def create_api_router() -> APIRouter:
-    # from backend.app.routes.entities import create_analyze_websocket_router
+    # from app.routes.entities import create_analyze_websocket_router
     from .auth import login_router, create_register_router, reset_password_router, register_invite_router
     from .entities import create_crud_router, admin_dashboard_router, worker_dashboard_router, broker_dashboard_router
     from .sessions import create_refresh_router, logout_router

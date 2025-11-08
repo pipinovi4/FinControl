@@ -4,9 +4,9 @@ from sqlalchemy.dialects.postgresql import UUID as PGUUID
 import uuid
 import enum
 
-from backend.app.models.entities.user import User
-from backend.app.models.mixins import TimeStampAuthMixin, DynamicLinkAuthMixin
-from backend.app.permissions import PermissionRole
+from app.models.entities.user import User
+from app.models.mixins import TimeStampAuthMixin, DynamicLinkAuthMixin
+from app.permissions import PermissionRole
 
 class DepartmentEnum(enum.Enum):
     HELIX = "Helix"

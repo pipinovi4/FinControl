@@ -3,14 +3,14 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from backend.app.models.entities.registration_invite import RegistrationInvite
-from backend.app.services.auth import PasswordService
-from backend.app.services.auth.invite_service import InviteService
-from backend.app.services.entities import UserService
-from backend.app.permissions import PermissionRole
-from backend.app.models.entities import Admin
-from backend.app.utils.decorators import handle_exceptions
-from backend.app.schemas.entities.admin_schema import AdminSchema
+from app.models.entities.registration_invite import RegistrationInvite
+from app.services.auth import PasswordService
+from app.services.auth.invite_service import InviteService
+from app.services.entities import UserService
+from app.permissions import PermissionRole
+from app.models.entities import Admin
+from app.utils.decorators import handle_exceptions
+from app.schemas.entities.admin_schema import AdminSchema
 from backend.db.session import get_async_db
 
 AdminT = TypeVar("AdminT", bound=Admin)

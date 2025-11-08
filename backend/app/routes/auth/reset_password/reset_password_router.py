@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.app.schemas.auth import ResetPasswordRequest, ResetPasswordConfirm
-from backend.app.utils.decorators import handle_route_exceptions
-from backend.app.services.auth import ResetPasswordService
-from backend.app.utils.middlewares import rate_limit
+from app.schemas.auth import ResetPasswordRequest, ResetPasswordConfirm
+from app.utils.decorators import handle_route_exceptions
+from app.services.auth import ResetPasswordService
+from app.utils.middlewares import rate_limit
 from backend.db.session import get_async_db
 
 router = APIRouter(tags=["Reset Password"])

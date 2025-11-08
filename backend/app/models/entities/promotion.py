@@ -6,7 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from uuid import uuid4
 
 from backend.db.session import Base
-from backend.app.models.mixins import TimeStampMixin, SoftDeleteMixin
+from app.models.mixins import TimeStampMixin, SoftDeleteMixin
 
 
 class PromotionEnum(enum.Enum):

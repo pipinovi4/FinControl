@@ -21,11 +21,11 @@ from sqlalchemy import (
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.app.utils.decorators import handle_exceptions
-from backend.app.models.entities.client import Client
-from backend.app.models.entities.credit import Credit, CreditStatus
+from app.utils.decorators import handle_exceptions
+from app.models.entities.client import Client
+from app.models.entities.credit import Credit, CreditStatus
 # Використовуй спільний тип DeletedFilter, щоб не дублювати Literal в різних місцях
-from backend.app.routes.entities.crud.dashboard.types import DeletedFilter
+from app.routes.entities.crud.dashboard.types import DeletedFilter
 
 
 CreditT = TypeVar("CreditT", bound=Credit)
@@ -204,7 +204,7 @@ class CreditService:
         Створює кредит від імені Адміна.
         Автоматично підставляє broker_id з клієнта.
         """
-        from backend.app.schemas.entities.credit_schema import CreditCreate  # локальний імпорт, щоб уникати циклів
+        from app.schemas.entities.credit_schema import CreditCreate  # локальний імпорт, щоб уникати циклів
         if not isinstance(payload, CreditCreate):
             # якщо приходить plain dict (напряму з Pydantic), це не критично
             pass
@@ -226,7 +226,7 @@ class CreditService:
 
     @handle_exceptions(raise_404=True)
     async def update(self, credit_id: UUID, payload) -> CreditT:
-        from backend.app.schemas.entities.credit_schema import CreditUpdate
+        from app.schemas.entities.credit_schema import CreditUpdate
         credit = await self.get_by_id(credit_id)
         data = payload.model_dump(exclude_unset=True) if hasattr(payload, "model_dump") else dict(payload or {})
         for k, v in data.items():

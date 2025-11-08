@@ -7,13 +7,13 @@ from fastapi import APIRouter, WebSocket, Depends, WebSocketException, status
 from fastapi.websockets import WebSocketDisconnect
 
 from backend.db.session import get_async_db
-from backend.app.routes.entities.analyze._base import generate_analyze_ws_endpoint
-from backend.app.routes.entities.analyze.types import AnalyzeType
-from backend.app.routes.entities.analyze.config import ROLE_REGISTRY
-from backend.app.utils.protocols import BaseService
-from backend.app.utils.wrappers import RoleServiceWrapper
-from backend.app.permissions import PermissionRole
-from backend.app.websockets import WebSocketConnection
+from app.routes.entities.analyze._base import generate_analyze_ws_endpoint
+from app.routes.entities.analyze.types import AnalyzeType
+from app.routes.entities.analyze.config import ROLE_REGISTRY
+from app.utils.protocols import BaseService
+from app.utils.wrappers import RoleServiceWrapper
+from app.permissions import PermissionRole
+from app.websockets import WebSocketConnection
 
 
 def make_analyze_websocket_handler(

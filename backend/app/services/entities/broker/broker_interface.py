@@ -1,7 +1,7 @@
 from typing import TypeVar
 
-from backend.app.models import Broker
-from backend.app.services.entities import UserInterfaceService
+from app.models import Broker
+from app.services.entities import UserInterfaceService
 
 BrokerT = TypeVar("BrokerT", bound=Broker)
 

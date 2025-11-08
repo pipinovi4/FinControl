@@ -3,8 +3,8 @@
 from typing import Optional
 from pydantic import Field
 
-from backend.app.schemas import WorkerSchema
-from backend.app.schemas.entities.filters import UserFilterSchema
+from app.schemas import WorkerSchema
+from app.schemas.entities.filters import UserFilterSchema
 
 
 class WorkerFilterSchema(WorkerSchema.Base, UserFilterSchema):

@@ -1,6 +1,6 @@
 from typing import Type, TypeVar, List
-from backend.app.models import Worker
-from backend.app.schemas import SchemaBase
+from app.models import Worker
+from app.schemas import SchemaBase
 
 T = TypeVar("T", bound=SchemaBase)
 

@@ -7,13 +7,13 @@ from uuid import UUID
 from pydantic import BaseModel, Field, EmailStr, field_validator
 from datetime import datetime
 
-from backend.app.schemas import SchemaBase
-from backend.app.schemas.entities.user_schema import UserSchema
+from app.schemas import SchemaBase
+from app.schemas.entities.user_schema import UserSchema
 
 if TYPE_CHECKING:
-    from backend.app.schemas.entities.worker_schema import WorkerShort # noqa 401
-    from backend.app.schemas.entities.broker_schema import BrokerShort # noqa 401
-    from backend.app.schemas.entities.credit_schema import CreditShort # noqa 401
+    from app.schemas.entities.worker_schema import WorkerShort # noqa 401
+    from app.schemas.entities.broker_schema import BrokerShort # noqa 401
+    from app.schemas.entities.credit_schema import CreditShort # noqa 401
 
 
 class ClientBase(UserSchema.Base):

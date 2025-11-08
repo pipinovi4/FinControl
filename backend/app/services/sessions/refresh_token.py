@@ -5,8 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
 import secrets
 
-from backend.app.models.sessions.refresh_token import RefreshToken
-from backend.app.utils.decorators import handle_exceptions
+from app.models.sessions.refresh_token import RefreshToken
+from app.utils.decorators import handle_exceptions
 
 
 class RefreshTokenService:

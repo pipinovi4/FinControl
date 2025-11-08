@@ -5,14 +5,14 @@ from typing import Optional, List, Type, TYPE_CHECKING
 from pydantic import BaseModel, Field, EmailStr
 from datetime import datetime
 
-from backend.app.permissions import PermissionRole
-from backend.app.schemas import SchemaBase
-from backend.app.schemas.entities.user_schema import UserSchema
+from app.permissions import PermissionRole
+from app.schemas import SchemaBase
+from app.schemas.entities.user_schema import UserSchema
 from uuid import UUID
 
 if TYPE_CHECKING:
-    from backend.app.schemas.entities.client_schema import ClientShort # noqa 401
-    from backend.app.schemas.entities.credit_schema import CreditShort # noqa 401
+    from app.schemas.entities.client_schema import ClientShort # noqa 401
+    from app.schemas.entities.credit_schema import CreditShort # noqa 401
 
 class BrokerBase(UserSchema.Base):
     """

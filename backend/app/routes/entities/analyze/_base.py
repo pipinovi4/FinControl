@@ -1,8 +1,8 @@
 from typing import Callable, Awaitable
 from fastapi import APIRouter, WebSocket
 
-from backend.app.utils.decorators import handle_route_exceptions, handle_ws_exceptions
-from backend.app.utils.middlewares.limiter import rate_limit
+from app.utils.decorators import handle_route_exceptions, handle_ws_exceptions
+from app.utils.middlewares.limiter import rate_limit
 
 def generate_analyze_endpoints(
     router: APIRouter,

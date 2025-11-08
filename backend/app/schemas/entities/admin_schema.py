@@ -4,10 +4,10 @@ from typing import Optional, Type, Union
 from pydantic import BaseModel, Field, EmailStr
 from uuid import UUID
 
-from backend.app.permissions import PermissionRole
-from backend.app.schemas import SchemaBase
-from backend.app.schemas.entities.user_schema import UserSchema
-from backend.app.schemas.mixins import TimeStampAuthSchema, DynamicLinkAuthSchema
+from app.permissions import PermissionRole
+from app.schemas import SchemaBase
+from app.schemas.entities.user_schema import UserSchema
+from app.schemas.mixins import TimeStampAuthSchema, DynamicLinkAuthSchema
 
 
 class AdminBase(UserSchema.Base, TimeStampAuthSchema, DynamicLinkAuthSchema):

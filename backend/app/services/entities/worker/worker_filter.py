@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
-from backend.app.models import Worker, Client
-from backend.app.permissions import PermissionRole
+from app.models import Worker, Client
+from app.permissions import PermissionRole
 
 
 class WorkerFilterService:

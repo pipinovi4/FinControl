@@ -4,7 +4,7 @@ from typing import Any, Literal
 import jwt  # PyJWT
 from uuid import UUID
 
-from backend.app.core.settings import settings
+from app.core.settings import settings
 
 # Allowed token types — used to differentiate JWT purpose
 TokenType = Literal["access", "refresh", "reset"]

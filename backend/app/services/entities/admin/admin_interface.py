@@ -1,5 +1,5 @@
-from backend.app.models import Admin
-from backend.app.services.entities import UserInterfaceService
+from app.models import Admin
+from app.services.entities import UserInterfaceService
 from typing import TypeVar
 
 AdminT = TypeVar("AdminT", bound=Admin)

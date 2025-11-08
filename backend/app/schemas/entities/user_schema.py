@@ -2,9 +2,9 @@
 
 from typing import Optional, Type
 from pydantic import BaseModel, Field
-from backend.app.permissions.enums import PermissionRole
-from backend.app.schemas import SchemaBase
-from backend.app.schemas.mixins import UUIDSchema, TimeStampSchema, SoftDeleteSchema, AuthSchema
+from app.permissions.enums import PermissionRole
+from app.schemas import SchemaBase
+from app.schemas.mixins import UUIDSchema, TimeStampSchema, SoftDeleteSchema, AuthSchema
 
 
 class UserBase(SchemaBase, AuthSchema, UUIDSchema, TimeStampSchema, SoftDeleteSchema):

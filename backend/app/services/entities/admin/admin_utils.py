@@ -1,5 +1,5 @@
 from typing import TypeVar
-from backend.app.models.entities import Admin
+from app.models.entities import Admin
 
 AdminT = TypeVar("AdminT", bound=Admin)
 

@@ -2,8 +2,8 @@
 
 from pydantic import Field
 
-from backend.app.schemas.entities.client_schema import ClientSchema
-from backend.app.schemas.entities.filters import UserFilterSchema
+from app.schemas.entities.client_schema import ClientSchema
+from app.schemas.entities.filters import UserFilterSchema
 
 
 class ClientFilterSchema(ClientSchema.Base, UserFilterSchema):

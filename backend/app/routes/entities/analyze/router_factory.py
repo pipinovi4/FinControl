@@ -14,12 +14,12 @@ from typing import Awaitable, Callable, Any, List
 from fastapi import APIRouter, HTTPException, Request, Depends
 
 from backend.db.session import get_async_db
-from backend.app.routes.entities.analyze._base import generate_analyze_endpoints
-from backend.app.routes.entities.analyze.types import AnalyzeType
-from backend.app.routes.entities.analyze.config import ROLE_REGISTRY
-from backend.app.permissions import PermissionRole
-from backend.app.utils.protocols import BaseService
-from backend.app.utils.wrappers import RoleServiceWrapper
+from app.routes.entities.analyze._base import generate_analyze_endpoints
+from app.routes.entities.analyze.types import AnalyzeType
+from app.routes.entities.analyze.config import ROLE_REGISTRY
+from app.permissions import PermissionRole
+from app.utils.protocols import BaseService
+from app.utils.wrappers import RoleServiceWrapper
 
 def make_analyze_handler(
     *,

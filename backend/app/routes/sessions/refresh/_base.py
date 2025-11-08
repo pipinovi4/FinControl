@@ -3,9 +3,9 @@ from typing import Awaitable, Callable, Type, TypeVar
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from backend.app.routes.sessions.refresh.types import RefreshTypes
-from backend.app.utils.decorators import handle_route_exceptions
-from backend.app.utils.middlewares.limiter import rate_limit
+from app.routes.sessions.refresh.types import RefreshTypes
+from app.utils.decorators import handle_route_exceptions
+from app.utils.middlewares.limiter import rate_limit
 
 InputSchemaT = TypeVar("InputSchemaT", bound=BaseModel)
 OutputSchemaT = TypeVar("OutputSchemaT", bound=BaseModel)

@@ -2,7 +2,7 @@
 
 from typing import Optional
 from pydantic import BaseModel, Field
-from backend.app.permissions.enums import PermissionRole
+from app.permissions.enums import PermissionRole
 
 
 class UserFilterSchema(BaseModel):

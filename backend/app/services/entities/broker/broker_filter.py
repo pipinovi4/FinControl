@@ -2,9 +2,9 @@ from sqlalchemy import select, literal
 from sqlalchemy.sql import Select
 from datetime import datetime
 
-from backend.app.models import Broker
-from backend.app.permissions import PermissionRole
-from backend.app.services.entities import UserFilterService
+from app.models import Broker
+from app.permissions import PermissionRole
+from app.services.entities import UserFilterService
 
 
 class BrokerFilterService(UserFilterService):

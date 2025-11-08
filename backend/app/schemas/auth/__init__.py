@@ -5,7 +5,7 @@ This module consolidates Pydantic models related to authentication input data,
 such as login, registration, and password reset requests.
 
 Usage:
-    from backend.app.schemas.auth import (
+    from app.schemas.auth import (
         LoginRequest,
         RegisterRequest,
         ResetPasswordRequest,

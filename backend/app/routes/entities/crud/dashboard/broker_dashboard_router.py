@@ -5,14 +5,14 @@ from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import UUID
 
-from backend.app.schemas.entities.client_schema import ClientBrokerOut, BrokerClientNewToday
+from app.schemas.entities.client_schema import ClientBrokerOut, BrokerClientNewToday
 from backend.db.session import get_async_db
-from backend.app.services.entities.broker.broker_dashboard import BrokerDashboard
-from backend.app.services.entities.credit.credit_service import CreditService, CreditStatus
-from backend.app.schemas.entities.credit_schema import (
+from app.services.entities.broker.broker_dashboard import BrokerDashboard
+from app.services.entities.credit.credit_service import CreditService, CreditStatus
+from app.schemas.entities.credit_schema import (
     CreditOut, CreditStatusUpdate, CreditCommentIn, BrokerPaginatedCreditsOut
 )
-from backend.app.routes.entities.crud.dashboard.types import (
+from app.routes.entities.crud.dashboard.types import (
     SimpleIntOut,
     BrokerClientListOut,
     BrokerIdIn,

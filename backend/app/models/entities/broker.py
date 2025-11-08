@@ -3,9 +3,9 @@ from sqlalchemy import String, ForeignKey
 from sqlalchemy.dialects.postgresql import ARRAY, UUID as PGUUID
 import uuid
 
-from backend.app.models.entities.user import User
-from backend.app.models.mixins import TimeStampAuthMixin
-from backend.app.permissions import PermissionRole
+from app.models.entities.user import User
+from app.models.mixins import TimeStampAuthMixin
+from app.permissions import PermissionRole
 
 
 class Broker(User, TimeStampAuthMixin):

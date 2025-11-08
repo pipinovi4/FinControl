@@ -1,12 +1,12 @@
 from typing import Dict, Tuple, Optional, Type
 from pydantic import BaseModel
 
-from backend.app.schemas import AdminSchema, WorkerSchema, BrokerSchema, ClientSchema, UserSchema
-from backend.app.schemas.sessions import TokenPair
-from backend.app.services.entities import AdminService, WorkerService, BrokerService, ClientService
-from backend.app.permissions import PermissionRole
-from backend.app.routes.auth.register.types import RegisterTypes
-from backend.app.utils.protocols import BaseSchemaNamespace, BaseService
+from app.schemas import AdminSchema, WorkerSchema, BrokerSchema, ClientSchema, UserSchema
+from app.schemas.sessions import TokenPair
+from app.services.entities import AdminService, WorkerService, BrokerService, ClientService
+from app.permissions import PermissionRole
+from app.routes.auth.register.types import RegisterTypes
+from app.utils.protocols import BaseSchemaNamespace, BaseService
 
 class RegisterTypesCls(BaseModel):
     web: Optional[Tuple[RegisterTypes, Type[BaseModel], Type[BaseModel]]] = None

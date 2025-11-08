@@ -3,7 +3,7 @@
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
 from pydantic import EmailStr
 from jinja2 import Template
-from backend.app.core.settings import settings
+from app.core.settings import settings
 
 RESET_PASSWORD_TEMPLATE = """
 <!DOCTYPE html>

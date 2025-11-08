@@ -5,10 +5,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 import secrets
 
-from backend.app.core.settings import settings
-from backend.app.models.sessions import RefreshToken
-from backend.app.services.sessions.refresh_token import RefreshTokenService
-from backend.app.utils.decorators import handle_exceptions
+from app.core.settings import settings
+from app.models.sessions import RefreshToken
+from app.services.sessions.refresh_token import RefreshTokenService
+from app.utils.decorators import handle_exceptions
 
 
 class RefreshService:

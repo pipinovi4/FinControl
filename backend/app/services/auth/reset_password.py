@@ -1,13 +1,13 @@
-from backend.app.services.auth.token_manager import TokenManager
-from backend.app.services.smtp_service import SMTPService
-from backend.app.services.entities.user.user_service import UserService
-from backend.app.core.settings import settings
+from app.services.auth.token_manager import TokenManager
+from app.services.smtp_service import SMTPService
+from app.services.entities.user.user_service import UserService
+from app.core.settings import settings
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import EmailStr
 from uuid import UUID
 
-from backend.app.utils.decorators import handle_route_exceptions
+from app.utils.decorators import handle_route_exceptions
 
 
 class ResetPasswordService:

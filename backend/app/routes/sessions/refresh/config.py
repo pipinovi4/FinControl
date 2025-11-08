@@ -1,9 +1,9 @@
 from typing import Dict, Tuple, Optional, Type
 from pydantic import BaseModel
 
-from backend.app.permissions import PermissionRole
-from backend.app.schemas.sessions import RefreshRequest, TokenPair
-from backend.app.routes.sessions.refresh.types import RefreshTypes
+from app.permissions import PermissionRole
+from app.schemas.sessions import RefreshRequest, TokenPair
+from app.routes.sessions.refresh.types import RefreshTypes
 
 class RefreshTypesCls(BaseModel):
     web: Optional[Tuple[RefreshTypes, None, Type[BaseModel]]] = None

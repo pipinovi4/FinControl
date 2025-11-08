@@ -2,9 +2,9 @@ from dataclasses import Field
 from uuid import UUID
 from pydantic import BaseModel
 from typing import List, Literal
-from backend.app.schemas.entities.client_schema import ClientOut, ClientWorkerOut, ClientBrokerOut, ClientAdminOut
-from backend.app.schemas.entities.broker_schema import BrokerOut, BrokerAdminOut
-from backend.app.schemas.entities.worker_schema import WorkerOut, WorkerAdminOut
+from app.schemas.entities.client_schema import ClientOut, ClientWorkerOut, ClientBrokerOut, ClientAdminOut
+from app.schemas.entities.broker_schema import BrokerOut, BrokerAdminOut
+from app.schemas.entities.worker_schema import WorkerOut, WorkerAdminOut
 
 
 class SimpleIntOut(BaseModel):

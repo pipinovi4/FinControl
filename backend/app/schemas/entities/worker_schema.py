@@ -5,13 +5,13 @@ from typing import Optional, List, TYPE_CHECKING
 from pydantic import BaseModel, Field, EmailStr
 from uuid import UUID
 
-from backend.app.permissions import PermissionRole
-from backend.app.schemas import SchemaBase
-from backend.app.schemas.entities.user_schema import UserSchema
+from app.permissions import PermissionRole
+from app.schemas import SchemaBase
+from app.schemas.entities.user_schema import UserSchema
 
 if TYPE_CHECKING:
-    from backend.app.schemas.entities.client_schema import ClientShort  # noqa: F401
-    from backend.app.schemas.entities.credit_schema import CreditShort  # noqa: F401
+    from app.schemas.entities.client_schema import ClientShort  # noqa: F401
+    from app.schemas.entities.credit_schema import CreditShort  # noqa: F401
 
 
 # ───────────── BASE ─────────────

@@ -5,7 +5,7 @@ This module provides a unified import path for all schemas related to session
 management, including refresh tokens and access/refresh token pairs.
 
 Usage:
-    from backend.app.schemas.sessions import TokenPair, RefreshRequest, RefreshTokenSchema
+    from app.schemas.sessions import TokenPair, RefreshRequest, RefreshTokenSchema
 
 Exports:
     - TokenPair: Access and refresh token response model.

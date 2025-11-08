@@ -1,9 +1,9 @@
 from sqlalchemy import select
 from sqlalchemy.sql import Select
 from datetime import datetime
-from backend.app.models import Admin
-from backend.app.permissions import PermissionRole
-from backend.app.services.entities import UserFilterService
+from app.models import Admin
+from app.permissions import PermissionRole
+from app.services.entities import UserFilterService
 
 
 class AdminFilterService(UserFilterService):

@@ -3,9 +3,9 @@ from sqlalchemy.orm.session import Session
 from pydantic import BaseModel
 from uuid import UUID
 
-from backend.app.permissions import PermissionRole
-from backend.app.schemas.entities import AdminSchema, BrokerSchema, WorkerSchema, ClientSchema
-from backend.app.services.entities import AdminService, WorkerService, BrokerService, ClientService
+from app.permissions import PermissionRole
+from app.schemas.entities import AdminSchema, BrokerSchema, WorkerSchema, ClientSchema
+from app.services.entities import AdminService, WorkerService, BrokerService, ClientService
 
 SchemaT = TypeVar(
     "SchemaT",

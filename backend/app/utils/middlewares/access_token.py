@@ -2,7 +2,7 @@ from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 import jwt
 
-from backend.app.core.settings import settings
+from app.core.settings import settings
 
 
 class AccessTokenMiddleware(BaseHTTPMiddleware):

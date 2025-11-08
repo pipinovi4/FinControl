@@ -4,7 +4,7 @@ from starlette.types import ASGIApp, Scope, Receive, Send
 from starlette.websockets import WebSocket
 import jwt
 
-from backend.app.core.settings import settings
+from app.core.settings import settings
 
 
 class WebSocketAuthMiddleware:

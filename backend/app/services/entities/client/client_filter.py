@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.sql import Select
-from backend.app.models import Client
-from backend.app.services.entities.user import UserFilterService
+from app.models import Client
+from app.services.entities.user import UserFilterService
 
 
 class ClientFilterService(UserFilterService):

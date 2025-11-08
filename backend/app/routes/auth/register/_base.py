@@ -3,10 +3,10 @@ from typing import Awaitable, Callable, TypeVar, Type, List, Tuple, get_type_hin
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from backend.app.schemas.sessions import TokenPair
-from backend.app.utils.decorators import handle_route_exceptions
-# from backend.app.utils.middlewares.limiter import rate_limit
-from backend.app.schemas import AdminSchema, WorkerSchema, BrokerSchema, ClientSchema
+from app.schemas.sessions import TokenPair
+from app.utils.decorators import handle_route_exceptions
+# from app.utils.middlewares.limiter import rate_limit
+from app.schemas import AdminSchema, WorkerSchema, BrokerSchema, ClientSchema
 
 # Type variables for generic schemas and services
 SchemaT = TypeVar("SchemaT", AdminSchema, WorkerSchema, BrokerSchema, ClientSchema)

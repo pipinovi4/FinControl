@@ -5,10 +5,10 @@ from sqlalchemy.orm import selectinload
 from uuid import UUID
 from datetime import datetime, UTC, date, timedelta
 
-from backend.app.models import Client, Credit
-from backend.app.schemas.entities.client_schema import WorkerClientNewToday, ClientWorkerOut
-from backend.app.schemas.entities.credit_schema import CreditCreate
-from backend.app.utils.decorators import handle_exceptions
+from app.models import Client, Credit
+from app.schemas.entities.client_schema import WorkerClientNewToday, ClientWorkerOut
+from app.schemas.entities.credit_schema import CreditCreate
+from app.utils.decorators import handle_exceptions
 
 
 class WorkerDashboardService:

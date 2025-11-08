@@ -1,4 +1,4 @@
-from backend.app.schemas.entities.admin_schema import AdminSchema
+from app.schemas.entities.admin_schema import AdminSchema
 from pydantic import Field
 
 class AdminFilterSchema(AdminSchema.Base):

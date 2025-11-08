@@ -5,16 +5,16 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from uuid import UUID
 
-from backend.app.permissions import PermissionRole
-from backend.app.routes.auth.register.types import RegisterTypes
-from backend.app.routes.auth.register.config import ROLE_REGISTRY
-from backend.app.schemas.sessions import TokenPair
-from backend.app.services.auth import generate_token_pair
-from backend.app.utils.cookies import set_auth_cookies
+from app.permissions import PermissionRole
+from app.routes.auth.register.types import RegisterTypes
+from app.routes.auth.register.config import ROLE_REGISTRY
+from app.schemas.sessions import TokenPair
+from app.services.auth import generate_token_pair
+from app.utils.cookies import set_auth_cookies
 from backend.db.session import get_async_db
-from backend.app.routes.auth.register._base import generate_register_endpoints
-from backend.app.schemas import AdminSchema, WorkerSchema, BrokerSchema, ClientSchema
-from backend.app.services.entities import AdminService, WorkerService, BrokerService, ClientService
+from app.routes.auth.register._base import generate_register_endpoints
+from app.schemas import AdminSchema, WorkerSchema, BrokerSchema, ClientSchema
+from app.services.entities import AdminService, WorkerService, BrokerService, ClientService
 
 # Type variables for generic schemas and services
 SchemaT = TypeVar("SchemaT", AdminSchema, WorkerSchema, BrokerSchema, ClientSchema)

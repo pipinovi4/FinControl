@@ -6,10 +6,10 @@ from datetime import datetime, UTC
 from typing import Sequence, cast, TypeVar
 from pydantic import EmailStr
 
-from backend.app.models.entities.user import User
-from backend.app.permissions import PermissionRole
-from backend.app.services.auth import PasswordService
-from backend.app.utils.decorators import handle_exceptions
+from app.models.entities.user import User
+from app.permissions import PermissionRole
+from app.services.auth import PasswordService
+from app.utils.decorators import handle_exceptions
 
 UserT = TypeVar("UserT", bound=User)
 

@@ -3,8 +3,8 @@ from datetime import datetime, UTC, timedelta
 from pydantic import Field
 from typing import Optional
 
-from backend.app.permissions import PermissionRole
-from backend.app.schemas import SchemaBase
+from app.permissions import PermissionRole
+from app.schemas import SchemaBase
 
 
 class InviteInfoOut(SchemaBase):

@@ -4,14 +4,14 @@ from pydantic import BaseModel
 
 from .types import BaseServiceProtocol, CRUDSchemas, CRUDOutputSchemas, CRUDInputSchemas, MatrixRow, \
     SuccessfulDeletedUser, EntityID
-from backend.app.permissions import PermissionRole
-from backend.app.services.entities import (
+from app.permissions import PermissionRole
+from app.services.entities import (
     AdminService,
     BrokerService,
     WorkerService,
     ClientService,
 )
-from backend.app.schemas.entities import (
+from app.schemas.entities import (
     AdminSchema,
     BrokerSchema,
     WorkerSchema,

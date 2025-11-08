@@ -20,16 +20,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from uuid import UUID
 
-from backend.app.routes.entities.crud.dashboard.admin_dashboard_router import DeletedFilter
-from backend.app.models import Client, Broker, Worker, User
-from backend.app.models.entities.credit import Credit, CreditStatus
-from backend.app.schemas.entities.broker_schema import BrokerAdminOut
-from backend.app.schemas.entities.client_schema import WorkerClientNewToday, UserNewToday, ClientAdminOut, ClientBrokerOut
-from backend.app.schemas.entities.worker_schema import WorkerAdminOut
-from backend.app.services.entities import WorkerService, BrokerService
-from backend.app.utils.decorators import handle_exceptions
-from backend.app.models.entities.promotion import Promotion, PromotionEnum
-from backend.app.schemas.entities.promotion_schema import (
+from app.routes.entities.crud.dashboard.admin_dashboard_router import DeletedFilter
+from app.models import Client, Broker, Worker, User
+from app.models.entities.credit import Credit, CreditStatus
+from app.schemas.entities.broker_schema import BrokerAdminOut
+from app.schemas.entities.client_schema import WorkerClientNewToday, UserNewToday, ClientAdminOut, ClientBrokerOut
+from app.schemas.entities.worker_schema import WorkerAdminOut
+from app.services.entities import WorkerService, BrokerService
+from app.utils.decorators import handle_exceptions
+from app.models.entities.promotion import Promotion, PromotionEnum
+from app.schemas.entities.promotion_schema import (
     PromotionCreate, PromotionUpdate, PromotionSummaryOut, TopWorkerOut
 )
 

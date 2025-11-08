@@ -5,12 +5,12 @@ from typing import Sequence, TypeVar, cast
 from uuid import UUID
 
 
-from backend.app.models.entities import Broker, Client
-from backend.app.permissions import PermissionRole
-from backend.app.services.auth import PasswordService
-from backend.app.services.entities import UserService
-from backend.app.utils.decorators import handle_exceptions
-from backend.app.schemas.entities.broker_schema import BrokerSchema
+from app.models.entities import Broker, Client
+from app.permissions import PermissionRole
+from app.services.auth import PasswordService
+from app.services.entities import UserService
+from app.utils.decorators import handle_exceptions
+from app.schemas.entities.broker_schema import BrokerSchema
 
 BrokerT = TypeVar("BrokerT", bound=Broker)
 

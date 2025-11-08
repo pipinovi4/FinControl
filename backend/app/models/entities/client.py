@@ -6,8 +6,8 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey, String, Text, Integer, CheckConstraint, DateTime
 from sqlalchemy.dialects.postgresql import JSONB, UUID as PGUUID
 
-from backend.app.models.entities.user import User
-from backend.app.permissions.enums import PermissionRole
+from app.models.entities.user import User
+from app.permissions.enums import PermissionRole
 
 class Client(User):
     """

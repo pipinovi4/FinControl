@@ -4,14 +4,14 @@ from asyncpg.protocol.protocol import Protocol
 from pydantic import BaseModel
 from sqlalchemy.orm import DeclarativeMeta
 
-from backend.app.schemas import AdminSchema, WorkerSchema, BrokerSchema, ClientSchema
-from backend.app.schemas.auth import LoginRequest
-from backend.app.schemas.sessions import TokenPair
-from backend.app.services.auth import PasswordService
-from backend.app.permissions import PermissionRole
-from backend.app.routes.auth.login.types import LoginTypes
-from backend.app.utils.protocols import BaseService, BaseSchemaNamespace
-from backend.app.models.entities import Admin, Worker, Broker, Client
+from app.schemas import AdminSchema, WorkerSchema, BrokerSchema, ClientSchema
+from app.schemas.auth import LoginRequest
+from app.schemas.sessions import TokenPair
+from app.services.auth import PasswordService
+from app.permissions import PermissionRole
+from app.routes.auth.login.types import LoginTypes
+from app.utils.protocols import BaseService, BaseSchemaNamespace
+from app.models.entities import Admin, Worker, Broker, Client
 
 class LoginTypesCls(BaseModel):
     web: Optional[Tuple[LoginTypes, Type[BaseModel], Type[BaseModel]]] = None

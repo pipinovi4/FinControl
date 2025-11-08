@@ -1,6 +1,6 @@
 import jwt
 from datetime import datetime, timedelta, UTC
-from backend.app.core.settings import settings
+from app.core.settings import settings
 
 class AccessTokenService:
     @staticmethod

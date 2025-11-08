@@ -4,7 +4,7 @@ import inspect
 import logging
 from typing import Any, Generic, TypeVar, Union, Set
 
-from backend.app.utils.protocols import BaseService
+from app.utils.protocols import BaseService
 
 S = TypeVar("S", bound=BaseService)
 

@@ -2,8 +2,8 @@
 from typing import Tuple, Type, TypeVar
 from enum import Enum
 
-from backend.app.utils.protocols import BaseService
-from backend.app.schemas.entities.filters import (
+from app.utils.protocols import BaseService
+from app.schemas.entities.filters import (
     WorkerFilterSchema, BrokerFilterSchema, ClientFilterSchema, AdminFilterSchema, UserFilterSchema
 )
 

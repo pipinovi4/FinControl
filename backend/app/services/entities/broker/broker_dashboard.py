@@ -5,10 +5,10 @@ from typing import Sequence, Any
 from uuid import UUID
 from datetime import datetime, UTC, timedelta, date
 
-from backend.app.models import Client
-from backend.app.models.entities.credit import Credit
-from backend.app.schemas.entities.client_schema import WorkerClientNewToday, ClientBrokerOut, BrokerClientNewToday
-from backend.app.utils.decorators import handle_exceptions
+from app.models import Client
+from app.models.entities.credit import Credit
+from app.schemas.entities.client_schema import WorkerClientNewToday, ClientBrokerOut, BrokerClientNewToday
+from app.utils.decorators import handle_exceptions
 
 
 class BrokerDashboard:

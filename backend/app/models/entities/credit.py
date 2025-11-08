@@ -8,7 +8,7 @@ from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 from backend.db.session import Base
-from backend.app.models.mixins.soft_delete import SoftDeleteMixin
+from app.models.mixins.soft_delete import SoftDeleteMixin
 
 
 class CreditStatus(StrEnum):

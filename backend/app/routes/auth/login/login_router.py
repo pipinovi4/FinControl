@@ -8,17 +8,17 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import cast
 
 from backend.db.session              import get_async_db
-from backend.app.models.entities     import User            # ← Base class
-from backend.app.permissions import PermissionRole
-from backend.app.schemas import AdminSchema, BrokerSchema, WorkerSchema, ClientSchema
-from backend.app.schemas.sessions    import TokenPair
-from backend.app.services.auth       import (
+from app.models.entities     import User            # ← Base class
+from app.permissions import PermissionRole
+from app.schemas import AdminSchema, BrokerSchema, WorkerSchema, ClientSchema
+from app.schemas.sessions    import TokenPair
+from app.services.auth       import (
     PasswordService,
     generate_token_pair,
 )
-from backend.app.utils.cookies       import set_auth_cookies
-from backend.app.utils.decorators    import handle_route_exceptions
-from backend.app.utils.middlewares.limiter import rate_limit   # якщо треба
+from app.utils.cookies       import set_auth_cookies
+from app.utils.decorators    import handle_route_exceptions
+from app.utils.middlewares.limiter import rate_limit   # якщо треба
 
 router = APIRouter(tags=["Auth"])
 
@@ -38,7 +38,7 @@ class LoginRequest(BaseModel):
 
 WEB_RL = "10/minute"      # <- або прибери, якщо не потрібен rate-limit
 
-from backend.app.services.entities import AdminService, BrokerService, WorkerService, ClientService
+from app.services.entities import AdminService, BrokerService, WorkerService, ClientService
 
 async def get_full_user_data(role: PermissionRole, user_id: UUID, db: AsyncSession) -> dict:
     match role:

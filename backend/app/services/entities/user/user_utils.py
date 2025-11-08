@@ -1,8 +1,8 @@
 from typing import Type, TypeVar
 
-from backend.app.models import User
-from backend.app.permissions import PermissionRole
-from backend.app.schemas import SchemaBase
+from app.models import User
+from app.permissions import PermissionRole
+from app.schemas import SchemaBase
 
 T = TypeVar("T", bound=SchemaBase)
 

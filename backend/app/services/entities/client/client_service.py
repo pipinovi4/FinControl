@@ -4,11 +4,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
-from backend.app.models import Client
-from backend.app.services.auth import PasswordService
-from backend.app.services.entities import UserService
-from backend.app.utils.decorators import handle_exceptions
-from backend.app.schemas.entities.client_schema import ClientSchema
+from app.models import Client
+from app.services.auth import PasswordService
+from app.services.entities import UserService
+from app.utils.decorators import handle_exceptions
+from app.schemas.entities.client_schema import ClientSchema
 
 ClientT = TypeVar("ClientT", bound=Client)
 

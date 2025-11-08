@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Optional
 
-from backend.app.schemas.sessions import RefreshRequest
+from app.schemas.sessions import RefreshRequest
 
 
 class RefreshTypes(Enum):

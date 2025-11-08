@@ -12,11 +12,11 @@
 # from sqlalchemy.ext.asyncio import AsyncSession
 #
 # from backend.db.session import get_async_db
-# from backend.app.permissions import PermissionRole
-# from backend.app.routes.entities.crud.config import DELETE_MATRIX
-# from backend.app.routes.entities.crud._base import generate_crud_endpoints
-# from backend.app.utils.decorators import handle_route_exceptions
-# from backend.app.routes.entities.crud.types import ServiceT
+# from app.permissions import PermissionRole
+# from app.routes.entities.crud.config import DELETE_MATRIX
+# from app.routes.entities.crud._base import generate_crud_endpoints
+# from app.utils.decorators import handle_route_exceptions
+# from app.routes.entities.crud.types import ServiceT
 #
 #
 # def make_delete_handler(

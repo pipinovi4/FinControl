@@ -23,7 +23,7 @@ accidentally call a super-admin helper.
 
 You can import a ready bundle like so:
 
-    from backend.app.utils.roles.registry import ROLE_REGISTRY, PermissionRole
+    from app.utils.roles.registry import ROLE_REGISTRY, PermissionRole
 
     admin = ROLE_REGISTRY[PermissionRole.ADMIN]
     result = admin.service.get_summary(...)
@@ -36,21 +36,21 @@ from __future__ import annotations
 from typing import Dict, Type
 from pydantic import BaseModel
 
-from backend.app.permissions import PermissionRole
-from backend.app.schemas.entities.filters import (
+from app.permissions import PermissionRole
+from app.schemas.entities.filters import (
     WorkerFilterSchema, BrokerFilterSchema, ClientFilterSchema, AdminFilterSchema, UserFilterSchema
 )
-from backend.app.services.entities import (
+from app.services.entities import (
     AdminService, WorkerService, BrokerService, ClientService,
     AdminInterfaceService, WorkerInterfaceService,
     BrokerInterfaceService, ClientInterfaceService,
     AdminFilterService,  WorkerFilterService,
     BrokerFilterService, ClientFilterService,
 )
-from backend.app.utils.protocols import BaseService
-from backend.app.utils.wrappers import RoleServiceWrapper
-from backend.app.utils.types import RoleBundle
-from backend.app.routes.entities.analyze.types import RawTuple
+from app.utils.protocols import BaseService
+from app.utils.wrappers import RoleServiceWrapper
+from app.utils.types import RoleBundle
+from app.routes.entities.analyze.types import RawTuple
 
 
 _RAW: Dict[PermissionRole, RawTuple] = {

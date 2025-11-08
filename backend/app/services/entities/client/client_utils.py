@@ -1,7 +1,7 @@
 from typing import Type, TypeVar
-from backend.app.models import Client
-from backend.app.schemas import SchemaBase
-from backend.app.services.entities import UserUtilService
+from app.models import Client
+from app.schemas import SchemaBase
+from app.services.entities import UserUtilService
 
 T = TypeVar("T", bound=SchemaBase)
 

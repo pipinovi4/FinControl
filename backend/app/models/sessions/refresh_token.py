@@ -8,7 +8,7 @@ from hashlib import sha256
 from sqlalchemy.sql.schema import UniqueConstraint
 
 from backend.db.session import Base
-from backend.app.models.mixins import UUIDMixin, TimeStampMixin
+from app.models.mixins import UUIDMixin, TimeStampMixin
 
 
 

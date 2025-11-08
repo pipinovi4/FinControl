@@ -28,7 +28,7 @@ from fastapi import APIRouter
 def create_register_router() -> APIRouter:
     register_router = APIRouter()
 
-    from backend.app.routes.auth.register.router_factory import create_register_routers
+    from app.routes.auth.register.router_factory import create_register_routers
 
     for router in create_register_routers():
         register_router.include_router(router)

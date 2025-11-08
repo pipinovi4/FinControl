@@ -4,8 +4,9 @@ from fastapi.responses import JSONResponse
 from slowapi import Limiter
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
-from backend.app.utils.middlewares import AccessTokenMiddleware, WebSocketAuthMiddleware
-from backend.app.routes import create_api_router
+from app.utils.middlewares import AccessTokenMiddleware, WebSocketAuthMiddleware
+from app.routes import create_api_router
+from app.core.settings import settings
 from fastapi.middleware.cors import CORSMiddleware
 from collections import defaultdict
 from slowapi.util import get_remote_address

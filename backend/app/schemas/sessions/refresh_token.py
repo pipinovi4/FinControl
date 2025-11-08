@@ -5,7 +5,7 @@ from uuid import UUID
 from pydantic import BaseModel, Field
 from typing import Annotated, Optional
 
-from backend.app.schemas.mixins import UUIDSchema
+from app.schemas.mixins import UUIDSchema
 
 
 class RefreshTokenSchema:

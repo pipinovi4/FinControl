@@ -4,9 +4,9 @@ from backend.db.session import get_async_db
 from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import UUID
 
-from backend.app.services.entities.worker.worker_dashboard import WorkerDashboardService
-from backend.app.schemas.entities.client_schema import ClientOut, WorkerClientNewToday, ClientWorkerOut
-from backend.app.routes.entities.crud.dashboard.types import (
+from app.services.entities.worker.worker_dashboard import WorkerDashboardService
+from app.schemas.entities.client_schema import ClientOut, WorkerClientNewToday, ClientWorkerOut
+from app.routes.entities.crud.dashboard.types import (
     SimpleIntOut,
     SimpleFloatOut,
     WorkerClientListOut,

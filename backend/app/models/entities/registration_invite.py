@@ -11,7 +11,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from backend.db.session import Base
 
-from backend.app.permissions import PermissionRole
+from app.permissions import PermissionRole
 
 class RegistrationInvite(Base):
     __tablename__ = "registration_invites"

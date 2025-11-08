@@ -8,11 +8,11 @@ from datetime import datetime
 from sqlalchemy import select, desc, func, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.app.models.entities.promotion import Promotion, PromotionEnum
-from backend.app.models.entities.worker import Worker
-from backend.app.models.entities.credit import Credit
-from backend.app.utils.decorators import handle_exceptions
-from backend.app.schemas.entities.promotion_schema import PromotionCreate, PromotionUpdate
+from app.models.entities.promotion import Promotion, PromotionEnum
+from app.models.entities.worker import Worker
+from app.models.entities.credit import Credit
+from app.utils.decorators import handle_exceptions
+from app.schemas.entities.promotion_schema import PromotionCreate, PromotionUpdate
 
 
 PromotionT = TypeVar("PromotionT", bound=Promotion)

@@ -6,7 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from passlib.context import CryptContext
 
-from backend.app.models.entities.user import User   # базова модель
+from app.models.entities.user import User   # базова модель
 
 pwd_ctx = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

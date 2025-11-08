@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Response, status
-from backend.app.utils.decorators import handle_route_exceptions
+from app.utils.decorators import handle_route_exceptions
 
 router = APIRouter(tags=["Logout"])
 
