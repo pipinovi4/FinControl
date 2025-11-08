@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from collections import defaultdict
 from slowapi.util import get_remote_address
 from fastapi import WebSocket
+from db.session import Base, engine
 
 # Initialize the rate limiter with the key function
 limiter = Limiter(key_func=get_remote_address)
@@ -52,6 +53,11 @@ def create_app() -> FastAPI:
 
 
 application = create_app()
+
+# ✅ AUTO-CREATE TABLES ON START
+@application.on_event("startup")
+def on_startup():
+    Base.metadata.create_all(bind=engine)
 
 if __name__ == "__main__":
     import uvicorn
