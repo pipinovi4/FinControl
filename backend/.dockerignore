@@ -1,0 +1,38 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Logs / temporary files
+*.log
+
+# Virtual environments
+.venv/
+venv/
+
+# IDE settings
+.vscode/
+.idea/
+
+# Git
+.git/
+.gitignore
+
+# Tests (не потрібні в проді)
+tests/
+
+# Local env files
+.env
+.env.*
+
+# Frontend trash (на всяк випадок)
+node_modules/
+
+# Документація і нотатки
+project_tree.txt
+tree.txt
+TASKS.md
+README.md
+
+# Alembic compiled artifacts (але залишаємо versions .py для міграцій!)
+db/alembic/versions/*.pyc
