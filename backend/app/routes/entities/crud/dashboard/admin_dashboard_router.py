@@ -12,7 +12,7 @@ from app.schemas import WorkerSchema, BrokerSchema, ClientSchema
 from app.schemas.auth.invite_schema import InviteIn, InviteOut
 from app.schemas.entities.client_schema import WorkerClientNewToday, UserNewToday
 from app.services.auth.invite_service import InviteService
-from backend.db.session import get_async_db
+from db.session import get_async_db
 from app.services.entities.admin.admin_dashboard import AdminDashboard
 from app.models.entities.promotion import PromotionEnum
 from app.services.entities.promotion.promotion_service import PromotionService

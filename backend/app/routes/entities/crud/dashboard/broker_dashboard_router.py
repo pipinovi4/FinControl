@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import UUID
 
 from app.schemas.entities.client_schema import ClientBrokerOut, BrokerClientNewToday
-from backend.db.session import get_async_db
+from db.session import get_async_db
 from app.services.entities.broker.broker_dashboard import BrokerDashboard
 from app.services.entities.credit.credit_service import CreditService, CreditStatus
 from app.schemas.entities.credit_schema import (

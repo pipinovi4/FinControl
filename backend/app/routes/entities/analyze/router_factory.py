@@ -13,7 +13,7 @@ from __future__ import annotations
 from typing import Awaitable, Callable, Any, List
 from fastapi import APIRouter, HTTPException, Request, Depends
 
-from backend.db.session import get_async_db
+from db.session import get_async_db
 from app.routes.entities.analyze._base import generate_analyze_endpoints
 from app.routes.entities.analyze.types import AnalyzeType
 from app.routes.entities.analyze.config import ROLE_REGISTRY

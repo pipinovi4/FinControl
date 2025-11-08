@@ -3,7 +3,7 @@ from sqlalchemy import Enum, String
 
 from app.models.mixins import UUIDMixin, TimeStampMixin, SoftDeleteMixin, AuthMixin
 from app.permissions.enums import PermissionRole
-from backend.db.session import Base
+from db.session import Base
 
 class User(Base, AuthMixin, UUIDMixin, TimeStampMixin, SoftDeleteMixin):
     """

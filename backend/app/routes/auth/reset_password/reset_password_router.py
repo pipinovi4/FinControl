@@ -5,7 +5,7 @@ from app.schemas.auth import ResetPasswordRequest, ResetPasswordConfirm
 from app.utils.decorators import handle_route_exceptions
 from app.services.auth import ResetPasswordService
 from app.utils.middlewares import rate_limit
-from backend.db.session import get_async_db
+from db.session import get_async_db
 
 router = APIRouter(tags=["Reset Password"])
 

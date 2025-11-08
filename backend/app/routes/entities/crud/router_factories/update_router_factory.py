@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 
-from backend.db.session import get_async_db
+from db.session import get_async_db
 from app.permissions import PermissionRole
 from app.routes.entities.crud.config import UPDATE_MATRIX
 from app.routes.entities.crud._base import generate_crud_endpoints

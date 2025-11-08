@@ -254,9 +254,9 @@ class ClientSchema:
 
 from importlib import import_module
 
-_client_mod = import_module("backend.app.schemas.entities.broker_schema")
+_client_mod = import_module("app.schemas.entities.broker_schema")
 globals()["BrokerShort"] = _client_mod.BrokerSchema.Short
-_client_mod = import_module("backend.app.schemas.entities.worker_schema")
+_client_mod = import_module("app.schemas.entities.worker_schema")
 globals()["WorkerShort"] = _client_mod.WorkerSchema.Short
-_client_mod = import_module("backend.app.schemas.entities.credit_schema")
+_client_mod = import_module("app.schemas.entities.credit_schema")
 globals()["CreditShort"] = _client_mod.CreditSchema.Short

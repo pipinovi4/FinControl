@@ -97,7 +97,7 @@ class BrokerSchema:
 
 from importlib import import_module
 
-_broker_mod = import_module("backend.app.schemas.entities.client_schema")
+_broker_mod = import_module("app.schemas.entities.client_schema")
 globals()["ClientShort"] = _broker_mod.ClientSchema.Short
-_broker_mod = import_module("backend.app.schemas.entities.credit_schema")
+_broker_mod = import_module("app.schemas.entities.credit_schema")
 globals()["CreditShort"] = _broker_mod.CreditSchema.Short

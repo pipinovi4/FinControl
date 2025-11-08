@@ -5,7 +5,7 @@ from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column
 from uuid import uuid4
 
-from backend.db.session import Base
+from db.session import Base
 from app.models.mixins import TimeStampMixin, SoftDeleteMixin
 
 

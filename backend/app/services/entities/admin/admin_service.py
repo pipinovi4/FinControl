@@ -11,7 +11,7 @@ from app.permissions import PermissionRole
 from app.models.entities import Admin
 from app.utils.decorators import handle_exceptions
 from app.schemas.entities.admin_schema import AdminSchema
-from backend.db.session import get_async_db
+from db.session import get_async_db
 
 AdminT = TypeVar("AdminT", bound=Admin)
 

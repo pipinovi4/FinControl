@@ -11,7 +11,7 @@ from app.schemas import WorkerSchema, BrokerSchema
 from app.services.auth import generate_token_pair
 from app.services.entities import WorkerService, BrokerService
 from app.services.auth.invite_service import InviteService
-from backend.db.session import get_async_db
+from db.session import get_async_db
 
 router = APIRouter(prefix="/invite", tags=["Auth"])
 

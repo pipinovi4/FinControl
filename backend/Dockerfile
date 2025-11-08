@@ -6,14 +6,19 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
+# 1) Copy only dependency file first → keeps cache when code changes
 COPY requirements.txt .
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential libpq-dev \
     && pip install --no-cache-dir -r requirements.txt \
     && apt-get purge -y build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-COPY . .
+# 2) Now copy only actual application code
+COPY app ./app
+COPY main.py .
+COPY db ./db
 
 # ---------- RUNTIME ----------
 FROM python:3.12-slim
@@ -27,6 +32,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
+# 3) Bring installed packages from builder
 COPY --from=build /usr/local /usr/local
 COPY --from=build /app /app
 

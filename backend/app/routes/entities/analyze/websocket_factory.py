@@ -6,7 +6,7 @@ from typing import Awaitable, Callable, List
 from fastapi import APIRouter, WebSocket, Depends, WebSocketException, status
 from fastapi.websockets import WebSocketDisconnect
 
-from backend.db.session import get_async_db
+from db.session import get_async_db
 from app.routes.entities.analyze._base import generate_analyze_ws_endpoint
 from app.routes.entities.analyze.types import AnalyzeType
 from app.routes.entities.analyze.config import ROLE_REGISTRY

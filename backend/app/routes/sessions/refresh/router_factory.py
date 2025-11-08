@@ -7,7 +7,7 @@ from app.schemas.sessions import TokenPair
 from app.services.auth import AccessTokenService
 from app.services.sessions.refresh_token import RefreshTokenService
 from app.utils.cookies import set_auth_cookies
-from backend.db.session import get_async_db
+from db.session import get_async_db
 from app.routes.sessions.refresh._base import generate_refresh_endpoints
 from app.routes.sessions.refresh.types import RefreshTypes
 from app.routes.sessions.refresh.config import ROLE_REGISTRY

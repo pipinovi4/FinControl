@@ -80,8 +80,8 @@ class WorkerSchema:
 # resolve forward refs without circular imports at import time
 from importlib import import_module
 
-_client_mod = import_module("backend.app.schemas.entities.client_schema")
+_client_mod = import_module("app.schemas.entities.client_schema")
 globals()["ClientShort"] = _client_mod.ClientSchema.Short
 
-_credit_mod = import_module("backend.app.schemas.entities.credit_schema")
+_credit_mod = import_module("app.schemas.entities.credit_schema")
 globals()["CreditShort"] = _credit_mod.CreditSchema.Short

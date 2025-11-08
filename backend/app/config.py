@@ -12,8 +12,8 @@ for _ in range(5):  # Look max 5 levels up for .env and project root
         sys.path.append(str(env_path))
         break
     env_path = env_path.parent
-else:
-    raise FileNotFoundError("❌ .env file not found in parent directories.")
+# else:
+#     raise FileNotFoundError("❌ .env file not found in parent directories.")
 
 # === DATABASE CONFIGURATION ===
 required_env = ["DB_USER", "DB_PASSWORD", "DB_HOST", "DB_PORT", "DB_NAME"]

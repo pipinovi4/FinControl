@@ -7,7 +7,7 @@ from sqlalchemy import ForeignKey, Numeric, Enum, DateTime, String, Text, text
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
-from backend.db.session import Base
+from db.session import Base
 from app.models.mixins.soft_delete import SoftDeleteMixin
 
 

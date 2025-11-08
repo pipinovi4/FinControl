@@ -7,7 +7,7 @@ from pydantic import BaseModel, EmailStr
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import cast
 
-from backend.db.session              import get_async_db
+from db.session              import get_async_db
 from app.models.entities     import User            # ← Base class
 from app.permissions import PermissionRole
 from app.schemas import AdminSchema, BrokerSchema, WorkerSchema, ClientSchema

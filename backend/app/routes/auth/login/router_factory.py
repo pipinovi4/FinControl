@@ -9,7 +9,7 @@ from app.routes.auth.login.config import ROLE_REGISTRY
 from app.schemas.sessions import TokenPair
 from app.services.auth import PasswordService, generate_token_pair
 from app.utils.cookies import set_auth_cookies
-from backend.db.session import get_async_db
+from db.session import get_async_db
 from app.routes.auth.login._base import generate_login_endpoints
 from app.permissions import PermissionRole
 from app.models.entities import Admin, Worker, Broker, Client

@@ -4,9 +4,9 @@ from httpx import ASGITransport
 from sqlalchemy.ext.asyncio import AsyncSession
 from collections.abc import AsyncGenerator
 
-from backend.main import application
-from backend.db.session import get_async_db
-from backend.db.init_test_db import override_test_db
+from app.main import application
+from db.session import get_async_db
+from app.db.init_test_db import override_test_db
 
 
 @pytest.fixture(scope="session")

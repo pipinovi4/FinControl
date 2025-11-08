@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from backend.db.session import get_async_db
+from db.session import get_async_db
 from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import UUID
 
