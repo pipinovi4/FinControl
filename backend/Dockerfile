@@ -41,4 +41,10 @@ USER appuser
 
 EXPOSE 8000
 
-CMD ["gunicorn", "main:application", "--workers", "5", "--worker-class", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000", "--timeout", "120", "--keep-alive", "65", "--preload"]
+CMD ["gunicorn", "main:application", \
+     "--workers", "3", \
+     "--worker-class", "uvicorn.workers.UvicornWorker", \
+     "--bind", "0.0.0.0:8000", \
+     "--timeout", "120", \
+     "--keep-alive", "65", \
+     "--preload"]

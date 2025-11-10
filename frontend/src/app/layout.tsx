@@ -21,10 +21,12 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-    title: 'WorldFlowCredit',
+    title: 'Fincontrol',
     description: 'Система управления кредитами и клиентами.',
     icons: {
         icon: "/avatar.ico",
+        shortcut: "/avatar.ico",
+        apple: "/avatar.ico",
     },
 };
 

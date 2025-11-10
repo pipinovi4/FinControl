@@ -3,16 +3,19 @@ FROM node:22-alpine AS build
 
 WORKDIR /app
 
-# Кеш залежностей
+# 1) Кеш залежностей
 COPY package*.json ./
 RUN npm install
 
-# Копіюємо решту коду
+# 2) ОБОВʼЯЗКОВО копіюємо public ДО build
+COPY public ./public
+
+# 3) Копіюємо решту коду
 COPY . .
 
 ENV NODE_ENV=production
 
-# Білд зі standalone
+# 4) Стендалоун білд
 RUN npm run build
 
 
@@ -24,13 +27,14 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3000
 
-# Копіюємо standalone сервер (всередині вже є node_modules)
+# Копіюємо standalone сервер (включає node_modules)
 COPY --from=build /app/.next/standalone ./
-# Копіюємо статичні файли (ті, що обробляє next)
+
+# Копіюємо статичні файли (для підвантаження)
 COPY --from=build /app/.next/static ./.next/static
 
-# ❌ Видалено, бо public/ тобі не потрібний
-# COPY --from=build /app/public ./public
+# Копіюємо public (з білда у runtime)
+COPY --from=build /app/public ./public
 
 EXPOSE 3000
 
