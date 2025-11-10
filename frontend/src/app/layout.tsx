@@ -21,7 +21,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-    title: 'Fincontrol',
+    title: 'Хуй хуй хуй CI/CD працює йоу йоу',
     description: 'Система управления кредитами и клиентами.',
     icons: {
         icon: "/avatar.ico",
