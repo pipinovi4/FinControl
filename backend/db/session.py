@@ -17,7 +17,7 @@ engine = create_async_engine(
     pool_size=SQLALCHEMY_POOL_SIZE,
     max_overflow=SQLALCHEMY_MAX_OVERFLOW,
     pool_timeout=SQLALCHEMY_POOL_TIMEOUT,
-    pool_pre_ping=SQLALCHEMY_POOL_PRE_PING.lower() == "true",
+    pool_pre_ping=True,
 )
 
 # 🧠 Create async sessionmaker
