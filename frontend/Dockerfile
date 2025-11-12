@@ -3,19 +3,26 @@ FROM node:22-alpine AS build
 
 WORKDIR /app
 
-# 1) Кеш залежностей
+# 1️⃣ Параметр для білду
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+
+# 2️⃣ Кеш залежностей
 COPY package*.json ./
 RUN npm install
 
-# 2) ОБОВʼЯЗКОВО копіюємо public ДО build
+# 3️⃣ Копіюємо public ДО build
 COPY public ./public
 
-# 3) Копіюємо решту коду
+# 4️⃣ Копіюємо решту коду
 COPY . .
 
 ENV NODE_ENV=production
 
-# 4) Стендалоун білд
+# 🧠 DEBUG: покажемо значення при білді
+RUN echo "🌍 Building frontend with NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL"
+
+# 5️⃣ Стендалоун білд
 RUN npm run build
 
 
@@ -33,7 +40,7 @@ COPY --from=build /app/.next/standalone ./
 # Копіюємо статичні файли (для підвантаження)
 COPY --from=build /app/.next/static ./.next/static
 
-# Копіюємо public (з білда у runtime)
+# Копіюємо public
 COPY --from=build /app/public ./public
 
 EXPOSE 3000
