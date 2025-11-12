@@ -9,10 +9,11 @@ from app.config import (
     SQLALCHEMY_POOL_TIMEOUT,
 )
 
-# 🔧 Create async SQLAlchemy engine with pool settings
+# 🔧 Створюємо async SQLAlchemy engine з pool параметрами
 engine = create_async_engine(
-    f"{SQLALCHEMY_DATABASE_URI}?pool_pre_ping=true&pool_recycle={SQLALCHEMY_POOL_RECYCLE}",
+    SQLALCHEMY_DATABASE_URI,
     echo=True,
+    pool_pre_ping=(SQLALCHEMY_POOL_PRE_PING.lower() == "true"),
     pool_size=SQLALCHEMY_POOL_SIZE,
     max_overflow=SQLALCHEMY_MAX_OVERFLOW,
     pool_timeout=SQLALCHEMY_POOL_TIMEOUT,
