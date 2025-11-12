@@ -23,9 +23,9 @@ const poppins = Poppins({
 export const metadata: Metadata = {
     title: 'Fincontrol',
     description: 'Система управления кредитами и клиентами.',
-    // icons: {
-    //     icon: "/avatar.ico",
-    // },
+    icons: {
+        icon: "/favicon.ico",
+    },
 };
 
 export default function RootLayout({
