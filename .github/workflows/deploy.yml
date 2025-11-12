@@ -28,7 +28,7 @@ jobs:
           push: true
           tags: pipinovi4/frontend-production:latest
           build-args: |
-            NEXT_PUBLIC_API_URL=http://backend:8000/api
+            NEXT_PUBLIC_API_URL=https://worldflowcredit.com
 
       # ===========================
       #  BACKEND BUILD
