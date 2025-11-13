@@ -5,12 +5,10 @@ services:
     restart: unless-stopped
     env_file:
       - .env.frontend
-    expose:
-      - "3000"
+    ports:
+      - "127.0.0.1:3000:3000"
     networks:
       - app_net
-    depends_on:
-      - backend
 
   backend:
     image: pipinovi4/backend-production:latest
@@ -18,12 +16,10 @@ services:
     restart: unless-stopped
     env_file:
       - .env.backend
-    expose:
-      - "8000"
+    ports:
+      - "127.0.0.1:8000:8000"
     networks:
       - app_net
-    depends_on:
-      - frontend
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
       interval: 20s

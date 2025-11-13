@@ -93,7 +93,7 @@ export async function fetchAdminCredits({
     search?: string;
     deleted?: DeletedFilter;
 }) {
-    const u = createUrl("dashboard/admin/credits", base);
+    const u = createUrl("api/dashboard/admin/credits", base);
     u.searchParams.set("skip", String(skip));
     u.searchParams.set("limit", String(limit));
     if (deleted) u.searchParams.set("deleted", deleted);
@@ -118,7 +118,7 @@ export async function fetchAdminClients({
     id: string;            // якщо бек справді вимагає admin_id у path — лишаємо
     deleted?: DeletedFilter;
 }) {
-    const u = createUrl(`dashboard/admin/clients/${id}`, base);
+    const u = createUrl(`api/dashboard/admin/clients/${id}`, base);
     u.searchParams.set("skip", String(skip));
     u.searchParams.set("limit", String(limit));
     const q = normSearch(search);
@@ -132,35 +132,35 @@ export async function fetchAdminClients({
 }
 
 export async function fetchClientOne({ token, base, id }: { token: string; base?: string; id: string; }) {
-    const u = createUrl(`dashboard/admin/client/${id}`, base);
+    const u = createUrl(`api/dashboard/admin/client/${id}`, base);
     return fetchJSON(u.toString(), { headers: h(token), cache: "no-store" });
 }
 
 export async function adminUpdateCredit({ token, base, id, patch }: { token: string; base?: string; id: string; patch: any; }) {
-    const u = createUrl(`dashboard/admin/credits/${id}`, base);
+    const u = createUrl(`api/dashboard/admin/credits/${id}`, base);
     return fetchJSON(u.toString(), { method: "PATCH", headers: h(token), body: JSON.stringify(patch) });
 }
 
 export async function adminUpdateClient({ token, base, id, patch }: { token: string; base?: string; id: string; patch: any; }) {
-    const u = createUrl(`dashboard/admin/client/${id}`, base);
+    const u = createUrl(`api/dashboard/admin/client/${id}`, base);
     return fetchJSON(u.toString(), { method: "PATCH", headers: h(token), body: JSON.stringify(patch) });
 }
 
 export async function adminChangeStatus({ token, base, id, status }: { token: string; base?: string; id: string; status: string; }) {
-    const u = createUrl(`dashboard/admin/credits/${id}/status`, base);
+    const u = createUrl(`api/dashboard/admin/credits/${id}/status`, base);
     u.searchParams.set("new_status", status);
     return fetchJSON(u.toString(), { method: "PATCH", headers: { Authorization: token } });
 }
 
 export async function adminCreateCredit({ token, base, client_id, amount }: { token: string; base?: string; client_id: string; amount: number; }) {
-    const u = createUrl("dashboard/admin/credits", base);
+    const u = createUrl("api/dashboard/admin/credits", base);
     return fetchJSON(u.toString(), { method: "POST", headers: h(token), body: JSON.stringify({ client_id, amount }) });
 }
 
 export async function adminDeleteCredit({ token, base, id }:{
     token:string; base?:string; id:string;
 }) {
-    const u = createUrl(`dashboard/admin/credits/${id}`, base);
+    const u = createUrl(`api/dashboard/admin/credits/${id}`, base);
     await fetchOk(u.toString(), { method: "DELETE", headers: { Authorization: token } });
     return true;
 }
@@ -168,7 +168,7 @@ export async function adminDeleteCredit({ token, base, id }:{
 export async function adminDeleteClient({ token, base, id }:{
     token:string; base?:string; id:string;
 }) {
-    const u = createUrl(`dashboard/admin/user/${id}/deactivate`, base);
+    const u = createUrl(`api/dashboard/admin/user/${id}/deactivate`, base);
     await fetchOk(u.toString(), { method: "PATCH", headers: { Authorization: token } });
     return true;
 }
@@ -176,20 +176,20 @@ export async function adminDeleteClient({ token, base, id }:{
 export async function adminRestoreClient({ token, base, id }:{
     token:string; base?:string; id:string;
 }) {
-    const u = createUrl(`dashboard/admin/user/${id}/restore`, base);
+    const u = createUrl(`api/dashboard/admin/user/${id}/restore`, base);
     await fetchOk(u.toString(), { method: "PATCH", headers: { Authorization: token } });
     return true;
 }
 
 export async function adminRestoreCredit({ token, base, id }: { token: string; base?: string; id: string; }) {
-    const u = createUrl(`dashboard/admin/credits/${id}/restore`, base);
+    const u = createUrl(`api/dashboard/admin/credits/${id}/restore`, base);
     return fetchOk(u.toString(), { method: "PATCH", headers: h(token) });
 }
 
 export async function adminAddComment({
                                           token, base, id, text,
                                       }: { token:string; base?:string; id:string; text:string; }) {
-    const u = createUrl(`dashboard/admin/credits/${id}/comment`, base);
+    const u = createUrl(`api/dashboard/admin/credits/${id}/comment`, base);
     return fetchJSON(u.toString(), {
         method: "POST",
         headers: h(token),
