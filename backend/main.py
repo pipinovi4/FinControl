@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 from slowapi import Limiter
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
+from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 from app.utils.middlewares import AccessTokenMiddleware, WebSocketAuthMiddleware
 from app.routes import create_api_router
 from app.core.settings import settings
@@ -12,7 +13,6 @@ from collections import defaultdict
 from slowapi.util import get_remote_address
 from fastapi import WebSocket
 from db.session import Base, engine
-from starlette.middleware.proxy_headers import ProxyHeadersMiddleware
 
 # Initialize the rate limiter with the key function
 limiter = Limiter(key_func=get_remote_address)
