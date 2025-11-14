@@ -12,7 +12,7 @@ from collections import defaultdict
 from slowapi.util import get_remote_address
 from fastapi import WebSocket
 from db.session import Base, engine
-from fastapi.middleware.proxy_headers import ProxyHeadersMiddleware
+from starlette.middleware.proxy_headers import ProxyHeadersMiddleware
 
 # Initialize the rate limiter with the key function
 limiter = Limiter(key_func=get_remote_address)
