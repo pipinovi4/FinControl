@@ -1,26 +1,20 @@
 from fastapi import FastAPI, Request
-from fastapi.routing import APIRoute
 from fastapi.responses import JSONResponse
 from slowapi import Limiter
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
-from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 from app.utils.middlewares import AccessTokenMiddleware, WebSocketAuthMiddleware
 from app.routes import create_api_router
 from app.core.settings import settings
 from fastapi.middleware.cors import CORSMiddleware
-from collections import defaultdict
 from slowapi.util import get_remote_address
-from fastapi import WebSocket
-from db.session import Base, engine
+from db.session import Base
 
 # Initialize the rate limiter with the key function
 limiter = Limiter(key_func=get_remote_address)
 
 def create_app() -> FastAPI:
-    app = FastAPI()
-
-    app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
+    app = FastAPI(strict_slashes=False)
 
     # Add CORS middleware
     app.add_middleware(
