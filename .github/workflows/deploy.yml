@@ -64,6 +64,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           source: "docker-compose.prod.yml"
           target: "/opt/Fincontrol"
+          overwrite: true
 
       # -------------------------------------
       #  DEPLOY ON VPS
