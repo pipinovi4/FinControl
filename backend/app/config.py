@@ -6,8 +6,8 @@ from dotenv import load_dotenv
 # === PATH SETUP ===
 env_path = Path(__file__).resolve()
 for _ in range(5):
-    if (env_path / ".env.backend").exists():
-        load_dotenv(dotenv_path=env_path / ".env.backend")
+    if (env_path / ".env").exists():
+        load_dotenv(dotenv_path=env_path / ".env")
         sys.path.append(str(env_path))
         break
     env_path = env_path.parent
