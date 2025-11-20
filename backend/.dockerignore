@@ -36,3 +36,11 @@ README.md
 
 # Alembic compiled artifacts (але залишаємо versions .py для міграцій!)
 db/alembic/versions/*.pyc
+
+__pycache__
+venv
+.env*
+tests
+docker-compose.dev.yml
+Dockerfile.dev
+

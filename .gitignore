@@ -65,3 +65,10 @@ next-env.d.ts
 # Alembic temp (optionally)
 backend/db/alembic/versions/*.pyc
 backend/db/alembic/versions/__pycache__/
+
+nginx.dev.conf
+secrets.dev.json
+dev.db
+docker-compose.dev.yml
+*.dev
+.env
