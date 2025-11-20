@@ -1,0 +1,64 @@
+services:
+  frontend:
+    image: pipinovi4/frontend-production:latest
+    container_name: frontend
+    restart: unless-stopped
+    env_file:
+      - .env.prod
+    ports:
+      - "127.0.0.1:3000:3000"
+    networks:
+      - app_net
+
+  backend:
+    image: pipinovi4/backend-production:latest
+    container_name: backend
+    restart: unless-stopped
+    env_file:
+      - .env.prod
+    ports:
+      - "127.0.0.1:8000:8000"
+    networks:
+      - app_net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+
+#  ###########################################
+#  #          TELEGRAM BOT SERVICE           #
+#  ###########################################
+#  bot:
+#    image: pipinovi4/bot-production:latest
+#    container_name: fincontrol-bot
+#    restart: unless-stopped
+#    env_file:
+#      - /etc/fincontrol.env
+#    depends_on:
+#      - rabbitmq
+#    networks:
+#      - app_net
+#
+#
+#  ###########################################
+#  #               RABBITMQ                  #
+#  ###########################################
+#  rabbitmq:
+#    image: rabbitmq:3.13-management
+#    container_name: fincontrol-rabbitmq
+#    restart: unless-stopped
+#    environment:
+#      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+#      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
+#    ports:
+#      # Панель управління RabbitMQ
+#      - "15672:15672"
+#      # AMQP
+#      - "5672:5672"
+#    networks:
+#      - app_net
+
+networks:
+  app_net:
+    driver: bridge
