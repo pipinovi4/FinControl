@@ -1,0 +1,20 @@
+# ---------- DEV ----------
+
+FROM node:22-alpine
+
+# Робоча директорія
+WORKDIR /app
+
+# Спочатку копіюємо package.json — кеш npm install
+COPY package*.json ./
+
+# Інсталимо залежності
+RUN npm install --legacy-peer-deps
+
+# Потім очікуємо volume, який підмонтує весь код
+# Тому не копіюємо source-файли в контейнер!
+
+EXPOSE 3000
+
+# Запускаємо Next.js у dev режимі
+CMD ["npm", "run", "dev"]
