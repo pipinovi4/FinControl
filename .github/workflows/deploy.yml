@@ -4,6 +4,14 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - "**/*.dev.*"
+      - "**/docker-compose.dev.yml"
+      - "**/Dockerfile.dev"
+      - "**/nginx.dev.conf"
+      - "**/.env.dev"
+      - "pgdata/**"
+      - "**/*.test.*"
 
 jobs:
   deploy:
