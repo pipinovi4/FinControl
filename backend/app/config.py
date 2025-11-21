@@ -3,14 +3,24 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-# === PATH SETUP ===
-env_path = Path(__file__).resolve()
-for _ in range(5):
-    if (env_path / ".env").exists():
-        load_dotenv(dotenv_path=env_path / ".env")
-        sys.path.append(str(env_path))
-        break
-    env_path = env_path.parent
+# ==========================================
+# ALWAYS LOAD .env FROM PROJECT ROOT
+# ==========================================
+
+# /app/app/config.py → go 2 levels up → /app → go 1 more → / (FinControl root in Docker)
+project_root = Path(__file__).resolve().parents[2]
+
+env_file = project_root / ".env"
+
+if env_file.exists():
+    print(f"🔧 Loading .env from: {env_file}")
+    load_dotenv(env_file)
+else:
+    print("⚠️ .env NOT FOUND in project root, using environment variables")
+
+
+# add project root to PYTHONPATH
+sys.path.append(str(project_root))
 
 # === DATABASE CONFIGURATION ===
 required_env = ["DB_USER", "DB_PASSWORD", "DB_HOST", "DB_PORT", "DB_NAME"]
