@@ -51,14 +51,6 @@ def create_app() -> FastAPI:
 
 application = create_app()
 
-# ✅ AUTO-CREATE TABLES ON START
-@application.on_event("startup")
-async def on_startup():
-    # імпортуємо engine звідси
-    from db.session import engine
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:application", host="0.0.0.0", port=8000, reload=False)
