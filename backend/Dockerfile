@@ -53,6 +53,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY app ./app
 COPY main.py .
 COPY db ./db
+COPY alembic.ini .
+COPY alembic ./alembic
 
 
 # ---------- RUNTIME ----------
