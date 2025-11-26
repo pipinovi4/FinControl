@@ -2,8 +2,8 @@ from __future__ import annotations
 import os
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-from locales import t, BTN_BACK  # ← було messages
-from .callbacks import cb_menu    # для коректного callback_data
+from ..locales import translate as t, BTN_BACK  # ← було messages
+from .callback_kb import cb_menu    # для коректного callback_data
 
 def kb_about(lang: str) -> InlineKeyboardMarkup:
     WEBSITE  = os.getenv("SOCIAL_WEBSITE",  "https://example.com")

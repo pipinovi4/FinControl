@@ -1,8 +1,9 @@
 from __future__ import annotations
 from typing import List
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
-from configs import COUNTRIES_BY_REGION
-from .callbacks import cb_country, CB_START
+
+from ..constants import CB_START, COUNTRIES_BY_REGION
+from .callback_kb import cb_country
 
 def kb_countries(region_code: str) -> InlineKeyboardMarkup:
     rows: List[List[InlineKeyboardButton]] = []

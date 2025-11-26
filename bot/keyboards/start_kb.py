@@ -1,8 +1,9 @@
 from __future__ import annotations
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 
-from locales import START_BTN   # ← було messages
-from .callbacks import CB_START
+from ..constants import CB_START
+from ..locales import START_BTN
+
 
 def kb_start() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup([

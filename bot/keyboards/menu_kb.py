@@ -1,10 +1,10 @@
 from __future__ import annotations
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 
-from locales import (  # ← було messages
-    BTN_SUPPORT, BTN_ABOUT, BTN_CHANGE_COUNTRY, BTN_MY_APPS, BTN_APPLY, t
+from ..locales import (  # ← було messages
+    BTN_SUPPORT, BTN_ABOUT, BTN_CHANGE_COUNTRY, BTN_MY_APPS, BTN_APPLY, translate as t
 )
-from .callbacks import cb_menu
+from .callback_kb import cb_menu
 
 def kb_main_menu(lang: str) -> InlineKeyboardMarkup:
     # перший ряд — широка кнопка «Подать заявку»
