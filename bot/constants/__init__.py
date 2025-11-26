@@ -31,7 +31,9 @@ from .app_state import (
 )
 
 # Callback helpers
-from .callbacks import cb_region, cb_country, cb_menu
+from .callbacks import (
+    CB_COUNTRY, CB_MENU, CB_START, CB_REGION
+)
 
 # Country/region mappings
 from .country_maps import (
@@ -54,7 +56,7 @@ __all__ = [
     "ABOUT_PHOTO_MSG_ID", "ABOUT_TEXT_MSG_ID",
 
     # callback builders
-    "cb_region", "cb_country", "cb_menu",
+    "CB_COUNTRY", "CB_MENU", "CB_START", "CB_REGION",
 
     # country/region maps
     "REGIONS", "COUNTRIES_BY_REGION",
