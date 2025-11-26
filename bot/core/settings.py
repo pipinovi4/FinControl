@@ -1,6 +1,9 @@
 from __future__ import annotations
+from dotenv import load_dotenv
 import os
 from dataclasses import dataclass
+
+load_dotenv()
 
 # === Base application settings ===
 # This dataclass stores all core environment-driven configuration
