@@ -36,6 +36,7 @@ alembic/__pycache__/
 alembic/versions/__pycache__/
 
 # Dev files
+requirements.dev.txt
 docker-compose.dev.yml
 Dockerfile.dev
 *.dev
