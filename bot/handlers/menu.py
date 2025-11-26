@@ -33,9 +33,7 @@ from ..keyboards import (
 )
 
 from ..handlers.application.prompts import send_step_prompt
-
-from ..ui.safe_io import safe_edit, replace_with_text
-from ..ui.progress_panel import upsert_progress_panel
+from ..ui import safe_edit, replace_with_text, upsert_progress_panel, wipe_all_progress_panels
 
 from ..core.logger import log
 
@@ -85,14 +83,13 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     # ------------------------------
     if data == CB_START:
         # reset UI
-        from ui.progress_panel import _wipe_all_progress_panels
-        await _wipe_all_progress_panels(q.message.chat, context)
+        await wipe_all_progress_panels(q.message.chat, context)
 
         await safe_edit(
             q,
             WELCOME_BILINGUAL,
             reply_markup=kb_regions(),
-            parse_mode="Markdown"
+            parse_mode="HTML"
         )
         return
 
@@ -164,13 +161,11 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         # 2) SUPPORT
         # --------------------------------------------------------
         if action == BTN_SUPPORT:
-            support_username = os.getenv("SUPPORT_USERNAME", "WorldFlowSupport")
-            text = t(lang, "support_text", support_username=support_username)
-            text += "\n\n" + t(lang, "menu_title")
-
-            await safe_edit(q, text, reply_markup=kb_main_menu(lang))
+            await _cleanup_about(q.message.chat, context)
+            support_username = os.getenv("TELEGRAM_BOT_SUPPORT_USERNAME", "WorldFlowSupport")
+            txt = t(lang, "support_text", support_username=support_username)
+            await safe_edit(q, txt, reply_markup=kb_main_menu(lang), parse_mode="HTML")
             return
-
         # --------------------------------------------------------
         # 3) ABOUT
         # --------------------------------------------------------
@@ -197,7 +192,7 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
                 q,
                 t(lang, "about_full"),
                 reply_markup=kb_about(lang),
-                parse_mode="Markdown",
+                parse_mode="HTML",
             )
             return
 
@@ -208,7 +203,8 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
             await safe_edit(
                 q,
                 t(lang, "back_to_region"),
-                reply_markup=kb_regions()
+                reply_markup=kb_regions(),
+                parse_mode="HTML",
             )
             return
 
