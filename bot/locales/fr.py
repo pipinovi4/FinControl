@@ -1,5 +1,5 @@
 from __future__ import annotations
-from . import register, BTN_SUPPORT, BTN_ABOUT, BTN_CHANGE_COUNTRY, BTN_MY_APPS, BTN_APPLY, BTN_BACK
+from locales import register, BTN_SUPPORT, BTN_ABOUT, BTN_CHANGE_COUNTRY, BTN_MY_APPS, BTN_APPLY, BTN_BACK
 
 L10N_FR = {
     # Вхід і вибір країни

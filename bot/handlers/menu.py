@@ -8,7 +8,7 @@ from telegram import (
 from telegram.ext import ContextTypes
 
 # --- Project-wide imports ---
-from ..constants import (
+from constants import (
     CB_START, CB_REGION, CB_COUNTRY, CB_MENU,
     LANG_BY_COUNTRY, COUNTRY_TITLE,
     APP_FLOW, APP_STEPS, APP_IDX, APP_ANS,
@@ -17,7 +17,7 @@ from ..constants import (
     build_step_order,
 )
 
-from ..locales import (
+from locales import (
     translate as t,
     WELCOME_BILINGUAL,
     BTN_APPLY, BTN_SUPPORT, BTN_ABOUT,
@@ -25,17 +25,17 @@ from ..locales import (
     BTN_BACK,
 )
 
-from ..keyboards import (
+from keyboards import (
     kb_regions,
     kb_countries,
     kb_main_menu,
     kb_about,
 )
 
-from ..handlers.application.prompts import send_step_prompt
-from ..ui import safe_edit, replace_with_text, upsert_progress_panel, wipe_all_progress_panels
+from handlers.application.prompts import send_step_prompt
+from ui import safe_edit, replace_with_text, upsert_progress_panel, wipe_all_progress_panels
 
-from ..core.logger import log
+from core.logger import log
 
 
 # ============================================================

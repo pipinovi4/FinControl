@@ -1,7 +1,7 @@
 from __future__ import annotations
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 
-from ..locales import (  # ← було messages
+from locales import (  # ← було messages
     BTN_SUPPORT, BTN_ABOUT, BTN_CHANGE_COUNTRY, BTN_MY_APPS, BTN_APPLY, translate as t
 )
 from .callback_kb import cb_menu

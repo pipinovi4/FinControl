@@ -34,8 +34,8 @@ from telegram import (
 )
 
 # --- Project imports ---
-from ...locales import translate as t
-from ...constants.step_order import ACCESS_CODE_PROMPTS
+from locales import translate as t
+from constants.step_order import ACCESS_CODE_PROMPTS
 
 
 # ============================================================================

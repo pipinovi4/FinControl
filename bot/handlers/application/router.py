@@ -35,11 +35,11 @@ from telegram import (
 from telegram.ext import ContextTypes
 
 # ----- Project imports -----
-from ...constants import (
+from constants import (
     APP_FLOW, APP_STEPS, APP_IDX, APP_ANS,
     LAST_PROMPT_MSG_ID, LAST_SERVICE_MSG_ID,
 )
-from ...locales import translate as t
+from locales import translate as t
 
 # prompt engine
 from .prompts import (
@@ -59,8 +59,8 @@ from .branching import apply_branching
 from .finish import finish_application
 
 # UI helpers
-from ...ui.progress_panel import upsert_progress_panel, wipe_all_progress_panels
-from ...core.logger import log
+from ui.progress_panel import upsert_progress_panel, wipe_all_progress_panels
+from core.logger import log
 
 
 # ====================================================================

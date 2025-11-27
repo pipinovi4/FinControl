@@ -2,7 +2,7 @@ from __future__ import annotations
 import os
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-from ..locales import translate as t, BTN_BACK  # ← було messages
+from locales import translate as t, BTN_BACK  # ← було messages
 from .callback_kb import cb_menu    # для коректного callback_data
 
 def kb_about(lang: str) -> InlineKeyboardMarkup:

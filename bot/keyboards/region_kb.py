@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import List
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
-from ..constants import REGIONS
+from constants import REGIONS
 from .callback_kb import cb_region
 
 def kb_regions() -> InlineKeyboardMarkup:

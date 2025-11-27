@@ -28,13 +28,13 @@ from telegram.ext import (
 )
 
 # Project imports
-from bot.core.settings import load_settings
-from bot.core.logger import setup_logging, log
+from core.settings import load_settings
+from core.logger import setup_logging, log
 
 # Handlers
-from bot.handlers.start import cmd_start
-from bot.handlers.menu import on_callback
-from bot.handlers.application import handle_application_message
+from handlers.start import cmd_start
+from handlers.menu import on_callback
+from handlers.application import handle_application_message
 
 
 # =====================================================================

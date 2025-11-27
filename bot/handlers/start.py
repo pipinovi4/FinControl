@@ -17,10 +17,10 @@ from telegram import Update
 from telegram.ext import ContextTypes
 
 # --- Project imports ---
-from ..locales import WELCOME_BILINGUAL        # i18n welcome text (Markdown)
-from ..keyboards.start_kb import kb_start      # "▶ Start" inline keyboard
+from locales import WELCOME_BILINGUAL        # i18n welcome text (Markdown)
+from keyboards.start_kb import kb_start      # "▶ Start" inline keyboard
 
-from ..ui import safe_edit, wipe_all_progress_panels
+from ui import safe_edit, wipe_all_progress_panels
 
 async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """

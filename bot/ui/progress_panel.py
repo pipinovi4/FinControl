@@ -32,8 +32,8 @@ from telegram.ext import ContextTypes
 from telegram import ReplyKeyboardRemove
 from telegram.error import BadRequest, Forbidden, TelegramError
 
-from ..locales import translate as t
-from ..constants import (
+from locales import translate as t
+from constants import (
     APP_STEPS, APP_ANS,
     PROGRESS_MSG_ID, PROGRESS_MSG_IDS,
 )

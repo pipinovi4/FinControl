@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import List
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 
-from ..constants import CB_START, COUNTRIES_BY_REGION
+from constants import CB_START, COUNTRIES_BY_REGION
 from .callback_kb import cb_country
 
 def kb_countries(region_code: str) -> InlineKeyboardMarkup:

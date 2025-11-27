@@ -15,10 +15,10 @@ from __future__ import annotations
 from telegram import ReplyKeyboardRemove
 from telegram.ext import ContextTypes
 
-from ...locales import translate as t
-from ...keyboards import kb_main_menu
-from ...constants import APP_FLOW
-from ...ui.progress_panel import wipe_all_progress_panels
+from locales import translate as t
+from keyboards import kb_main_menu
+from constants import APP_FLOW
+from ui.progress_panel import wipe_all_progress_panels
 
 
 async def finish_application(msg, context: ContextTypes.DEFAULT_TYPE, lang: str):

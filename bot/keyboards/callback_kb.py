@@ -1,4 +1,4 @@
-from ..constants import CB_COUNTRY, CB_REGION, CB_MENU
+from constants import CB_COUNTRY, CB_REGION, CB_MENU
 
 # ------------------------------------------------------------
 # Small helpers to generate consistent callback_data strings.

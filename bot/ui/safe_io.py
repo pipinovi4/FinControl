@@ -19,7 +19,7 @@ from typing import Optional
 from telegram.error import BadRequest, Forbidden, TelegramError
 from telegram import Message
 
-from ..core.logger import log
+from core.logger import log
 
 
 # =====================================================================

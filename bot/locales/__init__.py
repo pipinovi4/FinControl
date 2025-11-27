@@ -21,11 +21,11 @@ from . import ar  # noqa: F401
 from . import hi  # noqa: F401
 
 __all__ = [
-    "translate",
+    "translate", "register",
 
     "WELCOME_BILINGUAL", "START_BTN",
 
     "BTN_SUPPORT", "BTN_ABOUT", "BTN_CHANGE_COUNTRY", "BTN_MY_APPS", "BTN_APPLY", "BTN_BACK",
 
-    "en", "ru", "de", "fr", "el", "ar", "hi", "be", "kk",
+    "en", "ru", "de", "fr", "el", "ar", "hi"
 ]
