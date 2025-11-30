@@ -5,7 +5,7 @@ class L10NError(Exception):
     pass
 
 
-_L10N: dict[str, dict] = {}
+L10N: dict[str, dict] = {}
 _DEBUG = False
 
 
@@ -19,14 +19,14 @@ def register(lang: str, data: dict) -> None:
     if _DEBUG:
         print(f"[L10N] Registering locale '{lang}' with {len(data)} keys")
 
-    _L10N[lang] = {**_L10N.get(lang, {}), **data}
+    L10N[lang] = {**L10N.get(lang, {}), **data}
 
 
 def _lang_map(lang: str) -> dict:
     """Return language map with fallback -> en."""
-    if lang in _L10N:
-        return _L10N[lang]
-    return _L10N.get("en", {})
+    if lang in L10N:
+        return L10N[lang]
+    return L10N.get("en", {})
 
 
 def _get_dotted(m: dict, dotted: str):
@@ -77,6 +77,6 @@ __all__ = [
     "translate",
     "register",
     "enable_l10n_debug",
-    "_L10N",
+    "L10N",
     "L10NError",
 ]
