@@ -7,6 +7,7 @@ from .bodies import BODIES
 from .steps import STEPS
 from .labels import LABELS
 from .steps_by_country import STEPS_BY_COUNTRY
+from .quick import QUICK
 
 L10N_EL = {
     "titles": TITLES,
@@ -16,6 +17,7 @@ L10N_EL = {
     "steps": STEPS,
     "labels": LABELS,
     "steps_by_country": STEPS_BY_COUNTRY,
+    "quick": QUICK,
 }
 
 register("el", L10N_EL)

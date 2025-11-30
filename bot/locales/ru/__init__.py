@@ -7,16 +7,17 @@ from .bodies import BODIES
 from .labels import LABELS
 from .steps import STEPS
 from .steps_by_country import STEPS_BY_COUNTRY
-
+from .quick import QUICK
 
 L10N_RU = {
     "titles": TITLES,
     "buttons": BUTTONS,
     "ui": UI,
     "bodies": BODIES,
-    "labels": LABELS,
     "steps": STEPS,
+    "labels": LABELS,
     "steps_by_country": STEPS_BY_COUNTRY,
+    "quick": QUICK,
 }
 
 register("ru", L10N_RU)
