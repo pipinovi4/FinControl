@@ -8,6 +8,7 @@ from .steps import STEPS
 from .labels import LABELS
 from .steps_by_country import STEPS_BY_COUNTRY
 from .quick import QUICK
+from .common import COMMON
 
 L10N_EL = {
     "titles": TITLES,
@@ -18,6 +19,7 @@ L10N_EL = {
     "labels": LABELS,
     "steps_by_country": STEPS_BY_COUNTRY,
     "quick": QUICK,
+    "common": COMMON,
 }
 
 register("el", L10N_EL)
