@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from .core import translate, register
+# Core API
+from .core import translate, register, _L10N
 from .common import WELCOME_BILINGUAL, START_BTN
 
-# Action ids (must match main.py)
+# Action identifiers (used in handlers and keyboards)
 BTN_SUPPORT        = "support"
 BTN_ABOUT          = "about"
 BTN_CHANGE_COUNTRY = "change_country"
@@ -11,21 +12,49 @@ BTN_MY_APPS        = "my_apps"
 BTN_APPLY          = "apply"
 BTN_BACK           = "back"
 
-# import languages (registration side-effects)
-from . import en  # noqa: F401
-from . import ru  # noqa: F401
-from . import de  # noqa: F401
-from . import fr  # noqa: F401
-from . import el  # noqa: F401
-from . import ar  # noqa: F401
-from . import hi  # noqa: F401
+# ---------------------------------------------------------
+# Importing all locales (registration happens inside each)
+# ---------------------------------------------------------
+
+# Important: explicit imports to trigger `register(lang, data)`
+from .en     import L10N_EN
+from .ru     import L10N_RU
+from .de     import L10N_DE
+from .fr     import L10N_FR
+from .el     import L10N_EL
+from .ar     import L10N_AR
+from .hi     import L10N_HI
+from .en_gb  import L10N_EN_GB
+
+# ---------------------------------------------------------
+# Re-export
+# ---------------------------------------------------------
 
 __all__ = [
-    "translate", "register",
+    # Core API
+    "translate",
+    "register",
+    "_L10N",
 
-    "WELCOME_BILINGUAL", "START_BTN",
+    # Global UI snippets
+    "WELCOME_BILINGUAL",
+    "START_BTN",
 
-    "BTN_SUPPORT", "BTN_ABOUT", "BTN_CHANGE_COUNTRY", "BTN_MY_APPS", "BTN_APPLY", "BTN_BACK",
+    # Button IDs
+    "BTN_SUPPORT",
+    "BTN_ABOUT",
+    "BTN_CHANGE_COUNTRY",
+    "BTN_MY_APPS",
+    "BTN_APPLY",
+    "BTN_BACK",
 
-    "en", "ru", "de", "fr", "el", "ar", "hi"
+    # Locales (exposed for debugging)
+    "L10N_EN",
+    "L10N_EN_GB",
+    "L10N_RU",
+    "L10N_DE",
+    "L10N_FR",
+    "L10N_EL",
+    "L10N_AR",
+    "L10N_HI",
 ]

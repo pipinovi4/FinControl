@@ -5,7 +5,7 @@ WELCOME_BILINGUAL = (
     "▶ To continue, select your country and start the application.\n\n"
     "🌍 Indicate the country for your application.\n"
     "📄 The form and language will adjust automatically.\n"
-    "\n— — — — — — — — — —\n\n"
+    "\n\n"
     "*Начнём оформление*\n\n"
     "▶ Чтобы продолжить, выберите страну и начните оформление.\n\n"
     "🌍 Укажите страну для подачи заявки.\n"
