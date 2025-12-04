@@ -8,8 +8,8 @@ from telegram.ext import ContextTypes
 
 from core.logger import log
 from locales import translate as t, WELCOME_BILINGUAL
-from handlers.application.prompt import send_step_prompt, wipe_last_prompt
-from keyboards import kb_regions, kb_countries, kb_main_menu, kb_about
+from handlers.application.prompt import send_step_prompt
+from keyboards import kb_regions, kb_countries, kb_main_menu, kb_about, kb_applications, kb_support
 from ui import safe_edit, replace_with_text, upsert_progress_panel, wipe_all_progress_panels, safe_delete, reset_ui
 from wizard.engine import WizardEngine
 from config.master_steps import MASTER_STEPS
@@ -145,7 +145,7 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await safe_edit(
             q,
             t(lang, "bodies.support_text", support_username=support_username),
-            reply_markup=kb_main_menu(lang),
+            reply_markup=kb_support(lang),
             parse_mode="HTML"
         )
         return
@@ -207,7 +207,7 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await safe_edit(
             q,
             t(lang, "bodies.my_apps_stub") + "\n\n" + t(lang, "titles.menu_title"),
-            reply_markup=kb_main_menu(lang),
+            reply_markup=kb_applications(lang),
             parse_mode="HTML"
         )
         return
