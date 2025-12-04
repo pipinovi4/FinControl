@@ -1,21 +1,24 @@
+"""
+Phone number validator.
+Accepts digits, optional "+", 7–20 characters.
+"""
+
 import re
+from typing import Tuple
+from .base import ok, error
 
-PHONE_REGEX = re.compile(r"^\+?[0-9\s\-\(\)]{7,20}$")
 
+def validate_phone(value: str) -> Tuple[bool, str]:
+    v = value.strip()
 
-def validate_phone(value: str):
-    v = value.strip().replace(" ", "").replace("-", "")
+    if not v:
+        return error("errors.empty")
 
-    if not v.startswith("+"):
-        v = "+" + v
+    pattern = r"^\+?\d{7,20}$"
+    if not re.match(pattern, v):
+        return error("errors.invalid_phone")
 
-    if not PHONE_REGEX.match(v):
-        return False, "invalid_phone"
-
-    if len(v) < 8:
-        return False, "invalid_phone"
-
-    return True, None
+    return ok()
 
 
 __all__ = ["validate_phone"]
