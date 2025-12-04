@@ -8,7 +8,7 @@ from typing import Tuple
 from .base import ok, error
 
 
-def validate_phone(value: str) -> Tuple[bool, str]:
+async def validate_phone(value: str) -> Tuple[bool, str]:
     v = value.strip()
 
     if not v:

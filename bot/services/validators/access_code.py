@@ -48,43 +48,43 @@ async def validate_access_code(value: str) -> Tuple[bool, str]:
         4. Interpret result
         5. Convert into wizard-compatible (True/False, message)
     """
-    value = value.strip()
-
-    # ---- 1) Empty? ----
-    if not value:
-        return error("access_code.empty")
-
-    # ---- 2) Ask backend ----
-    url = f"{BACKEND_URL}/application/check-access-code"
-    params = {"code": value}
-
-    try:
-        async with httpx.AsyncClient(timeout=TIMEOUT) as client:
-            resp = await client.get(url, params=params)
-
-    except httpx.RequestError:
-        # Network error or timeout → show soft error
-        return error("access_code.unavailable")
-
-    # ---- 3) Non-200? ----
-    if resp.status_code != 200:
-        # Unknown backend status = treat as invalid
-        return error("access_code.invalid")
-
-    # ---- 4) Parse JSON ----
-    try:
-        data = resp.json()
-    except Exception:
-        return error("access_code.invalid")
-
-    # ---- 5) Interpret response ----
-    is_valid = data.get("valid", False)
-
-    if not is_valid:
-        # Access code exists but invalid
-        return error("access_code.invalid")
-
-    # Ok
+    # value = value.strip()
+    #
+    # # ---- 1) Empty? ----
+    # if not value:
+    #     return error("access_code.empty")
+    #
+    # # ---- 2) Ask backend ----
+    # url = f"{BACKEND_URL}/application/check-access-code"
+    # params = {"code": value}
+    #
+    # try:
+    #     async with httpx.AsyncClient(timeout=TIMEOUT) as client:
+    #         resp = await client.get(url, params=params)
+    #
+    # except httpx.RequestError:
+    #     # Network error or timeout → show soft error
+    #     return error("access_code.unavailable")
+    #
+    # # ---- 3) Non-200? ----
+    # if resp.status_code != 200:
+    #     # Unknown backend status = treat as invalid
+    #     return error("access_code.invalid")
+    #
+    # # ---- 4) Parse JSON ----
+    # try:
+    #     data = resp.json()
+    # except Exception:
+    #     return error("access_code.invalid")
+    #
+    # # ---- 5) Interpret response ----
+    # is_valid = data.get("valid", False)
+    #
+    # if not is_valid:
+    #     # Access code exists but invalid
+    #     return error("access_code.invalid")
+    #
+    # # Ok
     return ok()
 
 

@@ -13,7 +13,7 @@ EMAIL_RE = re.compile(
 )
 
 
-def validate_email(value: str) -> Tuple[bool, str]:
+async def validate_email(value: str) -> Tuple[bool, str]:
     v = value.strip()
 
     if not v:

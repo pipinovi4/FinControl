@@ -8,7 +8,7 @@ from typing import Tuple
 from .base import ok, error
 
 
-def validate_amount(value: str) -> Tuple[bool, str]:
+async def validate_amount(value: str) -> Tuple[bool, str]:
     v = value.replace(" ", "").strip()
 
     if not re.fullmatch(r"\d{3,9}", v):

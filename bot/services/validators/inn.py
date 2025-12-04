@@ -7,7 +7,7 @@ from typing import Tuple
 from .base import ok, error
 
 
-def validate_inn_ru(value: str) -> Tuple[bool, str]:
+async def validate_inn_ru(value: str) -> Tuple[bool, str]:
     v = value.strip()
 
     if not re.fullmatch(r"\d{10}|\d{12}", v):

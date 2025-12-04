@@ -21,7 +21,7 @@ DATE_RE = re.compile(
 )
 
 
-def validate_date_range(value: str) -> Tuple[bool, str]:
+async def validate_date_range(value: str) -> Tuple[bool, str]:
     m = DATE_RE.match(value)
     if not m:
         return error("Введите даты в формате: ДД.ММ.ГГГГ - ДД.ММ.ГГГГ")

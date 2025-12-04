@@ -8,7 +8,7 @@ from typing import Tuple
 from .base import ok, error
 
 
-def validate_yes_no(value: str) -> Tuple[bool, str]:
+async def validate_yes_no(value: str) -> Tuple[bool, str]:
     if value in ("Yes", "No"):
         return ok()
 

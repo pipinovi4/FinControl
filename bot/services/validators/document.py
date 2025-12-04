@@ -8,7 +8,7 @@ from typing import Tuple
 from .base import ok, error
 
 
-def validate_document(value: str) -> Tuple[bool, str]:
+async def validate_document(value: str) -> Tuple[bool, str]:
     if not value.strip():
         return error("errors.no_document")
 

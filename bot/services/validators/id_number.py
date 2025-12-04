@@ -8,7 +8,7 @@ from typing import Tuple
 from .base import ok, error
 
 
-def validate_id_number(value: str) -> Tuple[bool, str]:
+async def validate_id_number(value: str) -> Tuple[bool, str]:
     v = value.strip()
 
     if not re.fullmatch(r"[A-Za-z0-9\-]{4,20}", v):

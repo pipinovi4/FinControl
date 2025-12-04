@@ -10,7 +10,7 @@ from .base import ok, error
 PATTERN = r"^\d{3}-\d{3}-\d{3}\s\d{2}$"
 
 
-def validate_snils(value: str) -> Tuple[bool, str]:
+async def validate_snils(value: str) -> Tuple[bool, str]:
     if not re.match(PATTERN, value.strip()):
         return error("errors.invalid_snils")
 

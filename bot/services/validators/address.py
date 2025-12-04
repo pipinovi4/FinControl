@@ -7,7 +7,7 @@ from typing import Tuple
 from .base import ok, error
 
 
-def validate_address(value: str) -> Tuple[bool, str]:
+async def validate_address(value: str) -> Tuple[bool, str]:
     if len(value.strip()) < 5:
         return error("errors.invalid_address")
 

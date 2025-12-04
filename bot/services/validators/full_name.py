@@ -7,7 +7,7 @@ from typing import Tuple
 from .base import ok, error
 
 
-def validate_full_name(value: str) -> Tuple[bool, str]:
+async def validate_full_name(value: str) -> Tuple[bool, str]:
     parts = value.strip().split()
 
     if len(parts) < 2:

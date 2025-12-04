@@ -8,7 +8,7 @@ from typing import Tuple
 from .base import ok, error
 
 
-def validate_date(value: str) -> Tuple[bool, str]:
+async def validate_date(value: str) -> Tuple[bool, str]:
     v = value.strip()
 
     try:

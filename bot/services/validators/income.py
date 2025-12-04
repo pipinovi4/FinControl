@@ -7,7 +7,7 @@ from typing import Tuple
 from .base import ok, error
 
 
-def validate_income(value: str) -> Tuple[bool, str]:
+async def validate_income(value: str) -> Tuple[bool, str]:
     v = value.replace(" ", "").strip()
 
     if not re.fullmatch(r"\d{2,10}", v):

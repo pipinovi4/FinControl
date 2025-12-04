@@ -9,7 +9,7 @@ from typing import Tuple, List
 from .base import ok, error
 
 
-def validate_enum(value: str, allowed: List[str]) -> Tuple[bool, str]:
+async def validate_enum(value: str, allowed: List[str]) -> Tuple[bool, str]:
     if value in allowed:
         return ok()
 
