@@ -7,6 +7,7 @@ from .bodies import BODIES
 from .steps import STEPS
 from .steps_by_country import STEPS_BY_COUNTRY
 from .common import COMMON
+from .error import ERROR
 
 L10N_RU = {
     "titles": TITLES,
@@ -16,6 +17,7 @@ L10N_RU = {
     "steps": STEPS,
     "steps_by_country": STEPS_BY_COUNTRY,
     "common": COMMON,
+    "error": ERROR,
 }
 
 register("ru", L10N_RU)
