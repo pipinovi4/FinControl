@@ -5,7 +5,7 @@ from locales import translate as t, BTN_BACK
 from .callback_kb import cb_menu
 
 
-def kb_about(lang: str) -> InlineKeyboardMarkup:
+def kb_applications(lang: str) -> InlineKeyboardMarkup:
     rows = [
         [
             InlineKeyboardButton(
@@ -18,5 +18,5 @@ def kb_about(lang: str) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(rows)
 
 __all__ = [
-    "kb_about",
+    "kb_applications"
 ]

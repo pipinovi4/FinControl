@@ -9,3 +9,7 @@ def kb_regions() -> InlineKeyboardMarkup:
     for code in ("CIS", "EU", "NA", "AS"):
         rows.append([InlineKeyboardButton(REGIONS[code]["title"], callback_data=cb_region(code))])
     return InlineKeyboardMarkup(rows)
+
+__all__ = [
+    "kb_regions",
+]

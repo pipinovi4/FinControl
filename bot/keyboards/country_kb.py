@@ -11,3 +11,7 @@ def kb_countries(region_code: str) -> InlineKeyboardMarkup:
         rows.append([InlineKeyboardButton(f'{c["flag"]} {c["title"]}', callback_data=cb_country(c["code"]))])
     rows.append([InlineKeyboardButton("↩️ Back / Назад", callback_data=CB_START)])
     return InlineKeyboardMarkup(rows)
+
+__all__ = [
+    "kb_countries",
+]

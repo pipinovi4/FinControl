@@ -44,3 +44,7 @@ def kb_main_menu(lang: str) -> InlineKeyboardMarkup:
     ]
 
     return InlineKeyboardMarkup(rows)
+
+__all__ = [
+    "kb_main_menu",
+]
