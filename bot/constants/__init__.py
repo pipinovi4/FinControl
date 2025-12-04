@@ -41,13 +41,6 @@ from .country_maps import (
     LANG_BY_COUNTRY, COUNTRY_TITLE,
 )
 
-# Step ordering & branching logic
-from .step_order import (
-    BASE_STEP_ORDER, FEATURES,
-    CREDIT_REPORT_COUNTRIES, STATUS_BRANCH_STEPS,
-    ACCESS_CODE_PROMPTS, build_step_order,
-)
-
 __all__ = [
     # application flow state
     "APP_FLOW", "APP_STEPS", "APP_IDX", "APP_ANS",
@@ -61,9 +54,4 @@ __all__ = [
     # country/region maps
     "REGIONS", "COUNTRIES_BY_REGION",
     "LANG_BY_COUNTRY", "COUNTRY_TITLE",
-
-    # step ordering system
-    "BASE_STEP_ORDER", "FEATURES",
-    "CREDIT_REPORT_COUNTRIES", "STATUS_BRANCH_STEPS",
-    "ACCESS_CODE_PROMPTS", "build_step_order",
 ]

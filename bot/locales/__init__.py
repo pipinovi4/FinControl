@@ -2,7 +2,7 @@ from __future__ import annotations
 
 # Core API
 from .core import translate, register, L10N
-from .common import WELCOME_BILINGUAL, START_BTN
+from .common import WELCOME_BILINGUAL
 
 # Action identifiers (used in handlers and keyboards)
 BTN_SUPPORT        = "support"
@@ -24,7 +24,6 @@ __all__ = [
 
     # Global UI snippets
     "WELCOME_BILINGUAL",
-    "START_BTN",
 
     # Button IDs
     "BTN_SUPPORT",

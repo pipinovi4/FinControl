@@ -1,23 +1,32 @@
 STEPS_BY_COUNTRY = {
     "RU": {
-        "phone": "📞 Формат телефона: +7XXXXXXXXXX.",
-        "id_number": "🆔 СНИЛС (XXX-XXX-XXX YY).",
-        "reg_address": "🏠 Адрес регистрации по паспорту.",
-        "actual_address": "🏠 Адрес проживания.\nЕсли совпадает — «Совпадает».",
-        "dob": "📅 Дата рождения (ДД.ММ.ГГГГ).",
+        "id_number": {
+            "label": "Идентификатор",
+            "prompt": "🆔 СНИЛС (XXX-XXX-XXX YY).",
+            "quick": None,
+        },
+        "inn_ru": {
+            "label": "ИНН",
+            "prompt": "🔢 Укажите ваш ИНН (10 или 12 цифр).",
+            "quick": None,
+        },
     },
+
     "BY": {
-        "phone": "📞 Формат телефона: +375XXXXXXXXX.",
-        "id_number": "🆔 Ваш личный номер (паспортный ID).",
-        "dob": "📅 Дата рождения (ДД.ММ.ГГГГ).",
+        "id_number": {
+            "label": "Идентификатор",
+            "prompt": "🆔 Ваш личный номер (паспортный ID).",
+            "quick": None,
+        },
     },
+
     "KZ": {
-        "phone": "📞 Формат телефона: +7XXXXXXXXXX.",
-        "id_number": "🆔 ИИН (ЖСН).",
-        "dob": "📅 Дата рождения (ДД.ММ.ГГГГ).",
+        "id_number": {
+            "label": "Идентификатор",
+            "prompt": "🆔 ИИН (ЖСН).",
+            "quick": None,
+        },
     },
 }
 
-__all__ = [
-    "STEPS_BY_COUNTRY"
-]
+__all__ = ["STEPS_BY_COUNTRY"]

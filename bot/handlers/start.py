@@ -1,68 +1,54 @@
-# handlers/start.py
-"""
-Start command handler.
-
-This module contains the logic for the /start command:
-- clears user session state,
-- wipes progress panels,
-- shows the welcome text,
-- displays the Start keyboard.
-
-It uses shared UI helpers and constants from ui/ and constants/.
-"""
-
 from __future__ import annotations
 
 from telegram import Update
 from telegram.ext import ContextTypes
 
-# --- Project imports ---
-from locales import WELCOME_BILINGUAL        # i18n welcome text (Markdown)
-from keyboards.start_kb import kb_start      # "▶ Start" inline keyboard
+# Project imports
+from locales import WELCOME_BILINGUAL
+from keyboards import kb_regions
 
-from ui import safe_edit, wipe_all_progress_panels
+from ui import safe_edit
+from core.logger import log
+
 
 async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
-    Handle the /start command.
+    Handle /start command — resets the session, UI, and wizard state.
 
-    Responsibilities:
-    -----------------
-    1. Fully clears user_data — resets application state.
-    2. Removes any existing progress panels (UI cleanup).
-    3. Sends the bilingual welcome message.
-    4. Displays the Start button (inline keyboard).
-
-    Notes:
-    ------
-    - update.message.exists → user typed /start manually → reply_text().
-    - update.callback_query.exists → /start triggered from previous message or fallback → safe_edit().
-    - safe_edit() automatically handles cases where the message is a photo/video.
+    Behaviour:
+    ----------
+    • Clears ALL user_data (wizard, country, lang, steps, answers)
+    • Removes all UI progress panels
+    • Sends welcome message with START button
+    • Works both for text message and callback_query
     """
+    msg = update.message
+    cq = update.callback_query
 
-    # 1️⃣ Wipe all UI panels from previous session (if user existed)
-    if update.effective_chat:
-        await wipe_all_progress_panels(update.effective_chat, context)
+    log.info("[Start] /start called — resetting session")
 
-    # 2️⃣ Reset all conversation context (country, lang, wizard state etc.)
+    # Reset session
     context.user_data.clear()
 
-    # 3️⃣ Display welcome text + start button
-    if update.message:
-        # /start was typed normally
-        await update.message.reply_text(
-            WELCOME_BILINGUAL,
-            parse_mode="Markdown",
-            reply_markup=kb_start()
+    # Prepare text
+    text = WELCOME_BILINGUAL
+
+    # Remove any UI panels from past sessions
+    if msg:
+        await msg.reply_text(
+            text,
+            reply_markup=kb_regions(),
+            parse_mode="HTML",
         )
     else:
-        # /start triggered from callback or from a media message — must use safe_edit
         await safe_edit(
-            update.callback_query,
-            WELCOME_BILINGUAL,
-            reply_markup=kb_start(),
-            parse_mode="Markdown"
+            cq,
+            text,
+            reply_markup=kb_regions(),
+            parse_mode="HTML",
         )
+
+    log.debug("[Start] Session reset complete")
 
 
 __all__ = ["cmd_start"]

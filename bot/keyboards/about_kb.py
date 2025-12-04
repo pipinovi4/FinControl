@@ -2,8 +2,9 @@ from __future__ import annotations
 import os
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-from locales import translate as t, BTN_BACK  # ← було messages
-from .callback_kb import cb_menu    # для коректного callback_data
+from locales import translate as t, BTN_BACK
+from .callback_kb import cb_menu
+
 
 def kb_about(lang: str) -> InlineKeyboardMarkup:
     WEBSITE  = os.getenv("SOCIAL_WEBSITE",  "https://example.com")
@@ -15,19 +16,41 @@ def kb_about(lang: str) -> InlineKeyboardMarkup:
 
     rows = [
         [
-            InlineKeyboardButton(t(lang, "btn_website"), url=WEBSITE),
-            InlineKeyboardButton(t(lang, "btn_tg_channel"), url=TG_CH),
+            InlineKeyboardButton(
+                t(lang, "buttons.website"),
+                url=WEBSITE
+            ),
+            InlineKeyboardButton(
+                t(lang, "buttons.tg_channel"),
+                url=TG_CH
+            ),
         ],
         [
-            InlineKeyboardButton(t(lang, "btn_instagram"), url=INSTA),
-            InlineKeyboardButton(t(lang, "btn_x"), url=X_TW),
+            InlineKeyboardButton(
+                t(lang, "buttons.instagram"),
+                url=INSTA
+            ),
+            InlineKeyboardButton(
+                t(lang, "buttons.x"),
+                url=X_TW
+            ),
         ],
         [
-            InlineKeyboardButton(t(lang, "btn_linkedin"), url=LINKEDIN),
-            InlineKeyboardButton(t(lang, "btn_youtube"), url=YT),
+            InlineKeyboardButton(
+                t(lang, "buttons.linkedin"),
+                url=LINKEDIN
+            ),
+            InlineKeyboardButton(
+                t(lang, "buttons.youtube"),
+                url=YT
+            ),
         ],
         [
-            InlineKeyboardButton(t(lang, "btn_back"), callback_data=cb_menu(BTN_BACK)),
-        ]
+            InlineKeyboardButton(
+                t(lang, "buttons.back"),
+                callback_data=cb_menu(BTN_BACK)
+            ),
+        ],
     ]
+
     return InlineKeyboardMarkup(rows)

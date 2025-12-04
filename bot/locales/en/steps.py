@@ -1,100 +1,348 @@
 STEPS = {
-    "access_code": "🔐 Do you have a personal access code?\n\n"
-                   "Enter it below — we’ll activate individual terms available by special invitation.",
 
-    "full_name": (
-        "✍️ Please enter your full name exactly as it appears in your passport/ID.\n\n"
-        "ℹ️ Provide your answers directly in the messages to ensure the form is completed correctly."
-    ),
+    # ----------------------
+    # ACCESS CODE
+    # ----------------------
+    "access_code": {
+        "label": "Personal code",
+        "prompt": (
+            "🔐 Do you have a personal access code?\n\n"
+            "Enter it below — we will activate special individual terms."
+        ),
+        "quick": None,
+    },
 
-    "phone": "📞 Enter your mobile number in international format (e.g., +1XXXXXXXXXX).",
-    "email": "📧 Enter your email address.",
-    "loan_amount": (
-        "💰 Please enter the desired loan amount.\n"
-        "Choose one of the options below or enter it manually."
-    ),
-    "id_number": "🆔 Enter your national ID number (country-specific).",
-    "reg_address": "🏠 Enter your registered address (as in your ID).",
-    "actual_address": "🏠 Enter your current residential address.\nIf the same as registered — type “Same”.",
-    "dob": "📅 Enter your date of birth (YYYY-MM-DD).",
+    # ----------------------
+    # BASIC
+    # ----------------------
+    "full_name": {
+        "label": "Full name",
+        "prompt": (
+            "✍️ Please enter your full name exactly as it appears in your passport/ID.\n\n"
+            "ℹ️ Provide your answers directly in chat messages."
+        ),
+        "quick": None,
+    },
 
-    "marital_status": (
-        "💬 Please select your marital status.\n"
-        "Options:\n• Single\n• Married\n• Divorced\n• Widowed"
-    ),
+    "phone": {
+        "label": "Phone number",
+        "prompt": "📞 Enter your phone number.",
+        "quick": [
+            {"key": "TELEGRAM_PHONE", "type": "contact", "text": "📱 Use Telegram number"},
+        ],
+    },
 
-    "employment_status": (
-        "🏢 Select your status:\n"
-        "👔 Employed\n"
-        "📊 Business owner / Corporation\n"
-        "💼 Self-employed\n"
-        "🎓 Student\n"
-        "👵 Retired\n"
-        "🚫 Unemployed"
-    ),
+    "email": {
+        "label": "Email",
+        "prompt": "📧 Enter your email address.",
+        "quick": None,
+    },
 
-    # Employed
-    "emp_company_name": "🏢 Enter the full name of your employer (company/organization).",
-    "emp_company_reg_address": "📍 Enter the official registered address of your employer.",
-    "emp_company_actual_address": "📍 Provide the actual workplace address.\nIf same as registered — type “Same”.",
-    "emp_job_title": "💼 Please specify your job title.",
-    "emp_monthly_income_net": "💵 Enter your average monthly income (after taxes).",
-    "emp_income_proof": (
-        "📑 Select an available proof of income option.\n"
-        "Options: Payslip / Bank statement / Employer certificate / Other"
-    ),
-    "emp_job_start_date": "📅 Please enter the date you started this job.",
-    "emp_industry": "🏭 Indicate your employer’s industry (e.g., IT, retail, construction, healthcare).",
+    "telegram": {
+        "label": "Telegram account",
+        "prompt": "🤖 Enter your Telegram username (format: @username).",
+        "quick": None,
+    },
 
-    # Business
-    "biz_name": "🏢 Please provide the full name of your business.",
-    "biz_reg_number": "🆔 Enter your official business registration number.",
-    "biz_reg_date": "📅 Provide the date your business was registered.",
-    "biz_monthly_turnover": "💵 Enter your average monthly business turnover.",
-    "biz_has_credit_lines": "💳 Does your business have any active credit lines? 👉 Yes / No",
-    "biz_tax_regime": "📑 Select your tax regime: Simplified / Corporate / Other.",
-    "biz_upload_doc": "📂 Upload a supporting document (bank statement or tax report, optional).",
+    "loan_amount": {
+        "label": "Loan amount",
+        "prompt": (
+            "💰 Enter the desired loan amount.\n"
+            "Choose an option below or enter the amount manually."
+        ),
+        "quick": [
+            {"key": "MAX",     "text": "💳 Maximum possible"},
+            {"key": "UNKNOWN", "text": "🤔 Not sure yet"},
+            {"key": "SKIP",    "text": "⏭ Skip this step"},
+        ],
+    },
 
-    # Self-employed
-    "self_activity_field": "📊 Please specify your field of activity.",
-    "self_monthly_income_net": "💵 Enter your average monthly income (after taxes).",
-    "self_income_proof": (
-        "📑 How can you provide proof of income?\n"
-        "Options: Bank statement / Client contracts / Tax return / IRS form / Other"
-    ),
-    "self_upload_doc": "📂 Upload a supporting document (if available).",
+    "id_number": {
+        "label": "Identification number",
+        "prompt": "🆔 Enter your national identification number.",
+        "quick": None,
+    },
 
-    # Student
-    "stud_school_name": "🎓 Provide the full name of your educational institution.",
-    "stud_dates": "📅 Enter your enrolment date and expected graduation date.",
-    "stud_study_type": "📚 Select your study type: Full-time / Part-time / Online.",
-    "stud_has_income": "💵 Do you currently have a source of income? 👉 Yes / No",
-    "stud_has_guarantor": "👥 Do you have a guarantor available? 👉 Yes / No",
+    "reg_address": {
+        "label": "Registered address",
+        "prompt": "🏠 Enter your registered address (as in your ID).",
+        "quick": None,
+    },
 
-    # Retired
-    "ret_pension_amount": "👵 Enter your monthly pension amount (after taxes).",
-    "ret_additional_income": "💵 Additional income? 👉 Yes / No",
-    "ret_assets_owned": "🏡 Do you own any assets? 👉 Yes / No",
-    "ret_guarantor_optional": "👥 You may provide a guarantor (optional).",
+    "actual_address": {
+        "label": "Current address",
+        "prompt": (
+            "🏠 Enter your current residential address.\n"
+            "If it matches the registered address — type “Same”."
+        ),
+        "quick": None,
+    },
 
-    # Unemployed
-    "unemp_regular_income": "💵 Any regular income? 👉 Yes / No",
-    "unemp_assets_owned": "🏡 Do you own any assets? 👉 Yes / No",
-    "unemp_guarantor_optional": "👥 You may provide a guarantor (optional).",
+    "dob": {
+        "label": "Date of birth",
+        "prompt": "📅 Enter your date of birth (DD/MM/YYYY).",
+        "quick": None,
+    },
 
-    # Extra
-    "extra_assets": "🏡 Do you have assets? 👉 Yes / No",
-    "extra_assets_collateral": "🏦 Would you consider a collateral-backed loan? 👉 Yes / No",
-    "extra_additional_income": "💵 Additional income? 👉 Yes / No",
-    "extra_emergency_contact": "☎️ Emergency contact (optional).",
+    # ----------------------
+    # MARITAL STATUS
+    # ----------------------
+    "marital_status": {
+        "label": "Marital status",
+        "prompt": "💬 Select your marital status.",
+        "quick": [
+            {"key": "single",   "text": "Single"},
+            {"key": "married",  "text": "Married"},
+            {"key": "divorced", "text": "Divorced"},
+            {"key": "widowed",  "text": "Widowed"},
+        ],
+    },
 
-    # Credit reports
-    "credit_report_us": "📎 Upload your US credit report.",
-    "credit_report_ca": "📎 Upload your CA credit report.",
+    # ----------------------
+    # EMPLOYMENT STATUS
+    # ----------------------
+    "employment_status": {
+        "label": "Employment status",
+        "prompt": "🏢 Select your employment status.",
+        "quick": [
+            {"key": "Employed",                     "text": "Employed"},
+            {"key": "Business owner / Corporation", "text": "Business owner / Corporation"},
+            {"key": "Self-employed",                "text": "Self-employed"},
+            {"key": "Student",                      "text": "Student"},
+            {"key": "Retired",                      "text": "Retired"},
+            {"key": "Unemployed",                   "text": "Unemployed"},
+        ],
+    },
 
-    "final_note": "✅ Thank you! An expert will contact you shortly.",
+    # ----------------------
+    # EMPLOYED BRANCH
+    # ----------------------
+    "employer_name": {
+        "label": "Employer",
+        "prompt": "🏢 Enter your employer’s full name.",
+        "quick": None,
+    },
+    "employer_reg_address": {
+        "label": "Registered address",
+        "prompt": "📍 Enter the employer’s legal registered address.",
+        "quick": None,
+    },
+    "employer_actual_address": {
+        "label": "Work address",
+        "prompt": "📍 Enter the actual workplace address (or type “Same”).",
+        "quick": None,
+    },
+    "job_title": {
+        "label": "Job title",
+        "prompt": "💼 Enter your job title.",
+        "quick": None,
+    },
+    "income_net_monthly": {
+        "label": "Monthly income (net)",
+        "prompt": "💵 Enter your average monthly income (after taxes).",
+        "quick": None,
+    },
+    "income_proof": {
+        "label": "Income proof",
+        "prompt": "📑 Select your income proof.",
+        "quick": [
+            {"key": "2NDFL",    "text": "Payslip"},
+            {"key": "BANK",     "text": "Bank statement"},
+            {"key": "EMPLOYER", "text": "Employer certificate"},
+            {"key": "OTHER",    "text": "Other"},
+        ],
+    },
+    "employment_start_date": {
+        "label": "Employment start date",
+        "prompt": "📅 Enter the date you started this job.",
+        "quick": None,
+    },
+    "employer_industry": {
+        "label": "Industry",
+        "prompt": "🏭 Enter the employer’s industry sector.",
+        "quick": None,
+    },
+
+    # ----------------------
+    # BUSINESS BRANCH
+    # ----------------------
+    "business_name": {
+        "label": "Business name",
+        "prompt": "🏢 Enter your business name.",
+        "quick": None,
+    },
+    "business_reg_number": {
+        "label": "Registration number",
+        "prompt": "🆔 Enter your business registration number.",
+        "quick": None,
+    },
+    "business_reg_date": {
+        "label": "Registration date",
+        "prompt": "📅 Enter the business registration date.",
+        "quick": None,
+    },
+    "business_turnover_monthly": {
+        "label": "Monthly turnover",
+        "prompt": "💵 Enter your average monthly turnover.",
+        "quick": None,
+    },
+    "business_credit_lines": {
+        "label": "Credit lines",
+        "prompt": "💳 Do you have active credit lines?",
+        "quick": [
+            {"key": "Yes", "text": "Yes"},
+            {"key": "No",  "text": "No"},
+        ],
+    },
+    "business_tax_regime": {
+        "label": "Tax regime",
+        "prompt": "📑 Select your tax regime.",
+        "quick": [
+            {"key": "Simplified", "text": "Simplified"},
+            {"key": "General",    "text": "General"},
+            {"key": "Other",      "text": "Other"},
+        ],
+    },
+    "business_doc_upload": {
+        "label": "Business documents",
+        "prompt": "📂 Upload a supporting business document (optional).",
+        "quick": None,
+    },
+
+    # ----------------------
+    # SELF-EMPLOYED
+    # ----------------------
+    "activity_field": {
+        "label": "Activity field",
+        "prompt": "📊 Specify your field of activity.",
+        "quick": None,
+    },
+    "supporting_doc_upload": {
+        "label": "Supporting document",
+        "prompt": "📂 Upload a supporting document (if available).",
+        "quick": None,
+    },
+
+    # ----------------------
+    # STUDENT BRANCH
+    # ----------------------
+    "university_name": {
+        "label": "Educational institution",
+        "prompt": "🎓 Enter the full name of your educational institution.",
+        "quick": None,
+    },
+    "study_dates": {
+        "label": "Study period",
+        "prompt": "📅 Enter your enrollment date and expected graduation date.",
+        "quick": None,
+    },
+    "study_mode": {
+        "label": "Study mode",
+        "prompt": "📚 Select your mode of study.",
+        "quick": [
+            {"key": "Full-time", "text": "Full-time"},
+            {"key": "Part-time", "text": "Part-time"},
+            {"key": "Online",    "text": "Online"},
+        ],
+    },
+    "income_present": {
+        "label": "Income",
+        "prompt": "💵 Do you have any income?",
+        "quick": [
+            {"key": "Yes", "text": "Yes"},
+            {"key": "No",  "text": "No"},
+        ],
+    },
+    "income_amount": {
+        "label": "Income amount",
+        "prompt": "💵 Enter your income amount.",
+        "quick": None,
+    },
+    "guarantor_available": {
+        "label": "Guarantor",
+        "prompt": "👥 Do you have a guarantor?",
+        "quick": [
+            {"key": "Yes", "text": "Yes"},
+            {"key": "No",  "text": "No"},
+        ],
+    },
+    "guarantor_fullname": {
+        "label": "Guarantor’s full name",
+        "prompt": "👤 Enter your guarantor’s full name.",
+        "quick": None,
+    },
+    "guarantor_phone": {
+        "label": "Guarantor’s phone",
+        "prompt": "📞 Enter your guarantor’s phone number.",
+        "quick": None,
+    },
+    "guarantor_relation": {
+        "label": "Relationship",
+        "prompt": "👥 Specify your relationship with the guarantor.",
+        "quick": None,
+    },
+
+    # ----------------------
+    # RETIRED
+    # ----------------------
+    "pension_amount": {
+        "label": "Pension",
+        "prompt": "👵 Enter your monthly pension amount (after taxes).",
+        "quick": None,
+    },
+    "additional_income": {
+        "label": "Additional income",
+        "prompt": "💵 Do you have any additional income?",
+        "quick": [
+            {"key": "Yes", "text": "Yes"},
+            {"key": "No",  "text": "No"},
+        ],
+    },
+    "assets_owned": {
+        "label": "Assets",
+        "prompt": "🏡 Do you own any assets?",
+        "quick": [
+            {"key": "Yes", "text": "Yes"},
+            {"key": "No",  "text": "No"},
+        ],
+    },
+    "guarantor_optional": {
+        "label": "Guarantor (optional)",
+        "prompt": "👥 Provide guarantor details if needed.",
+        "quick": None,
+    },
+
+
+    # ----------------------
+    # UNEMPLOYED
+    # ----------------------
+    "regular_income": {
+        "label": "Regular income",
+        "prompt": "💵 Do you have any regular income?",
+        "quick": [
+            {"key": "Yes", "text": "Yes"},
+            {"key": "No",  "text": "No"},
+        ],
+    },
+
+    # ----------------------
+    # CREDIT REPORTS
+    # ----------------------
+    "credit_report_ru": {
+        "label": "Credit reports (RU)",
+        "prompt": "📎 Upload your Russian credit reports (3 files).",
+        "quick": None,
+    },
+    "credit_report_by": {
+        "label": "Credit report (BY)",
+        "prompt": "📎 Upload your Belarus credit report.",
+        "quick": None,
+    },
+    "credit_report_kz": {
+        "label": "Credit report (KZ)",
+        "prompt": "📎 Upload your Kazakhstan credit report.",
+        "quick": None,
+    },
 }
 
-__all__ = [
-    "STEPS"
-]
+__all__ = ["STEPS"]

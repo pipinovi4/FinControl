@@ -18,6 +18,10 @@ CB_COUNTRY = "country:"           # country:<COUNTRY_CODE>
 # Main menu routing (example: "menu:support", "menu:about")
 CB_MENU = "menu:"                 # menu:<action>
 
+CB_BACK = "nav:back"
+CB_NEXT = "nav:next"
+CB_CANCEL = "nav:cancel"
+
 __all__ = [
-    "CB_START", "CB_REGION", "CB_COUNTRY", "CB_MENU"
+    "CB_START", "CB_REGION", "CB_COUNTRY", "CB_MENU", "CB_BACK", "CB_NEXT", "CB_CANCEL"
 ]

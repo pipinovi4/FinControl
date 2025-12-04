@@ -1,24 +1,17 @@
 """
-Telegram bot bootstrap for WorldFlow Credit.
+WorldFlow Credit — Telegram bot bootstrap.
 
-This module is the entrypoint of the entire bot:
-- loads settings
-- initializes logging
-- builds the Telegram Application
-- registers handlers
-- starts polling
-
-Architecture notes:
--------------------
-• clean separation: startup logic ONLY
-• business logic lives in handlers/
-• settings loaded once
-• logging initialized globally before Application is created
+Responsibilities:
+-----------------
+✓ load settings
+✓ configure logging
+✓ build Application
+✓ register handlers
+✓ start polling
 """
 
 from __future__ import annotations
 
-# Telegram framework
 from telegram.ext import (
     Application,
     CommandHandler,
@@ -27,51 +20,58 @@ from telegram.ext import (
     filters,
 )
 
+from telegram.error import BadRequest, Forbidden, TelegramError
+
 # Project imports
 from core.settings import load_settings
 from core.logger import setup_logging, log
+from handlers.application.callbacks import handle_progress_callback
 
 # Handlers
 from handlers.start import cmd_start
 from handlers.menu import on_callback
 from handlers.application import handle_application_message
+from jobs import cleanup_user_data
+from locales.ru import L10N_RU
 
 
-# =====================================================================
-# Factory: Build Application instance
-# =====================================================================
+# ============================================================
+# 🔥 Global error handler
+# ============================================================
+async def error_handler(update, context):
+    try:
+        raise context.error
+    except (BadRequest, Forbidden):
+        log.warning(f"[TG Warning] {context.error}")
+    except TelegramError as e:
+        log.error(f"[TelegramError] {e}")
+    except Exception as e:
+        log.error(f"[Unhandled Exception] {e}", exc_info=True)
+
+
+# ============================================================
+# 🔧 Build Application
+# ============================================================
 def build_app() -> Application:
-    """
-    Create and configure a Telegram Application instance.
 
-    Steps:
-    ------
-    1) Load config via load_settings()
-    2) Initialize Application (builder pattern)
-    3) Register all handlers
-
-    Returns:
-        Ready-to-run Application instance
-    """
-
-    # Load .env / config
     settings = load_settings()
 
-    # Create bot instance
     app = (
-        Application
-        .builder()
+        Application.builder()
         .token(settings.bot_token)
         .build()
     )
 
-    # ========== Command handlers ==========
+    # Commands
     app.add_handler(CommandHandler("start", cmd_start))
 
-    # ========== Inline keyboard callbacks ==========
+    # Wizard navigation callbacks
+    app.add_handler(CallbackQueryHandler(handle_progress_callback, pattern="^nav:"))
+
+    # Menu, country select, etc.
     app.add_handler(CallbackQueryHandler(on_callback))
 
-    # ========== Application wizard routing ==========
+    # Wizard text/contact messages
     app.add_handler(
         MessageHandler(
             filters.TEXT | filters.CONTACT,
@@ -79,35 +79,33 @@ def build_app() -> Application:
         )
     )
 
+    # Global errors
+    app.add_error_handler(error_handler)
+
+    # jobqueue
+    app.job_queue.run_repeating(cleanup_user_data, interval=1800)
+
+
     return app
 
 
-# =====================================================================
-# Entrypoint
-# =====================================================================
+# ============================================================
+# 🚀 Entrypoint
+# ============================================================
 def main() -> None:
-    """
-    Start the Telegram bot:
-    • initialize logging
-    • build Application
-    • start polling
-    """
 
-    # 🔥 Initialize logging BEFORE anything else
     setup_logging()
 
     log.info("Bootstrapping WorldFlow Credit bot...")
 
     app = build_app()
-    log.info("🚀 WorldFlow Credit bot started (polling mode)")
+
+    log.info("🚀 Bot started (polling mode)")
 
     app.run_polling(
         allowed_updates=["message", "callback_query"]
     )
 
-
-__all__ = ["build_app", "main"]
-
-
 if __name__ == "__main__":
+    print(L10N_RU)
     main()

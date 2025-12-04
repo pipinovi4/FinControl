@@ -1,143 +1,174 @@
 # ui/progress_panel.py
 """
-Fintech-style progress summary panel.
-
-This module generates and maintains a dynamic "progress panel" — 
-a multi-line HTML summary of:
-    • completed steps
-    • remaining steps
-    • short preview of all answers
-
-Used to give the user a clean real-time overview of the application wizard.
-
-Functions provided:
--------------------
-- progress_panel_html()      → builds the HTML panel
-- upsert_progress_panel()    → creates or updates the panel in chat
-- _wipe_all_progress_panels() → removes all panels from the chat
-
-Internal helpers:
------------------
-- _html_escape()
-- _short()
-- _label()
-- _track_panel_id()
-- _cleanup_old_panels()
+Fintech-style progress summary panel with nested L10N architecture.
 """
 
 from __future__ import annotations
 
 from typing import List, Optional, Set
 from telegram.ext import ContextTypes
-from telegram import ReplyKeyboardRemove
 from telegram.error import BadRequest, Forbidden, TelegramError
-
-from locales import translate as t
-from constants import (
-    APP_STEPS, APP_ANS,
-    PROGRESS_MSG_ID, PROGRESS_MSG_IDS,
+from telegram import (
+    InlineKeyboardMarkup,
+    InlineKeyboardButton,
 )
+
+from locales import L10N, translate as t
+from constants import PROGRESS_MSG_ID, PROGRESS_MSG_IDS
+from constants.callbacks import CB_BACK, CB_NEXT, CB_CANCEL
+from wizard import Step
 
 
 # ============================================================
-# Internal helpers
+# Helpers
 # ============================================================
 
 def _html_escape(s: str) -> str:
-    """Escape HTML-sensitive characters."""
     return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
 def _short(val: str, limit: int = 64) -> str:
-    """
-    Truncate long values inside the panel.
-    Example:
-        "super long text ...." → "super long text…"
-    """
     s = str(val).strip()
     return s if len(s) <= limit else s[: limit - 1] + "…"
 
 
-def _label(lang: str, key: str) -> str:
+# ============================================================
+# L10N label resolvers
+# ============================================================
+
+def resolve_text(lang: str, key: str) -> str:
     """
-    Fetches a translated label for a given step key.
-    Falls back to the raw key if no translation exists.
+    Fetch: ui[key], titles[key], buttons[key], common[key]
+    This is for: progress_title, done, back, next, cancel...
     """
-    return t(lang, f"labels.{key}") or key
+    loc = L10N.get(lang, {})
+    for ns in ("ui", "titles", "buttons", "common", "progress_panel"):
+        block = loc.get(ns, {})
+        if key in block:
+            return block[key]
+    return key
+
+
+def resolve_label(lang: str, country: str, step_key: str) -> str:
+    """
+    Fetch: steps_by_country[country][step].label
+           steps[step].label
+    """
+    loc = L10N.get(lang, {})
+
+    # country override
+    sbc = loc.get("steps_by_country", {})
+    cfg = sbc.get(country, {}).get(step_key)
+    if cfg and "label" in cfg:
+        return cfg["label"]
+
+    # global step
+    steps = loc.get("steps", {})
+    cfg = steps.get(step_key)
+    if cfg and "label" in cfg:
+        return cfg["label"]
+
+    return step_key
 
 
 # ============================================================
 # HTML panel generator
 # ============================================================
 
-def progress_panel_html(lang: str, steps: list[str], answers: dict) -> str:
-    """
-    Build the full HTML markup for the progress panel.
+def progress_panel_html(lang: str, country: str, steps: list[Step], answers: dict, idx: int) -> str:
+    # -------------------------
+    #   UI L10N
+    # -------------------------
+    title = resolve_text(lang, "progress_title")
+    done_h = resolve_text(lang, "done")
+    current_h = resolve_text(lang, "current")
+    bar_h = resolve_text(lang, "progress_bar")
+    step_word = resolve_text(lang, "step")
+    of_word = resolve_text(lang, "of")
+    no_data = resolve_text(lang, "no_data")
 
-    Output structure:
-        📊 Title
-        ✓ Completed section
-        ⏳ To-do section
-    """
-    title = t(lang, "ui.preview_title")
-    done_h = t(lang, "ui.done")
-    todo_h = t(lang, "ui.todo")
+    # -------------------------
+    #   Step info
+    # -------------------------
+    total = len(steps)
+    step_number = idx + 1
+    current_step = steps[idx]
+    current_label = resolve_label(lang, country, current_step.key)
 
-    done_lines, todo_lines = [], []
+    # -------------------------
+    #   FIXED Emoji Progress Bar (10 cells)
+    # -------------------------
+    FULL = "🟩"   # completed
+    EMPTY = "🟦"  # remaining
+    BAR_LEN = 10  # fixed length bar
 
-    for key in steps:
-        label = _html_escape(_label(lang, key))
-        raw_val = answers.get(key)
+    # ratio
+    ratio = step_number / total if total > 0 else 0
+    filled = int(round(ratio * BAR_LEN))
 
-        # Determine if field is filled
-        filled = (
-            (isinstance(raw_val, str) and raw_val.strip() != "")
-            or raw_val not in (None, "")
-        )
+    # guarantee at least 1 filled on step 1
+    if filled == 0 and step_number > 0:
+        filled = 1
 
-        shown = "—" if not filled else _short(raw_val)
-        shown = _html_escape(shown)
+    # clamp to bounds
+    filled = max(1, min(BAR_LEN, filled))
 
-        line = f"• <b>{label}</b> — <code>{shown}</code>"
+    bar = FULL * filled + EMPTY * (BAR_LEN - filled)
 
-        if filled:
-            done_lines.append(line)
+    # -------------------------
+    #   Completed steps list
+    # -------------------------
+    rows = []
+
+    for i, s in enumerate(steps):
+        key = s.key
+        label = resolve_label(lang, country, key)
+
+        bullet = "➡️" if i == idx else "•"
+
+        entry = answers.get(key)
+        display_value = entry.get("display") if entry else None
+
+        if display_value:
+            rows.append(f"{bullet} <b>{label}</b>: <code>{_short(display_value)}</code>")
+        elif i == idx:
+            rows.append(f"{bullet} <b>{label}</b>: <i>{no_data}</i>")
         else:
-            todo_lines.append(line)
+            rows.append(f"{bullet} <b>{label}</b>")
 
-    parts = [f"<b>📊 {title}</b>"]
+    completed_block = "\n".join(rows)
 
-    if done_lines:
-        parts += [f"\n<b>{done_h}</b>", *done_lines]
+    # -------------------------
+    #   Final HTML
+    # -------------------------
+    return f"""
+<b>📋 {title}</b>
 
-    if todo_lines:
-        parts += [f"\n<b>{todo_h}</b>", *todo_lines]
+<b>{bar_h}:</b>
+{bar}
+<b>{step_word} {step_number} {of_word} {total}</b>
 
-    return "\n".join(parts)
+<b>{current_h}:</b>
+• <b>{current_label}</b>
 
+<b>{done_h}:</b>
+{completed_block}
+""".strip()
 
 # ============================================================
-# State helpers — tracking all panels
+# Panel state handlers
 # ============================================================
 
 def _track_panel_id(context: ContextTypes.DEFAULT_TYPE, mid: int) -> None:
-    """
-    Record a new panel message ID in user_data for cleanup management.
-    """
     ids: List[int] = context.user_data.get(PROGRESS_MSG_IDS, [])
     if mid not in ids:
         ids.append(mid)
-        context.user_data[PROGRESS_MSG_IDS] = ids
+    context.user_data[PROGRESS_MSG_IDS] = ids
 
 
-async def _cleanup_old_panels(msg, context: ContextTypes.DEFAULT_TYPE, keep: Set[int]) -> None:
-    """
-    Remove previous panels to avoid clutter:
-    - keeps exactly the panel IDs passed in `keep`
-    - deletes all others
-    """
+async def _cleanup_old_panels(msg, context: ContextTypes.DEFAULT_TYPE, keep: Set[int]):
     ids: List[int] = context.user_data.get(PROGRESS_MSG_IDS, [])
-    remain: List[int] = []
+    remain = []
 
     for mid in ids:
         if mid in keep:
@@ -147,97 +178,85 @@ async def _cleanup_old_panels(msg, context: ContextTypes.DEFAULT_TYPE, keep: Set
         try:
             await msg.chat.delete_message(mid)
         except (BadRequest, Forbidden):
-            # message can't be deleted or already removed
             pass
         except TelegramError as e:
-            # log other Telegram-level errors
-            print(f"[progress_panel] TelegramError during cleanup: {e}")
+            print(f"[progress_panel] TelegramError: {e}")
 
     context.user_data[PROGRESS_MSG_IDS] = remain
 
+
 # ============================================================
-# Upsert main panel
+# Upsert panel
 # ============================================================
 
 async def upsert_progress_panel(msg, context: ContextTypes.DEFAULT_TYPE):
-    """
-    Create or update the progress panel beneath the wizard.
-
-    Behavior:
-    ---------
-    1. Try editing existing panel (faster, cleaner)
-    2. If edit fails → delete old and send new panel
-    3. Update internal tracking structures
-    """
     lang = context.user_data.get("lang") or "en"
-    steps: list[str] = context.user_data.get(APP_STEPS, [])
-    answers: dict = context.user_data.get(APP_ANS, {})
-    html = progress_panel_html(lang, steps, answers)
+    country = context.user_data.get("country") or "US"
 
-    pmid: Optional[int] = context.user_data.get(PROGRESS_MSG_ID)
+    wizard = context.user_data.get("wizard")
+    if not wizard:
+        return
 
-    # Try updating
+    # <-- ключове!
+    steps = wizard.queue.steps     # <--- Step objects, not strings
+    answers = wizard.queue.answers
+    idx = wizard.queue.index
+
+    html = progress_panel_html(lang, country, steps, answers, idx)
+
+    kb = InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton(resolve_text(lang, "back"), callback_data=CB_BACK),
+            InlineKeyboardButton(resolve_text(lang, "next"), callback_data=CB_NEXT),
+        ],
+        [
+            InlineKeyboardButton(resolve_text(lang, "cancel"), callback_data=CB_CANCEL),
+        ],
+    ])
+
+    pmid = context.user_data.get(PROGRESS_MSG_ID)
+
     if pmid:
         try:
-            await msg.chat.edit_message_text(
+            await context.bot.edit_message_text(
+                chat_id=msg.chat_id,
                 message_id=pmid,
                 text=html,
-                parse_mode="HTML"
+                parse_mode="HTML",
+                reply_markup=kb
             )
             _track_panel_id(context, pmid)
             await _cleanup_old_panels(msg, context, keep={pmid})
             return
-
-        except (BadRequest, Forbidden):
-            # message cannot be edited
+        except Exception:
             try:
                 await msg.chat.delete_message(pmid)
-            except (BadRequest, Forbidden):
+            except Exception:
                 pass
-            except TelegramError as e:
-                print(f"[progress_panel] TelegramError on deleting stale panel: {e}")
 
-        except TelegramError as e:
-            print(f"[progress_panel] TelegramError on editing panel: {e}")
-
-    # Send new panel
-    sent = await msg.reply_text(
-        html,
-        parse_mode="HTML",
-        reply_markup=ReplyKeyboardRemove()
-    )
+    sent = await msg.reply_text(text=html, parse_mode="HTML", reply_markup=kb)
 
     context.user_data[PROGRESS_MSG_ID] = sent.message_id
     _track_panel_id(context, sent.message_id)
-
     await _cleanup_old_panels(msg, context, keep={sent.message_id})
 
 
 # ============================================================
-# Full cleanup
+# Cleanup all
 # ============================================================
 
 async def wipe_all_progress_panels(chat, context: ContextTypes.DEFAULT_TYPE):
-    """
-    Remove ALL progress panels from this chat.
-
-    Used when:
-    - user presses /start
-    - restarting the application flow
-    - switching country/region
-    """
     ids: List[int] = context.user_data.get(PROGRESS_MSG_IDS, [])
 
     for mid in ids:
         try:
             await chat.delete_message(mid)
-        except (BadRequest, Forbidden):
+        except Exception:
             pass
-        except TelegramError as e:
-            print(f"[progress_panel] TelegramError during wipe: {e}")
 
     context.user_data.pop(PROGRESS_MSG_IDS, None)
     context.user_data.pop(PROGRESS_MSG_ID, None)
+
 
 __all__ = [
     "progress_panel_html",

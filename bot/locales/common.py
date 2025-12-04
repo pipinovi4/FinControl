@@ -1,17 +1,17 @@
 # locales/common.py
 
 WELCOME_BILINGUAL = (
-    "*Let’s get you started*\n\n"
-    "▶ To continue, select your country and start the application.\n\n"
+    "<b>Let’s get you started</b>\n"
+    "\n"
+    "▶ <b>To continue, select your country and start the application.</b>\n"
     "🌍 Indicate the country for your application.\n"
     "📄 The form and language will adjust automatically.\n"
-    "\n\n"
-    "*Начнём оформление*\n\n"
-    "▶ Чтобы продолжить, выберите страну и начните оформление.\n\n"
+    "\n"
+    "<b>Начнём оформление</b>\n"
+    "\n"
+    "▶ <b>Чтобы продолжить, выберите страну и начните оформление.</b>\n"
     "🌍 Укажите страну для подачи заявки.\n"
     "📄 Анкета и язык настроятся автоматически."
 )
 
-START_BTN = "▶ Start"
-
-__all__ = ["WELCOME_BILINGUAL", "START_BTN"]
+__all__ = ["WELCOME_BILINGUAL"]

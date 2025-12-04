@@ -4,10 +4,8 @@ from .titles import TITLES
 from .buttons import BUTTONS
 from .ui import UI
 from .bodies import BODIES
-from .labels import LABELS
 from .steps import STEPS
 from .steps_by_country import STEPS_BY_COUNTRY
-from .quick import QUICK
 from .common import COMMON
 
 L10N_RU = {
@@ -16,9 +14,7 @@ L10N_RU = {
     "ui": UI,
     "bodies": BODIES,
     "steps": STEPS,
-    "labels": LABELS,
     "steps_by_country": STEPS_BY_COUNTRY,
-    "quick": QUICK,
     "common": COMMON,
 }
 

@@ -1,114 +1,86 @@
+# handlers/menu.py
+
 from __future__ import annotations
 
 import os
-from telegram import (
-    Update,
-    InputMediaPhoto,
-)
+from telegram import Update, InputMediaPhoto
 from telegram.ext import ContextTypes
 
-# --- Project-wide imports ---
+from core.logger import log
+from locales import translate as t, WELCOME_BILINGUAL
+from handlers.application.prompt import send_step_prompt, wipe_last_prompt
+from keyboards import kb_regions, kb_countries, kb_main_menu, kb_about
+from ui import safe_edit, replace_with_text, upsert_progress_panel, wipe_all_progress_panels, safe_delete, reset_ui
+from wizard.engine import WizardEngine
+from config.master_steps import MASTER_STEPS
+
 from constants import (
     CB_START, CB_REGION, CB_COUNTRY, CB_MENU,
     LANG_BY_COUNTRY, COUNTRY_TITLE,
-    APP_FLOW, APP_STEPS, APP_IDX, APP_ANS,
-    LAST_PROMPT_MSG_ID,
     ABOUT_PHOTO_MSG_ID, ABOUT_TEXT_MSG_ID,
-    build_step_order,
 )
 
 from locales import (
-    translate as t,
-    WELCOME_BILINGUAL,
     BTN_APPLY, BTN_SUPPORT, BTN_ABOUT,
-    BTN_CHANGE_COUNTRY, BTN_MY_APPS,
-    BTN_BACK,
+    BTN_CHANGE_COUNTRY, BTN_MY_APPS, BTN_BACK
 )
-
-from keyboards import (
-    kb_regions,
-    kb_countries,
-    kb_main_menu,
-    kb_about,
-)
-
-from handlers.application.prompts import send_step_prompt
-from ui import safe_edit, replace_with_text, upsert_progress_panel, wipe_all_progress_panels
-
-from core.logger import log
 
 
 # ============================================================
-# Internal helper: remove previously sent "About Us" media/text
+# Cleanup helper for ABOUT section
 # ============================================================
-async def _cleanup_about(chat, context: ContextTypes.DEFAULT_TYPE):
+async def cleanup_about(chat, context: ContextTypes.DEFAULT_TYPE):
     """
-    Deletes the previously sent About photo and About text message
-    if they exist in user_data. Helps avoid media clutter when user
-    reopens About multiple times.
+    Deletes stored ABOUT media/text if they were previously sent.
     """
     photo_id = context.user_data.pop(ABOUT_PHOTO_MSG_ID, None)
     text_id = context.user_data.pop(ABOUT_TEXT_MSG_ID, None)
 
-    for mid in (photo_id, text_id):
-        if mid:
-            try:
-                await chat.delete_message(mid)
-            except Exception:
-                pass
+    for msg_id in (photo_id, text_id):
+        if not msg_id:
+            continue
+        try:
+            await chat.delete_message(msg_id)
+        except Exception:
+            pass
 
 
 # ============================================================
-# Callback router: processes all inline keyboard actions
+# MAIN INLINE CALLBACK ROUTER
 # ============================================================
-async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """
-    Main callback handler for all inline keyboard actions.
-    Routes user navigation across:
-      - Start
-      - Region selection
-      - Country selection
-      - Main menu actions
-      - Application (wizard) start
-      - Misc sections (About, Support, My Apps)
-    """
+async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
     q = update.callback_query
     await q.answer()
 
     data = q.data or ""
-    lang = context.user_data.get("lang") or "en"
+    lang = context.user_data.get("lang", "en")
 
-    # ------------------------------
-    # User pressed "Start"
-    # ------------------------------
-    if data == CB_START:
-        # reset UI
-        await wipe_all_progress_panels(q.message.chat, context)
-
-        await safe_edit(
-            q,
-            WELCOME_BILINGUAL,
-            reply_markup=kb_regions(),
-            parse_mode="HTML"
-        )
-        return
-
-    # ------------------------------
-    # Region selected
-    # ------------------------------
+    # ---------------------------------------------------------
+    # REGION SELECTED
+    # ---------------------------------------------------------
     if data.startswith(CB_REGION):
         region_code = data.split(":", 1)[1]
+
+        # 1️⃣ Якщо країна ще не обрана — показуємо Welcome
+        if "country" not in context.user_data:
+            text = WELCOME_BILINGUAL
+        else:
+            # 2️⃣ Якщо країна вже була вибрана — показуємо локалізований текст
+            lang = context.user_data.get("lang", "en")
+            text = t(lang, "bodies.back_to_region")
+
         await safe_edit(
             q,
-            WELCOME_BILINGUAL,
+            text,
             reply_markup=kb_countries(region_code),
-            parse_mode="Markdown"
+            parse_mode="HTML",
         )
         return
 
-    # ------------------------------
-    # Country selected
-    # ------------------------------
+    # ---------------------------------------------------------
+    # COUNTRY SELECTED
+    # ---------------------------------------------------------
     if data.startswith(CB_COUNTRY):
         country_code = data.split(":", 1)[1]
 
@@ -116,123 +88,141 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         lang = LANG_BY_COUNTRY.get(country_code, "en")
         context.user_data["lang"] = lang
 
-        text = t(lang, "after_country_selected",
-                  country=COUNTRY_TITLE.get(country_code, country_code))
-        text += "\n\n" + t(lang, "menu_title")
+        # NEW L10N STRUCTURE
+        text = (
+            t(lang, "bodies.after_country_selected", country=COUNTRY_TITLE.get(country_code, country_code))
+            + "\n\n"
+            + t(lang, "titles.menu_title")
+        )
 
-        await safe_edit(q, text, reply_markup=kb_main_menu(lang))
+        await safe_edit(
+            q,
+            text,
+            reply_markup=kb_main_menu(lang),
+            parse_mode="HTML",
+        )
+
         return
 
-    # ------------------------------
-    # Menu actions
-    # ------------------------------
-    if data.startswith(CB_MENU):
-        action = data.split(":", 1)[1]
+    # ---------------------------------------------------------
+    # MENU ACTIONS
+    # ---------------------------------------------------------
+    if not data.startswith(CB_MENU):
+        return
 
-        # --------------------------------------------------------
-        # 1) APPLY → Starting the credit wizard
-        # --------------------------------------------------------
-        if action == BTN_APPLY:
-            country = context.user_data.get("country") or "US"
-            lang = context.user_data.get("lang") or "en"
+    action = data.split(":", 1)[1]
 
-            steps = build_step_order(country)
+    # ---------------------------------------------------------------
+    # APPLY — start wizard flow
+    # ---------------------------------------------------------------
+    if action == BTN_APPLY:
+        # Full UI reset (remove panels + prompt)
+        await reset_ui(q, context)
 
-            # initialize wizard state
-            context.user_data[APP_FLOW] = True
-            context.user_data[APP_STEPS] = steps
-            context.user_data[APP_IDX] = 0
-            context.user_data[APP_ANS] = {}
+        country = context.user_data.get("country", "US")
+        lang = context.user_data.get("lang", "en")
 
-            await safe_edit(q, t(lang, "apply_text"))
+        engine = WizardEngine(country=country, lang=lang, base_steps=MASTER_STEPS, debug=True)
+        context.user_data["wizard"] = engine
 
-            # show progress panel
-            await upsert_progress_panel(q.message, context)
+        await upsert_progress_panel(q.message, context)
 
-            # send first step prompt
-            sent_prompt = await send_step_prompt(q.message, lang, country, steps[0])
+        # first step
+        step = engine.current_step()
 
-            if sent_prompt and hasattr(sent_prompt, "message_id"):
-                context.user_data[LAST_PROMPT_MSG_ID] = sent_prompt.message_id
+        await send_step_prompt(q.message, context, lang, country, step.key)
 
-            return
+        return
 
-        # --------------------------------------------------------
-        # 2) SUPPORT
-        # --------------------------------------------------------
-        if action == BTN_SUPPORT:
-            await _cleanup_about(q.message.chat, context)
-            support_username = os.getenv("TELEGRAM_BOT_SUPPORT_USERNAME", "WorldFlowSupport")
-            txt = t(lang, "support_text", support_username=support_username)
-            await safe_edit(q, txt, reply_markup=kb_main_menu(lang), parse_mode="HTML")
-            return
-        # --------------------------------------------------------
-        # 3) ABOUT
-        # --------------------------------------------------------
-        if action == BTN_ABOUT:
-            await _cleanup_about(q.message.chat, context)
+    # ---------------------------------------------------------------
+    # SUPPORT
+    # ---------------------------------------------------------------
+    if action == BTN_SUPPORT:
+        await cleanup_about(q.message.chat, context)
 
-            file_id = os.getenv("ABOUT_FILE_ID", "")
-            if file_id:
-                try:
-                    await q.edit_message_media(
-                        media=InputMediaPhoto(
-                            media=file_id,
-                            caption=t(lang, "about_full"),
-                            parse_mode="HTML"
-                        ),
-                        reply_markup=kb_about(lang),
-                    )
-                    return
-                except Exception as e:
-                    log.warning("edit_message_media failed: %s", e)
+        support_username = os.getenv("TELEGRAM_BOT_SUPPORT_USERNAME", "WorldFlowSupport")
 
-            # fallback (text)
-            await safe_edit(
-                q,
-                t(lang, "about_full"),
-                reply_markup=kb_about(lang),
-                parse_mode="HTML",
-            )
-            return
+        await safe_edit(
+            q,
+            t(lang, "bodies.support_text", support_username=support_username),
+            reply_markup=kb_main_menu(lang),
+            parse_mode="HTML"
+        )
+        return
 
-        # --------------------------------------------------------
-        # 4) CHANGE COUNTRY
-        # --------------------------------------------------------
-        if action == BTN_CHANGE_COUNTRY:
-            await safe_edit(
-                q,
-                t(lang, "back_to_region"),
-                reply_markup=kb_regions(),
-                parse_mode="HTML",
-            )
-            return
+    # ---------------------------------------------------------------
+    # ABOUT
+    # ---------------------------------------------------------------
+    if action == BTN_ABOUT:
+        await cleanup_about(q.message.chat, context)
 
-        # --------------------------------------------------------
-        # 5) MY APPLICATIONS (stub)
-        # --------------------------------------------------------
-        if action == BTN_MY_APPS:
-            await safe_edit(
-                q,
-                t(lang, "my_apps_stub") + "\n\n" + t(lang, "menu_title"),
-                reply_markup=kb_main_menu(lang)
-            )
-            return
+        file_id = os.getenv("ABOUT_FILE_ID")
 
-        # --------------------------------------------------------
-        # 6) BACK
-        # --------------------------------------------------------
-        if action == BTN_BACK:
-            await replace_with_text(
-                q,
-                t(lang, "menu_title"),
-                reply_markup=kb_main_menu(lang)
-            )
-            return
+        caption = t(lang, "bodies.about_full")
+
+        if file_id:
+            try:
+                msg = await q.edit_message_media(
+                    InputMediaPhoto(
+                        media=file_id,
+                        caption=caption,
+                        parse_mode="HTML",
+                    ),
+                    reply_markup=kb_about(lang),
+                )
+                context.user_data[ABOUT_PHOTO_MSG_ID] = msg.message_id
+                return
+            except Exception as e:
+                log.warning(f"[ABOUT] Failed to replace media: {e}")
+
+        msg = await safe_edit(
+            q,
+            caption,
+            reply_markup=kb_about(lang),
+            parse_mode="HTML",
+        )
+
+        context.user_data[ABOUT_TEXT_MSG_ID] = q.message.message_id
+        return
+
+    # ---------------------------------------------------------------
+    # CHANGE COUNTRY
+    # ---------------------------------------------------------------
+    if action == BTN_CHANGE_COUNTRY:
+        await cleanup_about(q.message.chat, context)
+
+        # Локалізований текст!
+        await safe_edit(
+            q,
+            t(lang, "bodies.back_to_region"),
+            reply_markup=kb_regions(),
+            parse_mode="HTML"
+        )
+        return
+
+    # ---------------------------------------------------------------
+    # MY APPLICATIONS (placeholder)
+    # ---------------------------------------------------------------
+    if action == BTN_MY_APPS:
+        await safe_edit(
+            q,
+            t(lang, "bodies.my_apps_stub") + "\n\n" + t(lang, "titles.menu_title"),
+            reply_markup=kb_main_menu(lang),
+            parse_mode="HTML"
+        )
+        return
+
+    # ---------------------------------------------------------------
+    # BACK
+    # ---------------------------------------------------------------
+    if action == BTN_BACK:
+        await replace_with_text(
+            q,
+            t(lang, "titles.menu_title"),
+            reply_markup=kb_main_menu(lang),
+            parse_mode="HTML"
+        )
+        return
 
 
-# Export public symbols
-__all__ = [
-    "on_callback",
-    "_cleanup_about",
-]
+__all__ = ["on_callback", "cleanup_about"]
