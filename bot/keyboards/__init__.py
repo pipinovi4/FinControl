@@ -12,6 +12,6 @@ __all__ = [
     "kb_regions",
     "kb_main_menu",
     "kb_applications",
-    "support_kb",
+    "kb_support",
     "cb_region", "cb_country", "cb_menu",
 ]
