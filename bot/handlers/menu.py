@@ -6,16 +6,17 @@ import os
 from telegram import Update, InputMediaPhoto
 from telegram.ext import ContextTypes
 
+from constants.callbacks import CB_COUNTRY_BACK
 from core.logger import log
 from locales import translate as t, WELCOME_BILINGUAL
 from handlers.application.prompt import send_step_prompt
 from keyboards import kb_regions, kb_countries, kb_main_menu, kb_about, kb_applications, kb_support
-from ui import safe_edit, replace_with_text, upsert_progress_panel, wipe_all_progress_panels, safe_delete, reset_ui
+from ui import safe_edit, replace_with_text, upsert_progress_panel, reset_ui
 from wizard.engine import WizardEngine
 from config.master_steps import MASTER_STEPS
 
 from constants import (
-    CB_START, CB_REGION, CB_COUNTRY, CB_MENU,
+    CB_REGION, CB_COUNTRY, CB_MENU,
     LANG_BY_COUNTRY, COUNTRY_TITLE,
     ABOUT_PHOTO_MSG_ID, ABOUT_TEXT_MSG_ID,
 )
@@ -62,21 +63,22 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if data.startswith(CB_REGION):
         region_code = data.split(":", 1)[1]
 
-        # 1️⃣ Якщо країна ще не обрана — показуємо Welcome
-        if "country" not in context.user_data:
-            text = WELCOME_BILINGUAL
-        else:
-            # 2️⃣ Якщо країна вже була вибрана — показуємо локалізований текст
-            lang = context.user_data.get("lang", "en")
-            text = t(lang, "bodies.back_to_region")
+        context.user_data["region"] = region_code
 
-        await safe_edit(
+        if "country" not in context.user_data:
+            return await safe_edit(
+                q,
+                WELCOME_BILINGUAL,
+                reply_markup=kb_countries(region_code),
+                parse_mode="HTML",
+            )
+
+        return await safe_edit(
             q,
-            text,
-            reply_markup=kb_countries(region_code),
+            t(lang, "bodies.back_to_region"),
+            reply_markup=kb_countries(region_code, lang),
             parse_mode="HTML",
         )
-        return
 
     # ---------------------------------------------------------
     # COUNTRY SELECTED
@@ -84,31 +86,49 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if data.startswith(CB_COUNTRY):
         country_code = data.split(":", 1)[1]
 
+        # Зберігаємо країну
         context.user_data["country"] = country_code
+
+        # Визначаємо мову за країною
         lang = LANG_BY_COUNTRY.get(country_code, "en")
         context.user_data["lang"] = lang
 
-        # NEW L10N STRUCTURE
+        # Формуємо текст
         text = (
             t(lang, "bodies.after_country_selected", country=COUNTRY_TITLE.get(country_code, country_code))
             + "\n\n"
             + t(lang, "titles.menu_title")
         )
 
-        await safe_edit(
+        return await safe_edit(
             q,
             text,
             reply_markup=kb_main_menu(lang),
             parse_mode="HTML",
         )
 
-        return
+    if data == CB_COUNTRY_BACK:
+        if "country" not in context.user_data:
+            # fallback, наприклад, показати регионы
+            return await safe_edit(
+                q,
+                WELCOME_BILINGUAL,
+                reply_markup=kb_regions(),
+                parse_mode="HTML"
+            )
+
+        return await safe_edit(
+            q,
+            t(lang, "bodies.back_to_region"),
+            reply_markup=kb_regions(lang),
+            parse_mode="HTML"
+        )
 
     # ---------------------------------------------------------
     # MENU ACTIONS
     # ---------------------------------------------------------
     if not data.startswith(CB_MENU):
-        return
+        return None
 
     action = data.split(":", 1)[1]
 
@@ -130,9 +150,7 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # first step
         step = engine.current_step()
 
-        await send_step_prompt(q.message, context, lang, country, step.key)
-
-        return
+        return await send_step_prompt(q.message, context, lang, country, step.key)
 
     # ---------------------------------------------------------------
     # SUPPORT
@@ -142,13 +160,12 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         support_username = os.getenv("TELEGRAM_BOT_SUPPORT_USERNAME", "WorldFlowSupport")
 
-        await safe_edit(
+        return await safe_edit(
             q,
             t(lang, "bodies.support_text", support_username=support_username),
             reply_markup=kb_support(lang),
             parse_mode="HTML"
         )
-        return
 
     # ---------------------------------------------------------------
     # ABOUT
@@ -171,19 +188,17 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     reply_markup=kb_about(lang),
                 )
                 context.user_data[ABOUT_PHOTO_MSG_ID] = msg.message_id
-                return
+                return None
             except Exception as e:
                 log.warning(f"[ABOUT] Failed to replace media: {e}")
 
-        msg = await safe_edit(
+        context.user_data[ABOUT_TEXT_MSG_ID] = q.message.message_id
+        return await safe_edit(
             q,
             caption,
             reply_markup=kb_about(lang),
             parse_mode="HTML",
         )
-
-        context.user_data[ABOUT_TEXT_MSG_ID] = q.message.message_id
-        return
 
     # ---------------------------------------------------------------
     # CHANGE COUNTRY
@@ -191,38 +206,36 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if action == BTN_CHANGE_COUNTRY:
         await cleanup_about(q.message.chat, context)
 
-        # Локалізований текст!
-        await safe_edit(
+        return await safe_edit(
             q,
             t(lang, "bodies.back_to_region"),
-            reply_markup=kb_regions(),
+            reply_markup=kb_regions(lang),
             parse_mode="HTML"
         )
-        return
 
     # ---------------------------------------------------------------
     # MY APPLICATIONS (placeholder)
     # ---------------------------------------------------------------
     if action == BTN_MY_APPS:
-        await safe_edit(
+        return await safe_edit(
             q,
             t(lang, "bodies.my_apps_stub") + "\n\n" + t(lang, "titles.menu_title"),
             reply_markup=kb_applications(lang),
             parse_mode="HTML"
         )
-        return
 
     # ---------------------------------------------------------------
     # BACK
     # ---------------------------------------------------------------
     if action == BTN_BACK:
-        await replace_with_text(
+        return await replace_with_text(
             q,
             t(lang, "titles.menu_title"),
             reply_markup=kb_main_menu(lang),
             parse_mode="HTML"
         )
-        return
+
+    return None
 
 
 __all__ = ["on_callback", "cleanup_about"]
