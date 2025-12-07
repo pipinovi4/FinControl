@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional, Dict, Any, Tuple
+from typing import Optional, Dict, Any, Tuple, Coroutine
 
 from wizard.queue import (
     SmartQueue,
@@ -8,7 +8,7 @@ from wizard.queue import (
     BranchConfigError,
 )
 from wizard.step import Step
-from locales import translate as t
+from locales import translate as t, L10N
 from core.logger import log
 
 
@@ -121,7 +121,10 @@ class WizardEngine:
             log.debug(f"[Wizard] process_answer {key} = {raw_value}")
 
         try:
-            normalized = self._normalize_answer(raw_value)
+            if isinstance(raw_value, dict):
+                normalized = raw_value
+            else:
+                normalized = self._normalize_answer(raw_value)
 
             self.queue.set_answer(key, normalized, display_value)
 
@@ -138,6 +141,105 @@ class WizardEngine:
         except Exception as e:
             log.error(f"[Wizard] Unexpected error in process_answer: {e}", exc_info=True)
             return False, "fatal_error"
+
+    async def validate_input(self, step_key: str, raw_value: str) -> tuple[bool, str, Any | None] | tuple[
+        bool, str, str] | tuple[bool, str, str | Any] | tuple[bool, dict, str] | tuple[bool, Any, Any]:
+        """
+        Universal input validator.
+
+        Returns:
+            (ok: bool, canonical: str, display: str_or_error)
+        """
+        locale = L10N.get(self.lang, {})
+        steps = locale.get("steps", {})
+        by_country = locale.get("steps_by_country", {}).get(self.country, {})
+        cfg = by_country.get(step_key, {}) or steps.get(step_key, {})
+
+        validator_key = cfg.get("validator")
+
+        # FILE UPLOAD → skip normalize
+        if isinstance(raw_value, dict):
+            # load validator
+            from services.validators import VALIDATOR_REGISTRY
+            validator = VALIDATOR_REGISTRY.get(validator_key)
+
+            if not validator:
+                # accept file without validation
+                return True, raw_value, raw_value.get("name", "Документ")
+
+            ok, result = await validator(raw_value)
+
+            if not ok:
+                return False, "", cfg.get("validator_error") or result
+
+            # validator returns file_id → but we keep full dict
+            canonical = raw_value
+            display = raw_value.get("name", "Документ")
+            return True, canonical, display
+
+        # 1) Normalize yes/no (local language → Yes/No)
+        raw_norm = self._normalize_answer(raw_value)
+
+        # 2) Load config (steps + country overrides)
+        validator_error_text = cfg.get("validator_error")
+
+        # Quick buttons for this step
+        quick = cfg.get("quick") or []
+
+        # 3) 🔥 Convert BUTTON TEXT → KEY
+        raw_norm = self._resolve_button_key(raw_norm, quick)
+
+        # 4) If no validator → accept any value
+        if not validator_key:
+            canonical = raw_norm
+            display = raw_norm
+
+            # convert display via quick
+            for btn in quick:
+                if btn.get("key") == canonical:
+                    display = btn.get("text", canonical)
+                    break
+
+            return True, canonical, display
+
+        # 5) Load validator function
+        from services.validators import VALIDATOR_REGISTRY
+        validator = VALIDATOR_REGISTRY.get(validator_key)
+
+        if not validator:
+            return False, "", f"Missing validator '{validator_key}'"
+
+        # 6) Special case: ENUM needs allowed list
+        if validator_key == "enum":
+            allowed = [btn.get("key") for btn in quick]
+            try:
+                ok, result = await validator(raw_norm, allowed)
+            except Exception as e:
+                log.error(f"[Wizard] Validator enum failed for {step_key}: {e}", exc_info=True)
+                return False, "", "Ошибка валидации"
+        else:
+            # all other validators take (value)
+            try:
+                ok, result = await validator(raw_norm)
+            except Exception as e:
+                log.error(f"[Wizard] Validator failed for {step_key}: {e}", exc_info=True)
+                return False, "", "Ошибка валидации"
+
+        # 7) Validation failed → return error message
+        if not ok:
+            return False, "", validator_error_text or result
+
+        # 8) SUCCESS — canonical = validator result
+        canonical = result
+
+        # convert display via quick buttons
+        display = canonical
+        for btn in quick:
+            if btn.get("key") == canonical:
+                display = btn.get("text", canonical)
+                break
+
+        return True, canonical, display
 
     # -------------------------------------------------------------
     # 🔧 Normalize answer
@@ -159,6 +261,18 @@ class WizardEngine:
         except Exception as e:
             log.error(f"[Wizard] normalize_answer error: {e}")
             return answer
+
+    @staticmethod
+    def _resolve_button_key(raw: str, quick: list[dict]) -> str:
+        """Convert button TEXT → KEY."""
+        if not quick:
+            return raw
+
+        for btn in quick:
+            if raw == btn.get("text"):
+                return btn.get("key")
+
+        return raw
 
     # -------------------------------------------------------------
     # 🔚 Finished?

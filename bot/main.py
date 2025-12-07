@@ -74,7 +74,7 @@ def build_app() -> Application:
     # Wizard text/contact messages
     app.add_handler(
         MessageHandler(
-            filters.TEXT | filters.CONTACT,
+            filters.ALL & ~filters.COMMAND,
             handle_application_message
         )
     )
