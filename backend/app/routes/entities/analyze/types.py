@@ -4,56 +4,70 @@ from enum import Enum
 
 from app.utils.protocols import BaseService
 from app.schemas.entities.filters import (
-    WorkerFilterSchema, BrokerFilterSchema, ClientFilterSchema, AdminFilterSchema, UserFilterSchema
+    WorkerFilterSchema, BrokerFilterSchema,
+    AdminFilterSchema, UserFilterSchema
 )
 
-FilterSchemaT = TypeVar("FilterSchemaT", AdminFilterSchema, ClientFilterSchema, WorkerFilterSchema, BrokerFilterSchema, UserFilterSchema)
+# ⛔ NOTICE:
+# ClientFilterSchema видаляється з системи разом із Legacy Client
+FilterSchemaT = TypeVar(
+    "FilterSchemaT",
+    AdminFilterSchema,
+    WorkerFilterSchema,
+    BrokerFilterSchema,
+    UserFilterSchema,
+)
 
 RawTuple = Tuple[
     str,
-    Type[BaseService], Type[BaseService],
-    Type[BaseService], Type[FilterSchemaT],
+    Type[BaseService],  # worker service
+    Type[BaseService],  # broker service
+    Type[BaseService],  # admin service
+    Type[FilterSchemaT]
 ]
+
 
 class AnalyzeType(str, Enum):
     """
     Supported analytics metrics.
 
     Each value must correspond to a method named `run_<metric>`
-    in the appropriate Service class. Example: `run_clients_growth`.
+    inside the appropriate Service class.
     """
 
-    # 📈 Clients
-    class Client(Enum):
-        CLIENTS_GROWTH = "clients_growth"                    # Client registration trend over time
-        CLIENTS_PER_BROKER = "clients_per_broker"            # Distribution of clients by broker
-        CLIENTS_PER_WORKER = "clients_per_worker"            # Distribution of clients by worker
+    # ─────────────────────────────────────────────
+    # 📂 Application-centric metrics (MAIN FOCUS)
+    # ─────────────────────────────────────────────
 
-    class Worker(Enum):
-        pass
-    class Admin(Enum):
-        pass
-    class Broker(Enum):
-        pass
+    APPLICATIONS_GROWTH = "applications_growth"              # Trend of created applications over time
+    APPLICATIONS_PER_BROKER = "applications_per_broker"      # Distribution of applications by broker
+    APPLICATIONS_PER_WORKER = "applications_per_worker"      # Distribution of applications by worker
 
-    # 🗂 Applications
-    APPLICATIONS_SUMMARY = "applications_summary"        # Total, approved, rejected stats
-    APPLICATIONS_OVER_TIME = "applications_over_time"    # Number of applications per day/week
-    APPLICATIONS_BY_SOURCE = "applications_by_source"    # Applications segmented by source/channel
+    APPLICATIONS_SUMMARY = "applications_summary"            # Total, approved, rejected, pending
+    APPLICATIONS_OVER_TIME = "applications_over_time"        # Apps per day/week/month
+    APPLICATIONS_BY_SOURCE = "applications_by_source"        # Source channels segmentation
 
-    # 💸 Financial
-    REVENUE_PER_DAY = "revenue_per_day"                  # Revenue trends per day
-    AVERAGE_AMOUNT = "average_amount"                    # Average amount per application
-    TOTAL_REVENUE = "total_revenue"                      # Total issued funds across all clients
+    # ─────────────────────────────────────────────
+    # 💰 Financial metrics
+    # ─────────────────────────────────────────────
+    REVENUE_PER_DAY = "revenue_per_day"                      # Issued credits per day
+    AVERAGE_AMOUNT = "average_amount"                        # Avg issued amount
+    TOTAL_REVENUE = "total_revenue"                          # Sum(amount) of all credit operations
 
-    # 👤 User activity
-    ACTIVE_USERS_TODAY = "active_users_today"            # Number of users active today
-    LAST_LOGIN_DISTRIBUTION = "last_login_distribution"  # How recently users have logged in
+    # ─────────────────────────────────────────────
+    # 👥 User activity metrics
+    # ─────────────────────────────────────────────
+    ACTIVE_USERS_TODAY = "active_users_today"
+    LAST_LOGIN_DISTRIBUTION = "last_login_distribution"
 
-    # 🏢 Organization
-    BROKERS_ACTIVITY = "brokers_activity"                # Applications handled per broker
-    WORKERS_ACTIVITY = "workers_activity"                # Applications handled per worker
+    # ─────────────────────────────────────────────
+    # 🏢 Organizational metrics
+    # ─────────────────────────────────────────────
+    BROKERS_ACTIVITY = "brokers_activity"                    # Activity level based on app count
+    WORKERS_ACTIVITY = "workers_activity"                    # Same but for workers
 
+    # ─────────────────────────────────────────────
     # 📊 System diagnostics
-    SYSTEM_LOAD = "system_load"                          # Number of DB entities or heavy resources
-    ERRORS_PER_DAY = "errors_per_day"                    # System errors grouped by day
+    # ─────────────────────────────────────────────
+    SYSTEM_LOAD = "system_load"
+    ERRORS_PER_DAY = "errors_per_day"
