@@ -1,29 +1,29 @@
 from locales import BTN_SUPPORT, BTN_ABOUT, BTN_CHANGE_COUNTRY, BTN_MY_APPS, BTN_APPLY, BTN_BACK
 
 BUTTONS = {
-    "btn_apply": "📝 Подать заявку",
-    "btn_support": "🛟 Поддержка",
-    "btn_about": "ℹ️ О нас",
-    "btn_change_country": "🌐 Изменить страну",
-    "btn_my_apps": "🗂 Мои заявки",
-    "btn_back": "↩ Назад",
-
-    "btn_website": "Сайт",
-    "btn_tg_channel": "Канал в Telegram",
-    "btn_instagram": "Instagram",
-    "btn_x": "X / Twitter",
-    "btn_linkedin": "LinkedIn",
-    "btn_youtube": "YouTube",
+    "apply": "📝 Подать заявку",
+    "support": "🛟 Поддержка",
+    "about": "ℹ️ О нас",
+    "change_country": "🌐 Изменить страну",
+    "my_apps": "🗂 Мои заявки",
+    "back": "⬅️ Назад",
+    "next": "➡️ Вперед",
+    "cancel": "❌ Отменить",
+    "edit": "✏️ Изменить",
+    "submit": "✅ Отправить",
+    "return": "🔁 Вернуться",
+    "choose_field": "🎯 Выбрать поле",
+    "save": "💾 Сохранить",
 }
 
 # Алиасы кнопок
 BUTTONS.update({
-    BTN_SUPPORT: BUTTONS["btn_support"],
-    BTN_ABOUT: BUTTONS["btn_about"],
-    BTN_CHANGE_COUNTRY: BUTTONS["btn_change_country"],
-    BTN_MY_APPS: BUTTONS["btn_my_apps"],
-    BTN_APPLY: BUTTONS["btn_apply"],
-    BTN_BACK: BUTTONS["btn_back"],
+    BTN_SUPPORT: BUTTONS["support"],
+    BTN_ABOUT: BUTTONS["about"],
+    BTN_CHANGE_COUNTRY: BUTTONS["change_country"],
+    BTN_MY_APPS: BUTTONS["my_apps"],
+    BTN_APPLY: BUTTONS["apply"],
+    BTN_BACK: BUTTONS["back"],
 })
 
 __all__ = [
