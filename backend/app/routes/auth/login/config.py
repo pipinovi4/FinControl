@@ -4,7 +4,7 @@ from asyncpg.protocol.protocol import Protocol
 from pydantic import BaseModel
 from sqlalchemy.orm import DeclarativeMeta
 
-from app.schemas import AdminSchema, WorkerSchema, BrokerSchema, ClientSchema
+from app.schemas import AdminSchema, WorkerSchema, BrokerSchema
 from app.schemas.auth import LoginRequest
 from app.schemas.sessions import TokenPair
 from app.services.auth import PasswordService
