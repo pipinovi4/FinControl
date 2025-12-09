@@ -17,7 +17,8 @@ from app.utils.decorators import handle_exceptions
 
 class WorkerDashboardService:
     """
-    Dashboard service rewritten for Application-based architecture.
+    Application-based Worker Dashboard service.
+    Mirrors the old Client-based structure 1:1.
     """
 
     def __init__(self, db: AsyncSession):
@@ -28,24 +29,23 @@ class WorkerDashboardService:
     # -------------------------------------------------------------
     @handle_exceptions()
     async def get_sum_applications(self, worker_id: UUID) -> int:
-        stmt = select(func.count()).select_from(Application).where(
-            Application.worker_id == worker_id
+        stmt = (
+            select(func.count())
+            .select_from(Application)
+            .where(Application.worker_id == worker_id)
         )
-        result = await self.db.execute(stmt)
-        return result.scalar_one()
+        res = await self.db.execute(stmt)
+        return res.scalar_one()
 
     @handle_exceptions()
     async def get_total_sum_credits(self, worker_id: UUID) -> float:
-        """
-        Total credit amount created for worker via Application → Credit.
-        """
         stmt = (
             select(func.sum(Credit.amount))
             .join(Application, Application.id == Credit.application_id)
             .where(Application.worker_id == worker_id)
         )
-        result = await self.db.execute(stmt)
-        return result.scalar_one() or 0.0
+        res = await self.db.execute(stmt)
+        return res.scalar_one() or 0.0
 
     @handle_exceptions()
     async def get_month_sum_credits(self, worker_id: UUID) -> float:
@@ -59,8 +59,8 @@ class WorkerDashboardService:
                 extract('month', Credit.issued_at) == now.month,
             )
         )
-        result = await self.db.execute(stmt)
-        return result.scalar_one() or 0.0
+        res = await self.db.execute(stmt)
+        return res.scalar_one() or 0.0
 
     @handle_exceptions()
     async def get_sum_deals(self, worker_id: UUID) -> int:
@@ -70,11 +70,11 @@ class WorkerDashboardService:
             .join(Application, Application.id == Credit.application_id)
             .where(Application.worker_id == worker_id)
         )
-        result = await self.db.execute(stmt)
-        return result.scalar_one()
+        res = await self.db.execute(stmt)
+        return res.scalar_one()
 
     # -------------------------------------------------------------
-    # NEW APPLICATIONS TODAY / YESTERDAY
+    # TODAY / YESTERDAY NEW APPLICATIONS
     # -------------------------------------------------------------
     @handle_exceptions()
     async def get_sum_today_new_applications(self, worker_id: UUID) -> int:
@@ -84,7 +84,7 @@ class WorkerDashboardService:
             .select_from(Application)
             .where(
                 Application.worker_id == worker_id,
-                Application.taken_at_worker >= today,
+                Application.taken_at_worker >= today
             )
         )
         return (await self.db.execute(stmt)).scalar_one()
@@ -101,7 +101,7 @@ class WorkerDashboardService:
             .where(
                 Application.worker_id == worker_id,
                 Application.taken_at_worker >= yesterday,
-                Application.taken_at_worker < today,
+                Application.taken_at_worker < today
             )
         )
         return (await self.db.execute(stmt)).scalar_one()
@@ -114,11 +114,10 @@ class WorkerDashboardService:
             select(Application)
             .where(
                 Application.worker_id == worker_id,
-                Application.taken_at_worker >= today,
+                Application.taken_at_worker >= today
             )
         )
-        res = await self.db.execute(stmt)
-        apps = res.scalars().all()
+        apps = (await self.db.execute(stmt)).scalars().all()
         return [WorkerApplicationNewToday.model_validate(a) for a in apps]
 
     # -------------------------------------------------------------
@@ -147,7 +146,7 @@ class WorkerDashboardService:
             .options(
                 selectinload(Application.worker),
                 selectinload(Application.broker),
-                selectinload(Application.credits),
+                selectinload(Application.credits)
             )
         )
         result = await self.db.execute(stmt)
@@ -155,7 +154,7 @@ class WorkerDashboardService:
         return ApplicationWorkerOut.model_validate(app) if app else None
 
     # -------------------------------------------------------------
-    # ASSIGN / UNSIGN APPLICATION
+    # ASSIGN / UNSIGN
     # -------------------------------------------------------------
     @handle_exceptions()
     async def unsign_application(self, application_id: UUID):
@@ -178,7 +177,7 @@ class WorkerDashboardService:
         await self.db.commit()
 
     # -------------------------------------------------------------
-    # CREDIT AGGREGATION – MONTH / YEAR
+    # CREDIT AGGREGATION (MONTH / YEAR)
     # -------------------------------------------------------------
     @handle_exceptions()
     async def get_credits_for_month(self, worker_id: UUID, month: str):
@@ -205,8 +204,10 @@ class WorkerDashboardService:
 
         days = (end - start).days
         return [
-            {"date": (start + timedelta(days=i)).isoformat(),
-             "amount": round(credits_map.get(start + timedelta(days=i), 0.0), 2)}
+            {
+                "date": (start + timedelta(days=i)).isoformat(),
+                "amount": round(credits_map.get(start + timedelta(days=i), 0.0), 2)
+            }
             for i in range(days)
         ]
 
@@ -224,7 +225,7 @@ class WorkerDashboardService:
             .where(
                 Application.worker_id == worker_id,
                 Credit.issued_at >= start,
-                Credit.issued_at < end,
+                Credit.issued_at < end
             )
             .group_by("month")
             .order_by("month")
@@ -235,7 +236,7 @@ class WorkerDashboardService:
 
         return [
             {"month": f"{year}-{m:02}", "amount": round(credits_map.get(m, 0.0), 2)}
-            for m in range(1, 12 + 1)
+            for m in range(1, 13)
         ]
 
     # -------------------------------------------------------------
@@ -256,9 +257,6 @@ class WorkerDashboardService:
 
     @handle_exceptions()
     async def get_count_active_applications(self, worker_id: UUID) -> int:
-        """
-        Active = applications without ANY credit.
-        """
         stmt = (
             select(func.count(Application.id))
             .outerjoin(Credit, Application.id == Credit.application_id)
@@ -270,7 +268,7 @@ class WorkerDashboardService:
         return (await self.db.execute(stmt)).scalar_one()
 
     # -------------------------------------------------------------
-    # FILTER BUCKET APPLICATIONS (JSONB FILTERS!)
+    # FILTER BUCKET APPLICATIONS (JSONB)
     # -------------------------------------------------------------
     @handle_exceptions()
     async def filter_bucket_applications(
@@ -295,14 +293,12 @@ class WorkerDashboardService:
 
         where_clause = and_(*filters)
 
-        # total
         total = (
             await self.db.execute(
                 select(func.count()).select_from(Application).where(where_clause)
             )
         ).scalar_one()
 
-        # data
         stmt = (
             select(Application)
             .where(where_clause)
@@ -310,7 +306,9 @@ class WorkerDashboardService:
             .offset(skip)
             .limit(limit)
         )
-
         apps = (await self.db.execute(stmt)).scalars().all()
+
         return (
-            [ApplicationWorkerOut.model_validate(a) for a in apps]
+            [ApplicationWorkerOut.model_validate(a) for a in apps],
+            total
+        )
