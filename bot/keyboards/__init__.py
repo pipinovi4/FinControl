@@ -1,10 +1,10 @@
-from .about_kb import kb_about
-from .region_kb import kb_regions
-from .country_kb import kb_countries
-from .menu_kb import kb_main_menu
-from .callback_kb import cb_country, cb_menu, cb_region
-from .support_kb import kb_support
-from .applications_kb import kb_applications
+from .about import kb_about
+from .region import kb_regions
+from .country import kb_countries
+from .menu import kb_main_menu
+from .callbacks import cb_country, cb_menu, cb_region
+from .support import kb_support
+from .applications import kb_applications
 
 __all__ = [
     "kb_about",

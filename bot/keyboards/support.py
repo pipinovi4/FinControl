@@ -2,7 +2,7 @@ from __future__ import annotations
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 from locales import translate as t, BTN_BACK
-from .callback_kb import cb_menu
+from .callbacks import cb_menu
 
 
 def kb_support(lang: str) -> InlineKeyboardMarkup:

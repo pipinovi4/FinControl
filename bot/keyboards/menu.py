@@ -5,7 +5,7 @@ from locales import (
     BTN_SUPPORT, BTN_ABOUT, BTN_CHANGE_COUNTRY, BTN_MY_APPS, BTN_APPLY,
     translate as t
 )
-from .callback_kb import cb_menu
+from .callbacks import cb_menu
 
 
 def kb_main_menu(lang: str) -> InlineKeyboardMarkup:

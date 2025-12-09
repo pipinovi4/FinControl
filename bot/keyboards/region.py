@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import List, Optional
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from constants import REGIONS, CB_MENU
-from .callback_kb import cb_region, cb_menu
+from .callbacks import cb_region, cb_menu
 from locales import translate as t, BTN_BACK
 
 

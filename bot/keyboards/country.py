@@ -5,7 +5,7 @@ from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from constants.callbacks import CB_COUNTRY_BACK
 from locales import translate as t
 from constants import COUNTRIES_BY_REGION
-from .callback_kb import cb_country, cb_menu
+from .callbacks import cb_country, cb_menu
 
 def kb_countries(region_code: str, lang: Optional[str] = None) -> InlineKeyboardMarkup:
     rows: List[List[InlineKeyboardButton]] = []
