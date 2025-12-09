@@ -15,8 +15,8 @@ from app.models.entities.application import Application
 from app.schemas.entities.credit_schema import CreditCreate, CreditUpdate
 from app.routes.entities.crud.dashboard.types import DeletedFilter
 
-from .pagination import credit_list_paginated
-from .helpers import ensure_broker_access, soft_delete_credit, restore_credit
+from .credit_pagination import credit_list_paginated
+from .credit_utils import ensure_broker_access, soft_delete_credit, restore_credit
 
 
 CreditT = TypeVar("CreditT", bound=Credit)
@@ -25,7 +25,7 @@ CreditT = TypeVar("CreditT", bound=Credit)
 class CreditService:
     """
     Async credit service.
-    Fully Application-based.
+    Fully Application-based (no Client model).
     """
 
     def __init__(self, db: AsyncSession, model: Type[CreditT] = Credit):
@@ -103,7 +103,7 @@ class CreditService:
     # ─────────────────────────────────────────────
     @handle_exceptions()
     async def create(self, payload: CreditCreate) -> CreditT:
-        application = await self.db.get(Application, payload.application_id)
+        application = await self.db.get(Application, payload.client_id)
         if not application:
             raise ValueError("Application does not exist")
 
