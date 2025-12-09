@@ -136,6 +136,8 @@ class SmartQueue:
         # Apply branching
         self._apply_branching(key, canonical_value)
 
+        # Clean up old answers
+        self._cleanup_orphan_answers()
     # ---------------------------------------------------------
     # 🔀 UNIVERSAL BRANCH ENGINE
     # ---------------------------------------------------------
@@ -225,6 +227,17 @@ class SmartQueue:
             raise DynamicInsertError(
                 f"Failed to remove dynamic steps for parent='{parent_key}'"
             ) from e
+
+    def _cleanup_orphan_answers(self):
+        """Remove answers belonging to steps no longer present after branching."""
+        valid_keys = {s.key for s in self.steps}
+
+        to_delete = [k for k in self.answers.keys() if k not in valid_keys]
+
+        if to_delete:
+            log.info(f"[SmartQueue] Cleanup orphan answers: {to_delete}")
+            for k in to_delete:
+                del self.answers[k]
 
     # ---------------------------------------------------------
     # ✔ HELPERS
