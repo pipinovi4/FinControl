@@ -11,8 +11,8 @@ def handle_ws_exceptions(func):
     """
     Decorator to gracefully handle exceptions in WebSocket endpoint handlers.
 
-    🔹 Logs disconnect events (e.g., when the client closes the connection).
-    🔹 Logs unexpected exceptions and sends an error message to the client.
+    🔹 Logs disconnect events (e.g., when the application closes the connection).
+    🔹 Logs unexpected exceptions and sends an error message to the application.
     🔹 Ensures WebSocket is closed with code 1011 (Internal Error) on failure.
 
     Usage:
@@ -30,10 +30,10 @@ def handle_ws_exceptions(func):
         try:
             await func(websocket, *args, **kwargs)
         except WebSocketDisconnect:
-            # Normal client disconnect (no need to panic)
+            # Normal application disconnect (no need to panic)
             logger.info(f"[WS] Disconnected: {websocket.client}")
         except Exception as e:
-            # Unexpected error – send to client and close
+            # Unexpected error – send to application and close
             logger.exception(f"[WS] Error: {str(e)}")
             try:
                 await websocket.send_json({"error": str(e)})

@@ -120,7 +120,7 @@ class RefreshTokenService:
 
         Args:
             stored_token (RefreshToken): The token being rotated.
-            ip (Optional[str]): New client IP.
+            ip (Optional[str]): New application IP.
             ua (Optional[str]): New User-Agent.
             ttl_days (int): New token lifespan.
 

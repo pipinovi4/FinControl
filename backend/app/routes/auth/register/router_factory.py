@@ -13,12 +13,12 @@ from app.services.auth import generate_token_pair
 from app.utils.cookies import set_auth_cookies
 from db.session import get_async_db
 from app.routes.auth.register._base import generate_register_endpoints
-from app.schemas import AdminSchema, WorkerSchema, BrokerSchema, ClientSchema
-from app.services.entities import AdminService, WorkerService, BrokerService, ClientService
+from app.schemas import AdminSchema, WorkerSchema, BrokerSchema
+from app.services.entities import AdminService, WorkerService, BrokerService
 
 # Type variables for generic schemas and services
-SchemaT = TypeVar("SchemaT", AdminSchema, WorkerSchema, BrokerSchema, ClientSchema)
-ServiceT = TypeVar("ServiceT", AdminService, WorkerService, BrokerService, ClientService)
+SchemaT = TypeVar("SchemaT", AdminSchema, WorkerSchema, BrokerSchema)
+ServiceT = TypeVar("ServiceT", AdminService, WorkerService, BrokerService)
 
 
 def make_register_handler(
@@ -49,13 +49,6 @@ def make_register_handler(
         service = service_cls(db)
 
         data_dict = data.model_dump()
-
-        # Обробка worker_username
-        if role == PermissionRole.CLIENT and hasattr(data, "worker_username"):
-            worker = await WorkerService(db=db).get_by_username(cast(str, data.worker_username))
-            data_dict["worker_id"] = worker.id if worker else None
-            data_dict.pop("worker_username", None)
-            print(data_dict)
 
         # Тепер формуємо payload з очищеним словником
         payload = schema_cls.Create(**data_dict)

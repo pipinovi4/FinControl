@@ -1,6 +1,7 @@
 from sqlalchemy import select, literal
 from sqlalchemy.sql import Select
 from datetime import datetime
+from sqlalchemy import func
 
 from app.models import Broker
 from app.permissions import PermissionRole
@@ -30,6 +31,7 @@ class BrokerFilterService(UserFilterService):
 
     def __init__(self):
         """Initialize the filter service with a base SELECT query."""
+        super().__init__()
         self.query: Select = select(Broker)
 
     def by_email(self, email: str):
@@ -59,7 +61,9 @@ class BrokerFilterService(UserFilterService):
         :param region: Region name to match.
         :return: Self (chainable).
         """
-        self.query = self.query.where(Broker.region.any(literal(region)))
+        self.query = self.query.where(
+            func.lower(literal(region)).in_(func.lower(Broker.region))
+        )
         return self
 
     def by_exact_region_list(self, regions: list[str]):

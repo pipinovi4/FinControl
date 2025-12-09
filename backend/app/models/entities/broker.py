@@ -12,7 +12,7 @@ class Broker(User, TimeStampAuthMixin):
     """
     SQLAlchemy model representing a broker entity.
 
-    A broker is an external partner who submits clients to the platform and
+    A broker is an external partner who submits applications to the platform and
     monitors their processing progress. Brokers usually have limited access rights.
 
     Inherits:
@@ -43,11 +43,11 @@ class Broker(User, TimeStampAuthMixin):
         info={"description": "List of regions where the broker is active"}
     )
 
-    # One-to-many relationship: the broker can have many clients
-    clients: Mapped[list["Client"]] = relationship(
-        "Client",
+    # One-to-many relationship: the broker can have many applications
+    applications: Mapped[list["Application"]] = relationship(
+        "Application",
         back_populates="broker",
-        foreign_keys="Client.broker_id",
+        foreign_keys="Application.broker_id",
         cascade="save-update, merge",
         passive_deletes=True,
     )

@@ -4,114 +4,80 @@ from app.services.entities.user import UserInterfaceService
 
 class WorkerInterfaceService(UserInterfaceService):
     """
-    High-level interface class for accessing worker-specific information and computed attributes.
+    High-level interface for Worker entity in the APPLICATION-based architecture.
 
-    This class builds upon `UserInterfaceService` and provides additional utility methods
-    tailored to the `Worker` entity, such as checking client assignments, generating
-    dynamic login links, and exposing login/user data in a display-friendly form.
-
-    Main Use-Cases:
-        - Rendering worker-related info in templates or frontend APIs.
-        - Abstracting logic that would otherwise duplicate access to raw model fields.
-        - Ensuring safe, consistent, and structured access to optional fields.
-
-    Methods:
-        - has_clients(): Check if the worker has any clients.
-        - is_active(): Returns True if the worker is not soft-deleted.
-        - get_username(): Returns the username of the worker.
-        - get_telegram_username(): Telegram handle or empty string.
-        - get_clients_count(): Count of clients assigned to this worker.
-        - get_clients_display(): List of readable names for assigned clients.
-        - get_last_login(): String representation of last login.
-        - get_dynamic_link(): One-time login link, if supported.
-        - __str__(): Developer-friendly representation of the instance.
-
-    Example:
-        interface = WorkerInterfaceService(worker)
-        print(interface.get_clients_count())
-        if interface.has_clients():
-            print(interface.get_clients_display())
+    Provides helper methods for UI, API responses, templates:
+        - has_applications()
+        - get_applications_count()
+        - get_applications_display()
+        - is_active()
+        - get_username()
+        - get_last_login()
+        - get_dynamic_link()
     """
-    def __init__(self, worker: Worker) -> None:
-        """
-        Initialize the interface with a Worker instance.
 
-        :param worker: The Worker model instance.
-        """
+    def __init__(self, worker: Worker):
         super().__init__(worker)
-        self.worker = worker
+        self.worker: Worker = worker
 
-    def has_clients(self) -> bool:
+    # ---------------------------------------------------------
+    # APPLICATIONS
+    # ---------------------------------------------------------
+    def has_applications(self) -> bool:
+        """Return True if worker has at least one application."""
+        return bool(self.worker.applications)
+
+    def get_applications_count(self) -> int:
+        """Return number of assigned applications."""
+        return len(self.worker.applications or [])
+
+    def get_applications_display(self) -> list[str]:
         """
-        Check if the worker has any assigned clients.
-
-        :return: True if the worker has at least one client, False otherwise.
+        Return display names for applications.
+        Uses Application.data["full_name"] if available,
+        otherwise fallback like Application#ABC123.
         """
-        return bool(self.worker.clients)
+        result = []
+        for app in self.worker.applications:
+            full_name = app.data.get("full_name") if app.data else None
+            if full_name:
+                result.append(full_name)
+            else:
+                result.append(f"Application#{str(app.id)[:6]}")
+        return result
 
-    def is_active(self) -> bool:
-        """
-        Check if the worker is active (exists and is not marked as deleted).
-
-        :return: True if the worker is active, False if deleted.
-        """
-        return not self.worker.is_deleted
-
+    # ---------------------------------------------------------
+    # BASIC FIELDS
+    # ---------------------------------------------------------
     def get_username(self) -> str:
-        """
-        Retrieve the worker's username.
-
-        :return: The username (e.g., "john.smith").
-        """
+        """Return internal worker username."""
         return self.worker.username
 
-    def get_clients_count(self) -> int:
-        """
-        Retrieve the number of clients assigned to the worker.
+    def is_active(self) -> bool:
+        """True if worker is NOT soft-deleted."""
+        return not self.worker.is_deleted
 
-        :return: The count of clients.
-        """
-        return len(self.worker.clients) if self.worker.clients else 0
-
-    def get_clients_display(self) -> list[str]:
-        """
-        Retrieve a list of display names for all clients assigned to the worker.
-
-        For each client, returns its full name if available, or a fallback like "Client#<id>".
-
-        :return: List of display names for clients.
-        """
-        return [
-            client.full_name if client.full_name else f"Client#{str(client.id)[:6]}"
-            for client in self.worker.clients
-        ]
-
+    # ---------------------------------------------------------
+    # AUTH / META
+    # ---------------------------------------------------------
     def get_last_login(self) -> str:
         """
-        Retrieve the worker's last login timestamp as a string.
-
-        This relies on the TimeStampAuthMixin providing a 'last_login' attribute.
-
-        :return: The last login timestamp as a string or "N/A" if not available.
+        Return last login timestamp as string.
+        If not available — return 'N/A'.
         """
-        return str(self.worker.last_login) if hasattr(self.worker, 'last_login') and self.worker.last_login else "N/A"
+        last_login = getattr(self.worker, "last_login", None)
+        return str(last_login) if last_login else "N/A"
 
     def get_dynamic_link(self) -> str:
         """
-        Retrieve a one-time dynamic login link for the worker.
-
-        This method assumes the DynamicLinkAuthMixin provides a `generate_dynamic_link` method.
-
-        :return: The dynamic link as a string, or an empty string if not available.
+        Return one-time dynamic login link if supported.
         """
-        if hasattr(self.worker, 'generate_dynamic_link'):
+        if hasattr(self.worker, "generate_dynamic_link"):
             return self.worker.generate_dynamic_link()
         return ""
 
+    # ---------------------------------------------------------
+    # STR
+    # ---------------------------------------------------------
     def __str__(self) -> str:
-        """
-        Developer-friendly string representation of the worker.
-
-        :return: A string representing the worker.
-        """
         return f"Worker(username={self.worker.username}, id={self.worker.id})"

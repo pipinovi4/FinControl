@@ -8,51 +8,59 @@ BrokerT = TypeVar("BrokerT", bound=Broker)
 
 class BrokerInterfaceService(UserInterfaceService):
     """
-    BrokerInterfaceService — wrapper around the Broker model.
+    High-level interface wrapper for Broker entity.
 
-    Provides helper methods to access broker-specific attributes,
-    simplify view rendering, and encapsulate common logic.
+    After migration to Application-based architecture:
+      - brokers don't have `.applications`
+      - they DO have `.applications`
 
-    TypeVars:
-        BrokerT — any entity subclassing Broker.
-
-    Includes:
-        - get_display_name(): Display broker's company or fallback.
-        - get_email(): Return broker's email.
-        - get_regions(): List of broker's active regions.
-        - get_clients_count(): Return number of assigned clients.
-        - has_clients(): Check if broker has any clients.
-        - is_active(): Check if broker is active (not soft-deleted).
-        - __str__(): Developer-friendly string for debugging.
+    This interface provides:
+        - company display logic
+        - region access helpers
+        - application count helpers
+        - active/deleted status helpers
+        - safe field access
     """
+
     def __init__(self, broker: BrokerT):
         super().__init__(broker)
         self.broker: BrokerT = broker
 
+    # ---------------------------------------------------------
+    # BASIC ACCESSORS
+    # ---------------------------------------------------------
     def get_display_name(self) -> str:
-        """Return broker’s company name or fallback."""
+        """Return broker’s company name or fallback like Broker#abc123."""
         return self.broker.company_name or f"Broker#{str(self.broker.id)[:6]}"
 
     def get_email(self) -> str:
-        """Return broker’s email."""
-        return str(self.broker.email)
+        """Return broker’s email (stringified to avoid None)."""
+        return str(self.broker.email or "")
 
     def get_regions(self) -> list[str]:
         """Return list of broker’s regions."""
         return self.broker.region or []
 
-    def get_clients_count(self) -> int:
-        """Return the number of clients assigned to the broker."""
-        return len(self.broker.clients or [])
+    # ---------------------------------------------------------
+    # APPLICATION COUNTS (REPLACING OLD APPLICATIONS)
+    # ---------------------------------------------------------
+    def get_applications_count(self) -> int:
+        """Return number of Applications assigned to the broker."""
+        return len(self.broker.applications or [])
 
-    def has_clients(self) -> bool:
-        """Return True if the broker has at least one client."""
-        return bool(self.broker.clients)
+    def has_applications(self) -> bool:
+        """Return True if the broker has at least one Application."""
+        return bool(self.broker.applications)
 
+    # ---------------------------------------------------------
+    # STATUS
+    # ---------------------------------------------------------
     def is_active(self) -> bool:
         """Return True if broker is not soft-deleted."""
         return not self.broker.is_deleted
 
+    # ---------------------------------------------------------
+    # DEBUG
+    # ---------------------------------------------------------
     def __str__(self) -> str:
-        """String representation for debugging."""
         return f"Broker(company={self.broker.company_name}, id={self.broker.id})"

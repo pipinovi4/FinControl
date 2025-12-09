@@ -14,6 +14,6 @@ from pydantic import BaseModel
 
 class BaseSchemaNamespace(Protocol):
     Create: Type[BaseModel]   # Used for incoming POST payloads
-    Out:    Type[BaseModel]   # Returned to client in responses
+    Out:    Type[BaseModel]   # Returned to application in responses
     Update: Type[BaseModel]   # Used for PATCH/PUT payloads
     Base:   Type[BaseModel]   # Shared attributes or filters

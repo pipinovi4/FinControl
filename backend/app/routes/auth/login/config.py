@@ -11,7 +11,7 @@ from app.services.auth import PasswordService
 from app.permissions import PermissionRole
 from app.routes.auth.login.types import LoginTypes
 from app.utils.protocols import BaseService, BaseSchemaNamespace
-from app.models.entities import Admin, Worker, Broker, Client
+from app.models.entities import Admin, Worker, Broker
 
 class LoginTypesCls(BaseModel):
     web: Optional[Tuple[LoginTypes, Type[BaseModel], Type[BaseModel]]] = None
@@ -20,7 +20,7 @@ class LoginTypesCls(BaseModel):
 class LoginWebResponse(BaseModel):
     status: int = 200
 
-ModelT = Admin | Worker |Broker | Client
+ModelT = Admin | Worker |Broker
 
 ROLE_REGISTRY: Dict[PermissionRole, Tuple[str, BaseService, BaseSchemaNamespace, Type[ModelT], LoginTypesCls]] = {
     PermissionRole.ADMIN: (
@@ -30,7 +30,6 @@ ROLE_REGISTRY: Dict[PermissionRole, Tuple[str, BaseService, BaseSchemaNamespace,
         Admin,
         LoginTypesCls(
             web=(LoginTypes.WEB, LoginRequest, LoginWebResponse),
-            bot=(LoginTypes.BOT, LoginRequest, TokenPair),
         )
     ),
     PermissionRole.WORKER: (
@@ -40,7 +39,6 @@ ROLE_REGISTRY: Dict[PermissionRole, Tuple[str, BaseService, BaseSchemaNamespace,
         Worker,
         LoginTypesCls(
             web=(LoginTypes.WEB, LoginRequest, LoginWebResponse),
-            bot=(LoginTypes.BOT, LoginRequest, TokenPair),
         )
     ),
     PermissionRole.BROKER: (
@@ -50,15 +48,6 @@ ROLE_REGISTRY: Dict[PermissionRole, Tuple[str, BaseService, BaseSchemaNamespace,
         Broker,
         LoginTypesCls(
             web=(LoginTypes.WEB, LoginRequest, LoginWebResponse),
-        )
-    ),
-    PermissionRole.CLIENT: (
-        "/client",
-        PasswordService,
-        ClientSchema,
-        Client,
-        LoginTypesCls(
-            bot=(LoginTypes.BOT, LoginRequest, TokenPair),
         )
     ),
 }

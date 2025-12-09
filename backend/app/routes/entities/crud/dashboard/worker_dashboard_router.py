@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import UUID
 
 from app.services.entities.worker.worker_dashboard import WorkerDashboardService
-from app.schemas.entities.client_schema import ClientOut, WorkerClientNewToday, ClientWorkerOut
+from app.schemas.entities.application_schema import ClientOut, WorkerClientNewToday, ClientWorkerOut
 from app.routes.entities.crud.dashboard.types import (
     SimpleIntOut,
     SimpleFloatOut,
@@ -16,7 +16,7 @@ from app.routes.entities.crud.dashboard.types import (
 )
 
 router = APIRouter(
-    prefix="/client",
+    prefix="/application",
     tags=["worker:dashboard"]
 )
 
@@ -87,7 +87,7 @@ async def get_bucket_clients(
     return {"clients": clients, "total": total_clients}
 get_bucket_clients._meta = {"input_model": WorkerBucketClientsIn}
 
-# 8. Get client by ID
+# 8. Get application by ID
 @router.get("/{client_id}", response_model=ClientWorkerOut)
 async def get_client(client_id: UUID, db: AsyncSession = Depends(get_async_db)):
     service = WorkerDashboardService(db)
@@ -95,21 +95,21 @@ async def get_client(client_id: UUID, db: AsyncSession = Depends(get_async_db)):
 get_client._meta = {"input_model": ClientIdIn}
 
 
-# 9. Unassign a client from a worker
+# 9. Unassign a application from a worker
 @router.patch("/unsign/{client_id}", response_model=StatusMessage)
 async def unsign_client(client_id: UUID, db: AsyncSession = Depends(get_async_db)):
     service = WorkerDashboardService(db)
     await service.unsign_client(client_id)
-    return {"status": "client unsigned"}
+    return {"status": "application unsigned"}
 unsign_client._meta = {"input_model": ClientIdIn}
 
 
-# 10. Assign client to worker
+# 10. Assign application to worker
 @router.patch("/sign", response_model=StatusMessage)
 async def sign_client(data: WorkerSignClientIn, db: AsyncSession = Depends(get_async_db)):
     service = WorkerDashboardService(db)
     await service.sign_client(data.client_id, data.worker_id)
-    return {"status": "client signed"}
+    return {"status": "application signed"}
 sign_client._meta = {"input_model": WorkerSignClientIn}
 
 from fastapi import Query
@@ -156,7 +156,7 @@ async def get_completed_credits_count(
     count = await service.get_count_completed_clients(worker_id)
     return {"count": count}
 
-# 16. Get client by filters
+# 16. Get application by filters
 @router.get(
     "/filter/bucket/{worker_id}",
     response_model=WorkerClientListOut,

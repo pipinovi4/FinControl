@@ -7,7 +7,7 @@ imported directly from 'backend.app.models.entities'.
 
 # Core user entities
 from .user import User
-from .client import Client
+from .application import Application
 from .worker import Worker
 from .broker import Broker
 from .admin import Admin
@@ -18,7 +18,7 @@ from .promotion import Promotion
 # Public API of the entities package
 __all__ = [
     "User",
-    "Client",
+    "Application",
     "Worker",
     "Broker",
     "Admin",

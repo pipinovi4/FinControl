@@ -6,10 +6,10 @@ from pydantic import BaseModel
 from app.schemas.sessions import TokenPair
 from app.utils.decorators import handle_route_exceptions
 # from app.utils.middlewares.limiter import rate_limit
-from app.schemas import AdminSchema, WorkerSchema, BrokerSchema, ClientSchema
+from app.schemas import AdminSchema, WorkerSchema, BrokerSchema
 
 # Type variables for generic schemas and services
-SchemaT = TypeVar("SchemaT", AdminSchema, WorkerSchema, BrokerSchema, ClientSchema)
+SchemaT = TypeVar("SchemaT", AdminSchema, WorkerSchema, BrokerSchema)
 
 InputSchemaT = TypeVar("InputSchemaT", bound=BaseModel)
 OutputSchemaT = TypeVar("OutputSchemaT", bound=BaseModel)
@@ -46,4 +46,3 @@ def generate_register_endpoints(
         summary=f"{tags[0]} - {path.replace('_', ' ').title()}",
         response_model=response_model,
     )(wrapped)
-

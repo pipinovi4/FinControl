@@ -1,9 +1,8 @@
 from typing import Dict, Tuple, Optional, Type
 from pydantic import BaseModel
 
-from app.schemas import AdminSchema, WorkerSchema, BrokerSchema, ClientSchema, UserSchema
-from app.schemas.sessions import TokenPair
-from app.services.entities import AdminService, WorkerService, BrokerService, ClientService
+from app.schemas import AdminSchema, WorkerSchema, BrokerSchema
+from app.services.entities import AdminService, WorkerService, BrokerService
 from app.permissions import PermissionRole
 from app.routes.auth.register.types import RegisterTypes
 from app.utils.protocols import BaseSchemaNamespace, BaseService
@@ -22,7 +21,6 @@ ROLE_REGISTRY: Dict[PermissionRole, Tuple[str, BaseService, BaseSchemaNamespace,
         AdminSchema,
         RegisterTypesCls(
             web=(RegisterTypes.WEB, AdminSchema.Create, AdminSchema.WebRegisterResponse),
-            bot=(RegisterTypes.BOT, AdminSchema.Create, TokenPair)
         ),
     ),
     PermissionRole.WORKER: (
@@ -31,7 +29,6 @@ ROLE_REGISTRY: Dict[PermissionRole, Tuple[str, BaseService, BaseSchemaNamespace,
         WorkerSchema,
         RegisterTypesCls(
             web=(RegisterTypes.WEB, WorkerSchema.Create, WorkerSchema.WebRegisterResponse),
-            bot=(RegisterTypes.BOT, WorkerSchema.Create, TokenPair)
         ),
     ),
     PermissionRole.BROKER: (
@@ -40,14 +37,6 @@ ROLE_REGISTRY: Dict[PermissionRole, Tuple[str, BaseService, BaseSchemaNamespace,
         BrokerSchema,
         RegisterTypesCls(
             web=(RegisterTypes.WEB, BrokerSchema.Create, BrokerSchema.WebRegisterResponse),
-        ),
-    ),
-    PermissionRole.CLIENT: (
-        "/client",
-        ClientService,
-        ClientSchema,
-        RegisterTypesCls(
-            bot=(RegisterTypes.BOT, ClientSchema.WebRegisterRequest, TokenPair)
         ),
     ),
 }

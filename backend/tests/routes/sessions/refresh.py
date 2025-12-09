@@ -35,12 +35,12 @@ def test_refresh_token_broker(client):
 
 def test_refresh_token_client(client):
     """
-    Test if refresh token works for client role.
+    Test if refresh token works for application role.
     """
-    login_response = client.post("/api/auth/login/client/web", data={"username": "client", "password": "password"})
+    login_response = client.post("/api/auth/login/application/web", data={"username": "application", "password": "password"})
     refresh_token = login_response.json()["access_token"]
 
-    response = client.get("/api/auth/refresh/client/web", headers={"Authorization": f"Bearer {refresh_token}"})
+    response = client.get("/api/auth/refresh/application/web", headers={"Authorization": f"Bearer {refresh_token}"})
     assert response.status_code == 200
     assert "access_token" in response.json()
 

@@ -16,8 +16,8 @@ class Worker(User, TimeStampAuthMixin, DynamicLinkAuthMixin):
     """
     SQLAlchemy model representing a system worker (internal employee).
 
-    Workers are responsible for managing client applications via the admin panel.
-    They have full access to clients they oversee and may receive credits
+    Workers are responsible for managing application applications via the admin panel.
+    They have full access to applications they oversee and may receive credits
     based on performance.
 
     Inherits:
@@ -42,11 +42,11 @@ class Worker(User, TimeStampAuthMixin, DynamicLinkAuthMixin):
         unique=True
     )
 
-    # One-to-many relationship: this worker can manage multiple clients
-    clients: Mapped[list["Client"]] = relationship(
-        "Client",
+    # One-to-many relationship: this worker can manage multiple applications
+    applications: Mapped[list["Application"]] = relationship(
+        "Application",
         back_populates="worker",
-        foreign_keys="Client.worker_id",
+        foreign_keys="Application.worker_id",
         cascade="save-update, merge",
         passive_deletes=True,
     )

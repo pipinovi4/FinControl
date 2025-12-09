@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import Enum, String
+from sqlalchemy import Enum
 
 from app.models.mixins import UUIDMixin, TimeStampMixin, SoftDeleteMixin, AuthMixin
 from app.permissions.enums import PermissionRole
@@ -24,7 +24,7 @@ class User(Base, AuthMixin, UUIDMixin, TimeStampMixin, SoftDeleteMixin):
         Enum(PermissionRole),
         nullable=False
     )
-    # Enum-based user role: defines access level and behavior (e.g., client, admin)
+    # Enum-based user role: defines access level and behavior (e.g., application, admin)
 
     is_active: Mapped[bool] = mapped_column(
         default=True,

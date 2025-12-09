@@ -38,14 +38,13 @@ from pydantic import BaseModel
 
 from app.permissions import PermissionRole
 from app.schemas.entities.filters import (
-    WorkerFilterSchema, BrokerFilterSchema, ClientFilterSchema, AdminFilterSchema, UserFilterSchema
+    WorkerFilterSchema, BrokerFilterSchema, AdminFilterSchema,
 )
 from app.services.entities import (
-    AdminService, WorkerService, BrokerService, ClientService,
+    AdminService, WorkerService, BrokerService,
     AdminInterfaceService, WorkerInterfaceService,
-    BrokerInterfaceService, ClientInterfaceService,
+    BrokerInterfaceService, BrokerFilterService,
     AdminFilterService,  WorkerFilterService,
-    BrokerFilterService, ClientFilterService,
 )
 from app.utils.protocols import BaseService
 from app.utils.wrappers import RoleServiceWrapper
@@ -71,12 +70,6 @@ _RAW: Dict[PermissionRole, RawTuple] = {
         BrokerService, BrokerInterfaceService,
         BrokerFilterService,
         BrokerFilterSchema,
-    ),
-    PermissionRole.CLIENT: (
-        "/client",
-        ClientService, ClientInterfaceService,
-        ClientFilterService,
-        ClientFilterSchema,
     ),
 }
 

@@ -9,10 +9,11 @@ class BrokerUtilService:
     Public Methods:
         - is_region_match(broker, region): Check if broker operates in specified region.
         - get_main_region(broker): Get primary region from broker's region list.
-        - get_clients_count(broker): Count number of clients assigned to broker.
-        - has_clients(broker): Check if broker has any clients.
+        - get_applications_count(broker): Count number of applications assigned to broker.
+        - has_applications(broker): Check if broker has any applications.
         - get_company_display(broker): Return company display name or fallback.
     """
+
     @staticmethod
     def is_region_match(broker: Broker, region: str) -> bool:
         """
@@ -22,7 +23,7 @@ class BrokerUtilService:
         :param region: Region to check (case-insensitive)
         :return: True if region is in broker's list
         """
-        return any(r.lower() == region.lower() for r in broker.region or [])
+        return any(r.lower() == region.lower() for r in (broker.region or []))
 
     @staticmethod
     def get_main_region(broker: Broker) -> Optional[str]:
@@ -35,24 +36,24 @@ class BrokerUtilService:
         return broker.region[0] if broker.region else None
 
     @staticmethod
-    def get_clients_count(broker: Broker) -> int:
+    def get_applications_count(broker: Broker) -> int:
         """
-        Return number of clients assigned to the broker.
+        Return number of applications assigned to the broker.
 
         :param broker: Broker instance
-        :return: Integer count of clients
+        :return: Integer count of applications
         """
-        return len(broker.clients or [])
+        return len(broker.applications or [])
 
     @staticmethod
-    def has_clients(broker: Broker) -> bool:
+    def has_applications(broker: Broker) -> bool:
         """
-        Check whether the broker has any assigned clients.
+        Check whether the broker has any assigned applications.
 
         :param broker: Broker instance
-        :return: True if at least one client is assigned
+        :return: True if at least one application is assigned
         """
-        return bool(broker.clients)
+        return bool(broker.applications)
 
     @staticmethod
     def get_company_display(broker: Broker) -> str:

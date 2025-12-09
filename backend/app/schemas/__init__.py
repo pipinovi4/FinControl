@@ -10,7 +10,7 @@ from app.schemas.base import SchemaBase  # Base Pydantic schema with shared conf
 # Entity schemas
 from app.schemas.entities import (
     UserSchema,  # Pydantic schema for the User entity
-    ClientSchema,  # Pydantic schema for the Client entity
+    ApplicationSchema,  # Pydantic schema for the Application entity
     WorkerSchema,  # Pydantic schema for the Worker entity
     BrokerSchema,  # Pydantic schema for the Broker entity
     AdminSchema  # Pydantic schema for the Admin entity
@@ -30,6 +30,6 @@ from app.schemas.sessions.refresh_token import RefreshTokenSchema  # Schema for 
 __all__ = [
     "SchemaBase",
     "RefreshTokenSchema",
-    "UserSchema", "ClientSchema", "WorkerSchema", "BrokerSchema", "AdminSchema",
+    "UserSchema", "ApplicationSchema", "WorkerSchema", "BrokerSchema", "AdminSchema",
     "AuthSchema", "DynamicLinkAuthSchema", "SoftDeleteSchema"
 ]

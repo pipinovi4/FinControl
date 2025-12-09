@@ -10,45 +10,39 @@ from app.schemas import SchemaBase
 from app.schemas.entities.user_schema import UserSchema
 
 if TYPE_CHECKING:
-    from app.schemas.entities.client_schema import ClientShort  # noqa: F401
-    from app.schemas.entities.credit_schema import CreditShort  # noqa: F401
+    from app.schemas.entities.application_schema import ApplicationShort
+    from app.schemas.entities.credit_schema import CreditShort
 
 
-# ───────────── BASE ─────────────
 class WorkerBase(UserSchema.Base):
     username: str = Field(..., description="Унікальний внутрішній логін")
 
 
-# ───────────── CREATE ─────────────
 class WorkerCreate(UserSchema.Create):
     username: str = Field(..., description="Унікальний внутрішній логін")
 
 
-# ───────────── UPDATE ─────────────
 class WorkerUpdate(BaseModel):
-    username: Optional[str] = Field(None, description="Нове значення логіну")
+    username: Optional[str] = Field(None)
     email: Optional[EmailStr] = None
 
 
-# ───────────── OUT (API full view) ─────────────
 class WorkerOut(WorkerBase):
-    clients: Optional[List["ClientShort"]] = Field(default_factory=list)
+    applications: Optional[List["ApplicationShort"]] = Field(default_factory=list)
     credits: Optional[List["CreditShort"]] = Field(default_factory=list)
     role: PermissionRole = Field(..., description="Роль користувача")
     is_deleted: bool = False
 
 
-# ───────────── WEB REGISTER RESPONSE ─────────────
 class WorkerWebRegisterResponse(UserSchema.Base):
     id: UUID
     email: EmailStr
     username: Optional[str]
     credits: Optional[List["CreditShort"]] = Field(default_factory=list)
-    clients: Optional[List["ClientShort"]] = Field(default_factory=list)
+    applications: Optional[List["ApplicationShort"]] = Field(default_factory=list)
     is_deleted: bool = False
 
 
-# ───────────── SHORT ─────────────
 class WorkerShort(SchemaBase):
     id: UUID
     username: str
@@ -57,9 +51,6 @@ class WorkerShort(SchemaBase):
 
 
 class WorkerAdminOut(SchemaBase):
-    """
-    Schema for a Worker as seen by Admin.
-    """
     id: UUID
     username: str
     email: EmailStr
@@ -67,7 +58,6 @@ class WorkerAdminOut(SchemaBase):
     is_deleted: bool = False
 
 
-# ───────────── WRAPPER ─────────────
 class WorkerSchema:
     Base = WorkerBase
     Create = WorkerCreate
@@ -75,13 +65,3 @@ class WorkerSchema:
     Out = WorkerOut
     Short = WorkerShort
     WebRegisterResponse = WorkerWebRegisterResponse
-
-
-# resolve forward refs without circular imports at import time
-from importlib import import_module
-
-_client_mod = import_module("app.schemas.entities.client_schema")
-globals()["ClientShort"] = _client_mod.ClientSchema.Short
-
-_credit_mod = import_module("app.schemas.entities.credit_schema")
-globals()["CreditShort"] = _credit_mod.CreditSchema.Short

@@ -2,25 +2,27 @@
 from typing import Tuple, List, Type, cast, Dict
 from pydantic import BaseModel
 
-from .types import BaseServiceProtocol, CRUDSchemas, CRUDOutputSchemas, CRUDInputSchemas, MatrixRow, \
-    SuccessfulDeletedUser, EntityID
+from .types import (
+    BaseServiceProtocol,
+    CRUDSchemas,
+    CRUDOutputSchemas,
+    CRUDInputSchemas,
+    MatrixRow,
+    SuccessfulDeletedUser,
+    EntityID
+)
 from app.permissions import PermissionRole
 from app.services.entities import (
     AdminService,
     BrokerService,
     WorkerService,
-    ClientService,
 )
 from app.schemas.entities import (
     AdminSchema,
     BrokerSchema,
     WorkerSchema,
-    ClientSchema,
 )
 
-# ---------------------------------------------------------------------- #
-# This dict contains base schema *namespaces* like `AdminSchema`
-# ---------------------------------------------------------------------- #
 ROLE_REGISTRY: Dict[
     PermissionRole,
     Tuple[str, Type[BaseServiceProtocol], CRUDSchemas]
@@ -43,6 +45,7 @@ ROLE_REGISTRY: Dict[
             ),
         ),
     ),
+
     PermissionRole.WORKER: (
         "/worker",
         cast(Type[BaseServiceProtocol], WorkerService),
@@ -61,6 +64,7 @@ ROLE_REGISTRY: Dict[
             ),
         ),
     ),
+
     PermissionRole.BROKER: (
         "/broker",
         cast(Type[BaseServiceProtocol], BrokerService),
@@ -79,27 +83,12 @@ ROLE_REGISTRY: Dict[
             ),
         ),
     ),
-    PermissionRole.CLIENT: (
-        "/client",
-        cast(Type[BaseServiceProtocol], ClientService),
-        CRUDSchemas(
-            input=CRUDInputSchemas(
-                Create=ClientSchema.Create,
-                Read=EntityID,
-                Update=ClientSchema.Update,
-                Delete=EntityID,
-            ),
-            output=CRUDOutputSchemas(
-                Create=ClientSchema.Short,
-                Read=ClientSchema.Short,
-                Update=ClientSchema.Short,
-                Delete=SuccessfulDeletedUser,
-            ),
-        ),
-    ),
 }
 
-# Map schema names to their respective CRUDSchemas attributes
+# ──────────────────────────────────────────────────────────────
+# MATRIX BUILDERS
+# ──────────────────────────────────────────────────────────────
+
 SCHEMA_SELECTOR = {
     "Create": lambda schemas: schemas.input.Create,
     "Read":   lambda schemas: schemas.input.Read,
@@ -112,10 +101,6 @@ SCHEMA_SELECTOR = {
 }
 
 def _build_matrix(schema_action: str) -> List[MatrixRow]:
-    """
-    Builds a CRUD matrix for a specific action (e.g. "Create", "Read", "Update", "Delete"),
-    extracting corresponding input/output schemas from RoleSchemas.
-    """
     return [
         (
             role,
@@ -127,12 +112,10 @@ def _build_matrix(schema_action: str) -> List[MatrixRow]:
         for role, (path, service, schemas) in ROLE_REGISTRY.items()
     ]
 
-
-# Ready-to-use schema matrices
-CREATE_MATRIX:     List[MatrixRow] = _build_matrix("Create")
-READ_MATRIX:       List[MatrixRow] = _build_matrix("Read")
-UPDATE_MATRIX:     List[MatrixRow] = _build_matrix("Update")
-DELETE_MATRIX:     List[MatrixRow] = _build_matrix("Delete")
+CREATE_MATRIX  = _build_matrix("Create")
+READ_MATRIX    = _build_matrix("Read")
+UPDATE_MATRIX  = _build_matrix("Update")
+DELETE_MATRIX  = _build_matrix("Delete")
 
 __all__ = [
     "CREATE_MATRIX",

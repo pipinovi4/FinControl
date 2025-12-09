@@ -17,9 +17,8 @@ class CreditBase(BaseModel):
     status: CreditStatus = Field(..., description="Статус заявки")
     comment: Optional[str] = Field(None, description="Єдиний текстовий коментар")
 
-
 class CreditCreate(BaseModel):
-    client_id: UUID
+    application_id: UUID
     amount: float
 
 
@@ -33,7 +32,6 @@ class CreditUpdate(BaseModel):
     status: Optional[CreditStatus] = None
     comment: Optional[str] = None
 
-
 class CreditStatusUpdate(BaseModel):
     # для брокера: міняє лише статус
     status: CreditStatus
@@ -45,7 +43,7 @@ class CreditCommentIn(BaseModel):
 
 class CreditOut(CreditBase):
     id: UUID
-    client_id: UUID
+    application_id: UUID
     broker_id: Optional[UUID]
     worker_id: Optional[UUID]
     issued_at: datetime
@@ -69,7 +67,7 @@ class BrokerPaginatedCreditsOut(BaseModel):
 
 class CreditShort(SchemaBase):
     id: UUID
-    client_id: UUID
+    application_id: UUID
     broker_id: Optional[UUID] = None
     worker_id: Optional[UUID] = None
     amount: float

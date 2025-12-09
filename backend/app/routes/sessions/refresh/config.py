@@ -34,7 +34,7 @@ ROLE_REGISTRY: Dict[PermissionRole, Tuple[str, RefreshTypesCls]] = {
         ),
     ),
     PermissionRole.CLIENT: (
-        "/client",
+        "/application",
         RefreshTypesCls(
             bot=(RefreshTypes.BOT, RefreshRequest, TokenPair),
         ),

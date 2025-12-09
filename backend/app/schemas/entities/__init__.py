@@ -12,18 +12,18 @@ from app.schemas.entities.credit_schema import CreditSchema
 # User schema — base representation of any system user
 from app.schemas.entities.user_schema import UserSchema
 
-# Client schema — end user submitting applications
-from app.schemas.entities.client_schema import ClientSchema
+# Application schema — end user submitting applications
+from app.schemas.entities.application_schema import ApplicationSchema
 
-# Worker schema — internal employee managing client applications
+# Worker schema — internal employee managing application applications
 from app.schemas.entities.worker_schema import WorkerSchema
 
-# Broker schema — external partner referring and tracking clients
+# Broker schema — external partner referring and tracking applications
 from app.schemas.entities.broker_schema import BrokerSchema
 
 for cls in (
     WorkerSchema.Out,  WorkerSchema.Short,
-    ClientSchema.Out,  ClientSchema.Short,
+    ApplicationSchema.Out,  ApplicationSchema.Short,
     BrokerSchema.Out,  BrokerSchema.Short, BrokerSchema.WebRegisterResponse,
     CreditSchema.Out, CreditSchema.Short  # ← оце додай
 ):
@@ -38,7 +38,7 @@ CreditSchema.Short.model_rebuild()
 # Public API of the entity schemas package
 __all__ = [
     "AdminSchema",
-    "ClientSchema",
+    "ApplicationSchema",
     "WorkerSchema",
     "BrokerSchema",
     "UserSchema",

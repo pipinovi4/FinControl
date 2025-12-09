@@ -29,7 +29,7 @@ class Credit(Base, SoftDeleteMixin):
         server_default=text("gen_random_uuid()"),  # DB-side (надійно й уніфіковано)
         nullable=False,
     )
-    client_id: Mapped[UUID] = mapped_column(ForeignKey("clients.id", ondelete="CASCADE"), nullable=False)
+    application_id: Mapped[UUID] = mapped_column(ForeignKey("applications.id", ondelete="CASCADE"), nullable=False)
     broker_id: Mapped[UUID] = mapped_column(ForeignKey("brokers.id", ondelete="SET NULL"), nullable=True)
     worker_id: Mapped[UUID] = mapped_column(ForeignKey("workers.id", ondelete="SET NULL"), nullable=True)
 
@@ -61,6 +61,6 @@ class Credit(Base, SoftDeleteMixin):
     comment: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     # Relationships
-    client = relationship("Client", back_populates="credits")
+    application = relationship("Application", back_populates="credits")
     broker = relationship("Broker", back_populates="credits")
     worker = relationship("Worker", back_populates="credits")

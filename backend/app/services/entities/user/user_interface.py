@@ -18,7 +18,6 @@ class UserInterfaceService:
         - is_admin(): True if user has admin role.
         - is_worker(): True if user has worker role.
         - is_broker(): True if user has broker role.
-        - is_client(): True if user has client role.
         - is_internal(): True if user is staff (admin or worker).
         - is_deleted(): True if user is soft-deleted.
         - get_display_name(): Returns '@username' or fallback UUID-like ID.
@@ -54,14 +53,6 @@ class UserInterfaceService:
         :return: True if user is broker.
         """
         return self.user.role == PermissionRole.BROKER
-
-    def is_client(self) -> bool:
-        """
-        Check if the user has the 'client' role.
-
-        :return: True if user is client.
-        """
-        return self.user.role == PermissionRole.CLIENT
 
     def is_internal(self) -> bool:
         """

@@ -12,7 +12,6 @@ class PermissionRole(str, Enum):
 
     This enum is used across the system to enforce role-based permissions.
     """
-    CLIENT = 'CLIENT'
     WORKER = 'WORKER'
     BROKER = 'BROKER'
     ADMIN = 'ADMIN'

@@ -10,7 +10,7 @@ from typing import cast
 from db.session              import get_async_db
 from app.models.entities     import User            # ← Base class
 from app.permissions import PermissionRole
-from app.schemas import AdminSchema, BrokerSchema, WorkerSchema, ClientSchema
+from app.schemas import AdminSchema, BrokerSchema, WorkerSchema
 from app.schemas.sessions    import TokenPair
 from app.services.auth       import (
     PasswordService,
@@ -38,7 +38,7 @@ class LoginRequest(BaseModel):
 
 WEB_RL = "10/minute"      # <- або прибери, якщо не потрібен rate-limit
 
-from app.services.entities import AdminService, BrokerService, WorkerService, ClientService
+from app.services.entities import AdminService, BrokerService, WorkerService
 
 async def get_full_user_data(role: PermissionRole, user_id: UUID, db: AsyncSession) -> dict:
     match role:
@@ -51,10 +51,7 @@ async def get_full_user_data(role: PermissionRole, user_id: UUID, db: AsyncSessi
         case PermissionRole.WORKER:
             worker = await WorkerService(db).get_by_id(user_id)
             return WorkerSchema.WebRegisterResponse.model_validate(worker).model_dump()
-        case PermissionRole.CLIENT:
-            client = await ClientService(db).get_by_id(user_id)
-            return ClientSchema.Out.model_dump(client).model_dump()
-
+    
 # ──────────────────────────────  HANDLERS  ─────────────────────────────
 @router.post(
     "/web",

@@ -33,7 +33,7 @@ class RefreshService:
     async def create(self, user_id: str, ip: Optional[str], ua: Optional[str]) -> str:
         """
         Generate and persist a new refresh token for a given user.
-        Returns the raw (unhashed) token that will be sent to the client.
+        Returns the raw (unhashed) token that will be sent to the application.
 
         Args:
             user_id (str): User UUID as a string.
@@ -56,7 +56,7 @@ class RefreshService:
         given IP and User-Agent. This marks the token as used.
 
         Args:
-            token (str): The raw refresh token from the client.
+            token (str): The raw refresh token from the application.
             created_from_ip (Optional[str]): IP address of the request (if available).
             user_agent (Optional[str]): User-Agent header of the request (if available).
 

@@ -1,7 +1,7 @@
 from .user import UserService, UserUtilService, UserFilterService, UserInterfaceService
 from .admin import AdminService, AdminInterfaceService, AdminFilterService, AdminUtilService
 from .broker import BrokerUtilService, BrokerService, BrokerInterfaceService, BrokerFilterService
-from .client import ClientService, ClientUtilService, ClientInterfaceService, ClientFilterService
+from .application import ClientService, ClientUtilService, ClientInterfaceService, ClientFilterService
 from .worker import WorkerService, WorkerInterfaceService, WorkerUtilService, WorkerFilterService
 
 __all__ = [

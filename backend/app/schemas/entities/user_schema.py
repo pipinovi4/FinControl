@@ -23,7 +23,7 @@ class UserCreate(SchemaBase, AuthSchema.Create):
 
 class UserOut(UserBase, AuthSchema.Out):
     """
-    Schema for returning user data to clients.
+    Schema for returning user data to applications.
     """
     pass
 

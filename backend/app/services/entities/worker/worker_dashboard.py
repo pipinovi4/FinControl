@@ -1,44 +1,35 @@
-from sqlalchemy import select, extract, func, update, or_, and_
+from sqlalchemy import (
+    select, extract, func, update, and_
+)
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import Any, Sequence
 from sqlalchemy.orm import selectinload
 from uuid import UUID
+from typing import Any, Sequence
 from datetime import datetime, UTC, date, timedelta
 
-from app.models import Client, Credit
-from app.schemas.entities.client_schema import WorkerClientNewToday, ClientWorkerOut
-from app.schemas.entities.credit_schema import CreditCreate
+from app.models import Application, Credit
+from app.schemas.entities.application_schema import (
+    WorkerApplicationNewToday,
+    ApplicationWorkerOut
+)
 from app.utils.decorators import handle_exceptions
 
 
 class WorkerDashboardService:
     """
-    Asynchronous service class responsible for fetching dashboard data
-    for a Worker user.
-
-    Provides aggregated information such as:
-    - Total number of clients
-    - Credits statistics (monthly, total)
-    - New clients today
-    - Paginated client lists
-    - Detailed client info
+    Dashboard service rewritten for Application-based architecture.
     """
 
     def __init__(self, db: AsyncSession):
-        """
-        Initialize the service with an async database session.
-        """
         self.db = db
 
+    # -------------------------------------------------------------
+    # BASIC COUNTS
+    # -------------------------------------------------------------
     @handle_exceptions()
-    async def get_sum_clients(self, worker_id: UUID) -> int:
-        """
-        Count total number of clients assigned to the given worker.
-        """
-        stmt = (
-            select(func.count())
-            .select_from(Client)
-            .where(Client.worker_id == worker_id)
+    async def get_sum_applications(self, worker_id: UUID) -> int:
+        stmt = select(func.count()).select_from(Application).where(
+            Application.worker_id == worker_id
         )
         result = await self.db.execute(stmt)
         return result.scalar_one()
@@ -46,322 +37,280 @@ class WorkerDashboardService:
     @handle_exceptions()
     async def get_total_sum_credits(self, worker_id: UUID) -> float:
         """
-        Calculate the total sum of credits for the given worker.
+        Total credit amount created for worker via Application → Credit.
         """
-        stmt = select(func.sum(Credit.amount)).where(Credit.worker_id == worker_id)
+        stmt = (
+            select(func.sum(Credit.amount))
+            .join(Application, Application.id == Credit.application_id)
+            .where(Application.worker_id == worker_id)
+        )
         result = await self.db.execute(stmt)
         return result.scalar_one() or 0.0
 
     @handle_exceptions()
     async def get_month_sum_credits(self, worker_id: UUID) -> float:
-        """
-        Calculate the sum of credits for the current month.
-        """
-        current_date = datetime.now(UTC)
-
+        now = datetime.now(UTC)
         stmt = (
             select(func.sum(Credit.amount))
+            .join(Application, Application.id == Credit.application_id)
             .where(
-                Credit.worker_id == worker_id,
-                extract('year', Credit.issued_at) == current_date.year,
-                extract('month', Credit.issued_at) == current_date.month,
+                Application.worker_id == worker_id,
+                extract('year', Credit.issued_at) == now.year,
+                extract('month', Credit.issued_at) == now.month,
             )
         )
-
         result = await self.db.execute(stmt)
         return result.scalar_one() or 0.0
 
     @handle_exceptions()
     async def get_sum_deals(self, worker_id: UUID) -> int:
-        """
-        Count total number of deals (credits entries) for the given worker.
-        """
         stmt = (
             select(func.count())
             .select_from(Credit)
-            .where(Credit.worker_id == worker_id)
+            .join(Application, Application.id == Credit.application_id)
+            .where(Application.worker_id == worker_id)
         )
         result = await self.db.execute(stmt)
-        return result.scalar_one() or 0
+        return result.scalar_one()
 
+    # -------------------------------------------------------------
+    # NEW APPLICATIONS TODAY / YESTERDAY
+    # -------------------------------------------------------------
     @handle_exceptions()
-    async def get_sum_today_new_clients(self, worker_id: UUID) -> int:
-        """
-        Count number of clients taken by the worker today.
-        """
-        today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
-
+    async def get_sum_today_new_applications(self, worker_id: UUID) -> int:
+        today = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
         stmt = (
             select(func.count())
-            .select_from(Client)
+            .select_from(Application)
             .where(
-                Client.worker_id == worker_id,
-                Client.taken_at_worker >= today_start,
+                Application.worker_id == worker_id,
+                Application.taken_at_worker >= today,
             )
         )
-        result = await self.db.execute(stmt)
-        return result.scalar_one() or 0
+        return (await self.db.execute(stmt)).scalar_one()
 
     @handle_exceptions()
-    async def get_sum_yesterday_new_clients(self, worker_id: UUID) -> int:
-        """
-        Count a number of clients taken by the worker yesterday.
-        """
+    async def get_sum_yesterday_new_applications(self, worker_id: UUID) -> int:
         now = datetime.utcnow()
-        today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
-        yesterday_start = today_start - timedelta(days=1)
+        today = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        yesterday = today - timedelta(days=1)
 
         stmt = (
             select(func.count())
-            .select_from(Client)
+            .select_from(Application)
             .where(
-                Client.worker_id == worker_id,
-                Client.taken_at_worker >= yesterday_start,
-                Client.taken_at_worker < today_start,
+                Application.worker_id == worker_id,
+                Application.taken_at_worker >= yesterday,
+                Application.taken_at_worker < today,
             )
         )
-        result = await self.db.execute(stmt)
-        return result.scalar_one() or 0
+        return (await self.db.execute(stmt)).scalar_one()
 
     @handle_exceptions()
-    async def get_today_new_clients(self, worker_id: UUID) -> list[WorkerClientNewToday]:
-        """
-        Return list of clients taken by the worker today.
-        """
-        today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+    async def get_today_new_applications(self, worker_id: UUID) -> list[WorkerApplicationNewToday]:
+        today = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
 
         stmt = (
-            select(Client)
+            select(Application)
             .where(
-                Client.worker_id == worker_id,
-                Client.taken_at_worker >= today_start,
+                Application.worker_id == worker_id,
+                Application.taken_at_worker >= today,
             )
         )
-        result = await self.db.execute(stmt)
-        return [WorkerClientNewToday.model_validate(c) for c in result.scalars().all()]
+        res = await self.db.execute(stmt)
+        apps = res.scalars().all()
+        return [WorkerApplicationNewToday.model_validate(a) for a in apps]
 
+    # -------------------------------------------------------------
+    # PAGINATION
+    # -------------------------------------------------------------
     @handle_exceptions()
-    async def get_bucket_clients(
-            self,
-            worker_id: UUID,
-            skip: int = 0,
-            limit: int = 6,
-    ) -> list[ClientWorkerOut]:
-        """
-        Return paginated and validated list of clients for a worker.
-        """
+    async def get_bucket_applications(self, worker_id: UUID, skip=0, limit=6):
         stmt = (
-            select(Client)
-            .where(Client.worker_id == worker_id)
-            .order_by(Client.id)
+            select(Application)
+            .where(Application.worker_id == worker_id)
+            .order_by(Application.id)
             .offset(skip)
             .limit(limit)
         )
+        apps = (await self.db.execute(stmt)).scalars().all()
+        return [ApplicationWorkerOut.model_validate(a) for a in apps]
 
-        result = await self.db.execute(stmt)
-        clients = result.scalars().all()
-        return [ClientWorkerOut.model_validate(c) for c in clients]
-
+    # -------------------------------------------------------------
+    # SINGLE APPLICATION
+    # -------------------------------------------------------------
     @handle_exceptions()
-    async def get_client(self, client_id: UUID) -> ClientWorkerOut | None:
-        """
-        Fetch and validate a single client by ID.
-        """
+    async def get_application(self, application_id: UUID):
         stmt = (
-            select(Client)
-            .where(Client.id == client_id)
+            select(Application)
+            .where(Application.id == application_id)
             .options(
-                selectinload(Client.worker),
-                selectinload(Client.broker),
-                selectinload(Client.credits)
+                selectinload(Application.worker),
+                selectinload(Application.broker),
+                selectinload(Application.credits),
             )
         )
-
         result = await self.db.execute(stmt)
-        client = result.scalar_one_or_none()
+        app = result.scalar_one_or_none()
+        return ApplicationWorkerOut.model_validate(app) if app else None
 
-        return ClientWorkerOut.model_validate(client) if client else None
-
+    # -------------------------------------------------------------
+    # ASSIGN / UNSIGN APPLICATION
+    # -------------------------------------------------------------
     @handle_exceptions()
-    async def unsign_client(self, client_id: UUID) -> None:
-        """
-        Unsign a client from their current worker.
-        """
+    async def unsign_application(self, application_id: UUID):
         stmt = (
-            update(Client)
-            .where(Client.id == client_id)
+            update(Application)
+            .where(Application.id == application_id)
             .values(worker_id=None, taken_at_worker=None)
         )
         await self.db.execute(stmt)
         await self.db.commit()
 
     @handle_exceptions()
-    async def sign_client(self, client_id: UUID, worker_id: UUID) -> None:
+    async def sign_application(self, application_id: UUID, worker_id: UUID):
         stmt = (
-            update(Client)
-            .where(Client.id == client_id)
+            update(Application)
+            .where(Application.id == application_id)
             .values(worker_id=worker_id, taken_at_worker=datetime.utcnow())
         )
         await self.db.execute(stmt)
         await self.db.commit()
 
+    # -------------------------------------------------------------
+    # CREDIT AGGREGATION – MONTH / YEAR
+    # -------------------------------------------------------------
     @handle_exceptions()
-    async def get_credits_for_month(self, worker_id: UUID, month: str) -> list[dict[str, Any]]:
-        """
-        Return credits per day for a specific month (YYYY-MM).
-        """
-        try:
-            year, month_num = map(int, month.split("-"))
-            start_date = date(year, month_num, 1)
-            if month_num == 12:
-                end_date = date(year + 1, 1, 1)
-            else:
-                end_date = date(year, month_num + 1, 1)
-        except Exception:
-            raise ValueError("Invalid month format. Expected YYYY-MM.")
+    async def get_credits_for_month(self, worker_id: UUID, month: str):
+        year, month_num = map(int, month.split("-"))
+        start = date(year, month_num, 1)
+        end = date(year + (month_num == 12), (month_num % 12) + 1, 1)
 
-        # Fetch all credits in that month
         stmt = (
-            select(Credit.issued_at, func.sum(Credit.amount))
-            .where(
-                Credit.worker_id == worker_id,
-                Credit.issued_at >= start_date,
-                Credit.issued_at < end_date,
+            select(
+                func.date(Credit.issued_at).label("day"),
+                func.sum(Credit.amount)
             )
-            .group_by(Credit.issued_at)
+            .join(Application, Application.id == Credit.application_id)
+            .where(
+                Application.worker_id == worker_id,
+                Credit.issued_at >= start,
+                Credit.issued_at < end,
+            )
+            .group_by("day")
         )
 
-        result = await self.db.execute(stmt)
-        credits_map = {row.date: float(row[1]) for row in result.all()}
+        rows = (await self.db.execute(stmt)).all()
+        credits_map = {row.day: float(row[1]) for row in rows}
 
-        # Fill all days with 0 if missing
-        total_days = (end_date - start_date).days
-        credits_per_day = []
-
-        for i in range(total_days):
-            current_date = start_date + timedelta(days=i)
-            credits_per_day.append({
-                "date": current_date.isoformat(),
-                "amount": round(credits_map.get(current_date, 0.0), 2)
-            })
-
-        return credits_per_day
+        days = (end - start).days
+        return [
+            {"date": (start + timedelta(days=i)).isoformat(),
+             "amount": round(credits_map.get(start + timedelta(days=i), 0.0), 2)}
+            for i in range(days)
+        ]
 
     @handle_exceptions()
-    async def get_credits_for_year(self, worker_id: UUID, year: int) -> list[dict[str, Any]]:
-        """
-        Return credits per month for a specific year.
-        """
-        # ⛔ safety check
-        if year < 1900:
-            raise ValueError("Invalid year format. Must be 4 digits, e.g. 2025")
-
-        start_date = date(year, 1, 1)
-        end_date = date(year + 1, 1, 1)
+    async def get_credits_for_year(self, worker_id: UUID, year: int):
+        start = date(year, 1, 1)
+        end = date(year + 1, 1, 1)
 
         stmt = (
             select(
                 extract("month", Credit.issued_at).label("month"),
                 func.sum(Credit.amount)
             )
+            .join(Application, Application.id == Credit.application_id)
             .where(
-                Credit.worker_id == worker_id,
-                Credit.issued_at >= start_date,
-                Credit.issued_at < end_date
+                Application.worker_id == worker_id,
+                Credit.issued_at >= start,
+                Credit.issued_at < end,
             )
             .group_by("month")
             .order_by("month")
         )
 
-        result = await self.db.execute(stmt)
-        credits_map = {int(row[0]): float(row[1]) for row in result.all()}
+        rows = (await self.db.execute(stmt)).all()
+        credits_map = {int(row[0]): float(row[1]) for row in rows}
 
-        credits_per_month = []
-        for month in range(1, 13):
-            credits_per_month.append({
-                "month": f"{year}-{month:02}",
-                "amount": round(credits_map.get(month, 0.0), 2)
-            })
+        return [
+            {"month": f"{year}-{m:02}", "amount": round(credits_map.get(m, 0.0), 2)}
+            for m in range(1, 12 + 1)
+        ]
 
-        return credits_per_month
-
+    # -------------------------------------------------------------
+    # ACTIVE / COMPLETED APPLICATIONS
+    # -------------------------------------------------------------
     @handle_exceptions()
-    async def get_count_completed_clients(self, worker_id: UUID) -> int:
+    async def get_count_completed_applications(self, worker_id: UUID) -> int:
         stmt = (
-            select(func.count(Client.id))
-            .join(Credit, Client.id == Credit.client_id)
+            select(func.count(Application.id))
+            .join(Credit, Application.id == Credit.application_id)
             .where(
-                Client.worker_id == worker_id,
-                Credit.status == "completed")
+                Application.worker_id == worker_id,
+                Credit.status == "completed"
+            )
             .distinct()
         )
-        result = await self.db.execute(stmt)
-        return result.scalar_one()
+        return (await self.db.execute(stmt)).scalar_one()
 
     @handle_exceptions()
-    async def get_count_active_clients(self, worker_id: UUID) -> int:
+    async def get_count_active_applications(self, worker_id: UUID) -> int:
+        """
+        Active = applications without ANY credit.
+        """
         stmt = (
-            select(func.count(Client.id))
-            .outerjoin(Credit, Client.id == Credit.client_id)
+            select(func.count(Application.id))
+            .outerjoin(Credit, Application.id == Credit.application_id)
             .where(
-                Client.worker_id == worker_id,
+                Application.worker_id == worker_id,
                 Credit.id.is_(None)
             )
         )
-        result = await self.db.execute(stmt)
-        return result.scalar_one()
+        return (await self.db.execute(stmt)).scalar_one()
 
+    # -------------------------------------------------------------
+    # FILTER BUCKET APPLICATIONS (JSONB FILTERS!)
+    # -------------------------------------------------------------
     @handle_exceptions()
-    async def filter_bucket_clients(
+    async def filter_bucket_applications(
         self,
         worker_id: UUID,
-        skip: int = 0,
-        limit: int = 6,
+        skip=0,
+        limit=6,
         *,
         email: str | None = None,
         phone_number: str | None = None,
         full_name: str | None = None,
-    ) -> tuple[list[ClientWorkerOut], int]:
-        """
-        Вернуть (список, total) клиентов конкретного работника,
-        удовлетворяющих переданным фильтрам, с пагинацией.
-        """
+    ) -> tuple[list[ApplicationWorkerOut], int]:
 
-        # ------- динамический WHERE ---------------------------------
-        conditions = []
+        filters = [Application.worker_id == worker_id]
 
         if email:
-            conditions.append(Client.email.ilike(f"%{email}%"))
+            filters.append(Application.data["email"].astext.ilike(f"%{email}%"))
         if phone_number:
-            conditions.append(Client.phone_number.ilike(f"%{phone_number}%"))
+            filters.append(Application.data["phone_number"].astext.ilike(f"%{phone_number}%"))
         if full_name:
-            conditions.append(Client.full_name.ilike(f"%{full_name}%"))
+            filters.append(Application.data["full_name"].astext.ilike(f"%{full_name}%"))
 
-        where_clause = and_(*conditions)
+        where_clause = and_(*filters)
 
-        # ------- total ----------------------------------------------
-        total_stmt = select(func.count()).select_from(Client).where(where_clause)
-        total_res  = await self.db.execute(total_stmt)
-        total: int = total_res.scalar_one()
-
-        # ------- данные страницы ------------------------------------
-        data_stmt = (
-            select(Client)
-            .where(where_clause)
-            .options(
-                selectinload(Client.worker),
-                selectinload(Client.broker),
-                selectinload(Client.credits),
+        # total
+        total = (
+            await self.db.execute(
+                select(func.count()).select_from(Application).where(where_clause)
             )
-            .order_by(Client.full_name.asc())
+        ).scalar_one()
+
+        # data
+        stmt = (
+            select(Application)
+            .where(where_clause)
+            .order_by(Application.id)
             .offset(skip)
             .limit(limit)
         )
 
-        data_res = await self.db.execute(data_stmt)
-        clients: Sequence[Client] = data_res.scalars().all()
-
+        apps = (await self.db.execute(stmt)).scalars().all()
         return (
-            [ClientWorkerOut.model_validate(c) for c in clients],
-            total,
-        )
+            [ApplicationWorkerOut.model_validate(a) for a in apps]

@@ -1,70 +1,61 @@
 # backend/app/schemas/entities/broker_schema.py
 from __future__ import annotations
 
-from typing import Optional, List, Type, TYPE_CHECKING
+from typing import Optional, List, Type
 from pydantic import BaseModel, Field, EmailStr
 from datetime import datetime
+from uuid import UUID
 
 from app.permissions import PermissionRole
 from app.schemas import SchemaBase
 from app.schemas.entities.user_schema import UserSchema
-from uuid import UUID
 
-if TYPE_CHECKING:
-    from app.schemas.entities.client_schema import ClientShort # noqa 401
-    from app.schemas.entities.credit_schema import CreditShort # noqa 401
+# Forward refs (no TYPE_CHECKING needed)
+from app.schemas.entities.application_schema import ApplicationShort
+from app.schemas.entities.credit_schema import CreditShort
+
 
 class BrokerBase(UserSchema.Base):
     """
     Shared schema for the Broker entity.
     """
-    company_name: Optional[str] = Field(None, example="Acme Ltd.", description="Broker's company name")
-    region: Optional[List[str]] = Field(None, example=["Kyiv", "Lviv"], description="Regions of operation")
+    company_name: Optional[str] = None
+    region: Optional[List[str]] = None
 
 
 class BrokerCreate(UserSchema.Create):
-    """
-    Schema for creating a Broker.
-    """
-    company_name: Optional[str] = Field(None, example="Acme Ltd.")
-    region: Optional[List[str]] = Field(None, example=["Kyiv", "Lviv"])
+    company_name: Optional[str] = None
+    region: Optional[List[str]] = None
 
 
 class BrokerUpdate(SchemaBase):
-    """
-    Schema for updating a Broker.
-    """
-    company_name: Optional[str] = Field(None, example="New Name Ltd.")
-    region: Optional[List[str]] = Field(None, example=["Dnipro", "Odessa"])
+    company_name: Optional[str] = None
+    region: Optional[List[str]] = None
     email: Optional[EmailStr] = None
 
 
 class BrokerOut(SchemaBase):
     """
-    Schema for returning Broker data with related clients.
+    Public-facing schema for returning Broker data (full view).
     """
-    clients: Optional[List["ClientShort"]] = Field(None, description="List of clients assigned to this broker")
-    role: PermissionRole = Field(..., description="User role")
-    credits: Optional[List["CreditShort"]] = Field(
-        None, description="List of client's credit records"
-    )
-    company_name: Optional[str] = Field(None, example="Acme Ltd.", description="Broker's company name")
-    region: Optional[List[str]] = Field(None, example=["Kyiv", "Lviv"], description="Regions of operation")
+    applications: Optional[List[ApplicationShort]] = Field(default_factory=list)
+    credits: Optional[List[CreditShort]] = Field(default_factory=list)
+    role: PermissionRole
+    company_name: Optional[str] = None
+    region: Optional[List[str]] = None
     is_deleted: bool = False
 
 
 class BrokerWebRegisterResponse(UserSchema.Base):
     """
-    Schema returned after successful broker registration via web.
+    Returned after broker is created via web.
     """
-    id: UUID = Field(..., description="Unique broker ID")
-    email: EmailStr = Field(..., description="Email used for login")
-    company_name: Optional[str] = Field(None, description="Name of the broker's company")
-    region: Optional[List[str]] = Field(None, description="List of regions where the broker is active")
-    credits: Optional[List["CreditShort"]] = Field(
-        None, description="List of client's credit records"
-    )
-    clients: Optional[List["ClientShort"]] = Field(None, description="List of clients assigned to this broker")
+    id: UUID
+    email: EmailStr
+    company_name: Optional[str]
+    region: Optional[List[str]]
+    applications: Optional[List[ApplicationShort]] = Field(default_factory=list)
+    credits: Optional[List[CreditShort]] = Field(default_factory=list)
     is_deleted: bool = False
 
 
@@ -72,32 +63,23 @@ class BrokerShort(SchemaBase):
     id: UUID
     email: EmailStr
     company_name: Optional[str] = None
-    region: Optional[List[str]] = Field(None, description="List of regions where the broker is active")
+    region: Optional[List[str]] = None
     is_deleted: bool = False
 
+
 class BrokerAdminOut(SchemaBase):
-    """
-    Schema for a Client as seen by a Broker — includes worker info.
-    """
     id: UUID
     email: EmailStr
-    company_name: Optional[str] = None
-    region: Optional[List[str]] = Field(None, description="List of regions where the broker is active")
+    company_name: Optional[str]
+    region: Optional[List[str]]
     created_at: datetime
     is_deleted: bool = False
 
 
 class BrokerSchema:
-    Base:   Type[BaseModel] = BrokerBase
+    Base: Type[BaseModel] = BrokerBase
     Create: Type[BaseModel] = BrokerCreate
     Update: Type[BaseModel] = BrokerUpdate
-    Out:    Type[BaseModel] = BrokerOut
-    Short:  Type[BaseModel] = BrokerShort
+    Out: Type[BaseModel] = BrokerOut
+    Short: Type[BaseModel] = BrokerShort
     WebRegisterResponse: Type[BaseModel] = BrokerWebRegisterResponse
-
-from importlib import import_module
-
-_broker_mod = import_module("app.schemas.entities.client_schema")
-globals()["ClientShort"] = _broker_mod.ClientSchema.Short
-_broker_mod = import_module("app.schemas.entities.credit_schema")
-globals()["CreditShort"] = _broker_mod.CreditSchema.Short

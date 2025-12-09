@@ -8,7 +8,7 @@ from their respective sub-packages, offering a single entry point for imports.
 # === Entities ===
 from .entities.user import User
 from .entities.admin import Admin
-from .entities.client import Client
+from .entities.application import Application
 from .entities.broker import Broker
 from .entities.worker import Worker
 from .entities.credit import Credit
@@ -28,7 +28,7 @@ from .sessions.refresh_token import RefreshToken
 
 __all__ = [
     # Entities
-    "User", "Admin", "Client", "Broker", "Worker", "Credit", "RegistrationInvite", "Promotion",
+    "User", "Admin", "Application", "Broker", "Worker", "Credit", "RegistrationInvite", "Promotion",
 
     # Mixins
     "AuthMixin", "DynamicLinkAuthMixin", "SoftDeleteMixin",
