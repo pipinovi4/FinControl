@@ -6,19 +6,31 @@ import os
 from telegram import Update, InputMediaPhoto
 from telegram.ext import ContextTypes
 
-from constants.callbacks import CB_COUNTRY_BACK
+from constants.callbacks import (
+    CB_COUNTRY_BACK,
+    CB_BACK, CB_NEXT, CB_CANCEL,
+    CB_EDIT, CB_SUBMIT, CB_SAVE
+)
+
 from core.logger import log
 from locales import translate as t, WELCOME_BILINGUAL
 from handlers.application.prompt import send_step_prompt
-from keyboards import kb_regions, kb_countries, kb_main_menu, kb_about, kb_applications, kb_support
-from ui import safe_edit, replace_with_text, upsert_progress_panel, reset_ui
+from keyboards import (
+    kb_regions, kb_countries, kb_main_menu,
+    kb_about, kb_applications, kb_support
+)
+
+from ui import safe_edit, replace_with_text, reset_ui
 from wizard.engine import WizardEngine
 from config.master_steps import MASTER_STEPS
+
+# NEW — routers
+from handlers.application.router_selector import get_router
 
 from constants import (
     CB_REGION, CB_COUNTRY, CB_MENU,
     LANG_BY_COUNTRY, COUNTRY_TITLE,
-    ABOUT_PHOTO_MSG_ID, ABOUT_TEXT_MSG_ID,
+    ABOUT_PHOTO_MSG_ID, ABOUT_TEXT_MSG_ID, CB_GOTO,
 )
 
 from locales import (
@@ -31,9 +43,6 @@ from locales import (
 # Cleanup helper for ABOUT section
 # ============================================================
 async def cleanup_about(chat, context: ContextTypes.DEFAULT_TYPE):
-    """
-    Deletes stored ABOUT media/text if they were previously sent.
-    """
     photo_id = context.user_data.pop(ABOUT_PHOTO_MSG_ID, None)
     text_id = context.user_data.pop(ABOUT_TEXT_MSG_ID, None)
 
@@ -50,21 +59,35 @@ async def cleanup_about(chat, context: ContextTypes.DEFAULT_TYPE):
 # MAIN INLINE CALLBACK ROUTER
 # ============================================================
 async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
     q = update.callback_query
     await q.answer()
 
     data = q.data or ""
     lang = context.user_data.get("lang", "en")
 
+    wizard = context.user_data.get("wizard")
+    panel_mode = context.user_data.get("panel_mode")
+
+    # ---------------------------------------------------------
+    # PANEL ROUTING (progress/review/edit)
+    # ---------------------------------------------------------
+    if wizard and data.startswith(CB_GOTO):
+        router = get_router(update, context)
+        return await router.on_callback(data)
+
+    WIZARD_CALLBACKS = {CB_CANCEL, CB_BACK, CB_NEXT, CB_EDIT, CB_SUBMIT, CB_SAVE}
+
+    if wizard and data in WIZARD_CALLBACKS:
+        router = get_router(update, context)
+        return await router.on_callback(data)
     # ---------------------------------------------------------
     # REGION SELECTED
     # ---------------------------------------------------------
     if data.startswith(CB_REGION):
         region_code = data.split(":", 1)[1]
-
         context.user_data["region"] = region_code
 
+        # if no country selected yet
         if "country" not in context.user_data:
             return await safe_edit(
                 q,
@@ -85,15 +108,11 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # ---------------------------------------------------------
     if data.startswith(CB_COUNTRY):
         country_code = data.split(":", 1)[1]
-
-        # Зберігаємо країну
         context.user_data["country"] = country_code
 
-        # Визначаємо мову за країною
         lang = LANG_BY_COUNTRY.get(country_code, "en")
         context.user_data["lang"] = lang
 
-        # Формуємо текст
         text = (
             t(lang, "bodies.after_country_selected", country=COUNTRY_TITLE.get(country_code, country_code))
             + "\n\n"
@@ -109,7 +128,6 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if data == CB_COUNTRY_BACK:
         if "country" not in context.user_data:
-            # fallback, наприклад, показати регионы
             return await safe_edit(
                 q,
                 WELCOME_BILINGUAL,
@@ -133,23 +151,28 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     action = data.split(":", 1)[1]
 
     # ---------------------------------------------------------------
-    # APPLY — start wizard flow
+    # APPLY — start wizard
     # ---------------------------------------------------------------
     if action == BTN_APPLY:
-        # Full UI reset (remove panels + prompt)
         await reset_ui(q, context)
 
         country = context.user_data.get("country", "US")
         lang = context.user_data.get("lang", "en")
 
-        engine = WizardEngine(country=country, lang=lang, base_steps=MASTER_STEPS, debug=True)
+        engine = WizardEngine(
+            country=country,
+            lang=lang,
+            base_steps=MASTER_STEPS,
+            debug=True
+        )
         context.user_data["wizard"] = engine
+        context.user_data["panel_mode"] = "progress"
 
-        await upsert_progress_panel(q.message, context)
+        # delegate panel to router
+        router = get_router(update, context)
+        await router.update_panel()
 
-        # first step
         step = engine.current_step()
-
         return await send_step_prompt(q.message, context, lang, country, step.key)
 
     # ---------------------------------------------------------------
@@ -159,7 +182,6 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await cleanup_about(q.message.chat, context)
 
         support_username = os.getenv("TELEGRAM_BOT_SUPPORT_USERNAME", "WorldFlowSupport")
-
         return await safe_edit(
             q,
             t(lang, "bodies.support_text", support_username=support_username),
@@ -174,7 +196,6 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await cleanup_about(q.message.chat, context)
 
         file_id = os.getenv("ABOUT_FILE_ID")
-
         caption = t(lang, "bodies.about_full")
 
         if file_id:
@@ -192,6 +213,7 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             except Exception as e:
                 log.warning(f"[ABOUT] Failed to replace media: {e}")
 
+        # fallback text
         context.user_data[ABOUT_TEXT_MSG_ID] = q.message.message_id
         return await safe_edit(
             q,
@@ -214,12 +236,14 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
     # ---------------------------------------------------------------
-    # MY APPLICATIONS (placeholder)
+    # MY APPLICATIONS
     # ---------------------------------------------------------------
     if action == BTN_MY_APPS:
         return await safe_edit(
             q,
-            t(lang, "bodies.my_apps_stub") + "\n\n" + t(lang, "titles.menu_title"),
+            t(lang, "bodies.my_apps_stub")
+            + "\n\n"
+            + t(lang, "titles.menu_title"),
             reply_markup=kb_applications(lang),
             parse_mode="HTML"
         )

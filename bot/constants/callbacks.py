@@ -21,6 +21,12 @@ CB_BACK = "nav:back"
 CB_NEXT = "nav:next"
 CB_CANCEL = "nav:cancel"
 
+CB_SUBMIT = "submit"
+CB_EDIT = "edit"
+CB_SAVE = "save"
+CB_GOTO = "goto:"   # goto:<step_index>
+
 __all__ = [
-    "CB_REGION", "CB_COUNTRY", "CB_MENU", "CB_BACK", "CB_NEXT", "CB_CANCEL", "CB_COUNTRY_BACK",
+    "CB_REGION", "CB_COUNTRY", "CB_MENU", "CB_BACK", "CB_NEXT",
+    "CB_CANCEL", "CB_COUNTRY_BACK", "CB_SUBMIT", "CB_EDIT", "CB_SAVE", "CB_GOTO"
 ]

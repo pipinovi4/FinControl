@@ -1,5 +1,4 @@
 # ui/safe_io.py
-
 from __future__ import annotations
 from typing import Optional
 
@@ -7,9 +6,10 @@ from telegram import Message
 from telegram.error import BadRequest, Forbidden, TelegramError
 
 from core.logger import log
-from ui import wipe_all_progress_panels
+
 
 async def _try_delete_message(message: Message):
+    """Safely delete a message (ignore all safe exceptions)."""
     try:
         await message.delete()
     except (BadRequest, Forbidden):
@@ -18,7 +18,13 @@ async def _try_delete_message(message: Message):
         log.debug(f"[safe_delete] TelegramError while deleting: {e}")
 
 
+# ---------------------------------------------------------------------
+# SAFE EDIT (universal)
+# ---------------------------------------------------------------------
 async def safe_edit(q, text: str, reply_markup=None, parse_mode: Optional[str] = None):
+    """
+    Edit a text or caption safely. If edit fails → delete and send new.
+    """
     m: Message = q.message
 
     is_media = any([
@@ -52,6 +58,9 @@ async def safe_edit(q, text: str, reply_markup=None, parse_mode: Optional[str] =
     )
 
 
+# ---------------------------------------------------------------------
+# Replace message with NEW — always delete + send
+# ---------------------------------------------------------------------
 async def replace_with_text(q, text: str, reply_markup=None, parse_mode=None):
     m: Message = q.message
     await _try_delete_message(m)
@@ -63,19 +72,36 @@ async def replace_with_text(q, text: str, reply_markup=None, parse_mode=None):
     )
 
 
+# ---------------------------------------------------------------------
+# Safe delete single callback message
+# ---------------------------------------------------------------------
 async def safe_delete(q):
     await _try_delete_message(q.message)
 
 
+# ---------------------------------------------------------------------
+# Reset UI – in new architecture:
+# delete the pressed message + clear panel_ids
+# ---------------------------------------------------------------------
 async def reset_ui(q, context):
     chat = q.message.chat
 
+    # delete the pressed callback message
     await _try_delete_message(q.message)
 
-    try:
-        await wipe_all_progress_panels(chat, context)
-    except Exception as e:
-        log.debug(f"[reset_ui] Cannot wipe panels: {e}")
+    # clean all panel messages (BasePanel mechanics)
+    panel_ids = context.user_data.get("panel_ids", [])
+    for mid in panel_ids:
+        try:
+            await chat.delete_message(mid)
+        except Exception:
+            pass
 
-    # cleanup_about тут більше НЕ викликаємо
-    # це буде робити menu.py (UI logic)
+    context.user_data["panel_ids"] = []
+
+__all__ = [
+    "safe_delete",
+    "safe_edit",
+    "replace_with_text",
+    "reset_ui",
+]

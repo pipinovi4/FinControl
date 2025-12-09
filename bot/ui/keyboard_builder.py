@@ -9,20 +9,20 @@ def build_keyboard(lang: str, country: str, step_key: str):
     quick_map = locale.get("quick", {})
 
     # --------------------------
-    # Correct country override
+    # Safe override
     # --------------------------
-    cfg = steps_by_country.get(country, {}).get(step_key)
+    cfg = (steps_by_country.get(country) or {}).get(step_key)
     if not cfg:
         cfg = steps.get(step_key, {})
+    if not isinstance(cfg, dict):
+        cfg = {}
 
     # ============================================================
-    # 1. DIRECT PHONE INPUT
+    # 1. PHONE INPUT
     # ============================================================
     if cfg.get("input") == "phone":
         return ReplyKeyboardMarkup(
-            [
-                [KeyboardButton(t(lang, "steps.share_phone"), request_contact=True)]
-            ],
+            [[KeyboardButton(t(lang, "steps.share_phone"), request_contact=True)]],
             resize_keyboard=True,
             one_time_keyboard=True,
         )
@@ -35,7 +35,7 @@ def build_keyboard(lang: str, country: str, step_key: str):
         return ReplyKeyboardMarkup(
             [[KeyboardButton(o)] for o in options],
             resize_keyboard=True,
-            one_time_keyboard=True
+            one_time_keyboard=True,
         )
 
     # ============================================================
@@ -46,34 +46,29 @@ def build_keyboard(lang: str, country: str, step_key: str):
         rows = []
 
         for item in quick_opts:
-
-            # contact button
             if isinstance(item, dict) and item.get("type") == "contact":
-                rows.append([KeyboardButton(
-                    text=item.get("text", "📱 Отправить номер"),
-                    request_contact=True
-                )])
+                rows.append([
+                    KeyboardButton(item.get("text", "📱 Отправить номер"), request_contact=True)
+                ])
                 continue
 
-            # canonical buttons
             if isinstance(item, dict) and "text" in item:
                 rows.append([KeyboardButton(item["text"])])
                 continue
 
-            # plain string button
             rows.append([KeyboardButton(str(item))])
 
-        return ReplyKeyboardMarkup(
-            rows,
-            resize_keyboard=True,
-            one_time_keyboard=True,
-        )
+        return ReplyKeyboardMarkup(rows, resize_keyboard=True, one_time_keyboard=True)
 
     # ============================================================
-    # 4. YES / NO
+    # 4. YES/NO
     # ============================================================
     if cfg.get("input") == "yesno":
-        yes, no = quick_map.get("yes_no", ["Yes", "No"])
+        yes_no = quick_map.get("yes_no")
+        if isinstance(yes_no, (list, tuple)) and len(yes_no) == 2:
+            yes, no = yes_no
+        else:
+            yes, no = "Yes", "No"
 
         return ReplyKeyboardMarkup(
             [
@@ -81,14 +76,13 @@ def build_keyboard(lang: str, country: str, step_key: str):
                 [KeyboardButton(no)]
             ],
             resize_keyboard=True,
-            one_time_keyboard=True
+            one_time_keyboard=True,
         )
 
     # ============================================================
-    # 5. DEFAULT
+    # 5. DEFAULT → remove keyboard
     # ============================================================
     return ReplyKeyboardRemove()
 
-__all__ = [
-    "build_keyboard",
-]
+
+__all__ = ["build_keyboard"]

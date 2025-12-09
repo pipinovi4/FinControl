@@ -6,8 +6,7 @@ Validates:
 - max file size
 """
 
-from typing import Tuple
-from .base import ok, error
+from typing import Tuple, Any
 
 ALLOWED_TYPES = {
     "image/jpeg",
@@ -19,30 +18,31 @@ ALLOWED_TYPES = {
 MAX_SIZE_MB = 10
 
 
-async def validate_document(value: dict) -> Tuple[bool, str]:
+async def validate_document(value: Any) -> Tuple[bool, Any]:
     """
-    value = {
-        "file_id": str,
-        "mime": str,
-        "size": int,
-        "name": str
-    }
+    value may be:
+    - dict (one file)
+    - list[dict] (multi-file)
     """
 
-    if not isinstance(value, dict):
-        return error("errors.invalid_file")
+    # Case 1 — ONE FILE
+    if isinstance(value, dict):
+        if "file_id" not in value:
+            return False, "Некорректный файл"
 
-    file_id = value.get("file_id")
-    mime = value.get("mime")
-    size = value.get("size", 0)
+        return True, value
 
-    if not file_id:
-        return error("errors.no_document")
+    # Case 2 — MULTI FILE
+    if isinstance(value, list):
 
-    if mime and mime not in ALLOWED_TYPES:
-        return error("errors.unsupported_file_type")
+        if not value:
+            return False, "Не найдено файлов"
 
-    if size > MAX_SIZE_MB * 1024 * 1024:
-        return error("errors.file_too_large")
+        for i, f in enumerate(value):
 
-    return ok()
+            if "file_id" not in f:
+                return False, "Некорректный файл"
+
+        return True, value
+
+    return False, "Некорректный формат файла"

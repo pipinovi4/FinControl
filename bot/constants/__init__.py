@@ -32,7 +32,8 @@ from .app_state import (
 
 # Callback helpers
 from .callbacks import (
-    CB_COUNTRY, CB_MENU, CB_REGION, CB_COUNTRY_BACK, CB_BACK, CB_NEXT, CB_CANCEL
+    CB_COUNTRY, CB_MENU, CB_REGION, CB_COUNTRY_BACK,
+    CB_BACK, CB_NEXT, CB_CANCEL, CB_SUBMIT, CB_EDIT, CB_SAVE, CB_GOTO
 )
 
 # Country/region mappings
@@ -49,8 +50,8 @@ __all__ = [
     "ABOUT_PHOTO_MSG_ID", "ABOUT_TEXT_MSG_ID",
 
     # callback builders
-    "CB_COUNTRY", "CB_MENU", "CB_REGION",
-    "CB_COUNTRY_BACK", "CB_BACK", "CB_NEXT", "CB_CANCEL",
+    "CB_COUNTRY", "CB_MENU", "CB_REGION", "CB_COUNTRY_BACK",
+    "CB_BACK", "CB_NEXT", "CB_CANCEL", "CB_EDIT", "CB_SUBMIT", "CB_SAVE", "CB_GOTO",
 
     # country/region maps
     "REGIONS", "COUNTRIES_BY_REGION",
