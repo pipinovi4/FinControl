@@ -11,10 +11,10 @@ from typing import Awaitable, Callable, TypeVar, Type, Any
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from app.schemas import AdminSchema, WorkerSchema, BrokerSchema, ClientSchema, UserSchema
+from app.schemas import AdminSchema, WorkerSchema, BrokerSchema
 from app.utils.decorators import handle_route_exceptions
 
-SchemaT = TypeVar("SchemaT", AdminSchema, WorkerSchema, BrokerSchema, ClientSchema)
+SchemaT = TypeVar("SchemaT", AdminSchema, WorkerSchema, BrokerSchema)
 
 # Thin wrapper around `router.<verb>()`                                    #
 def generate_crud_endpoints(

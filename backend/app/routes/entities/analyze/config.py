@@ -10,7 +10,7 @@ Each bundle contains:
     * interface service         – UI-specific helpers or DTO mappers
     * filter service            – role-specific query rules
     * util   service            – light, ad-hoc helpers
-    * Pydantic schema class     – object returned to the client layer
+    * Pydantic schema class     – object returned to the application layer
 
 **Why do we wrap classes with `RoleServiceWrapper`?**
 
@@ -38,13 +38,14 @@ from pydantic import BaseModel
 
 from app.permissions import PermissionRole
 from app.schemas.entities.filters import (
-    WorkerFilterSchema, BrokerFilterSchema, AdminFilterSchema,
+    WorkerFilterSchema, BrokerFilterSchema, AdminFilterSchema, UserFilterSchema
 )
 from app.services.entities import (
     AdminService, WorkerService, BrokerService,
     AdminInterfaceService, WorkerInterfaceService,
-    BrokerInterfaceService, BrokerFilterService,
+    BrokerInterfaceService,
     AdminFilterService,  WorkerFilterService,
+    BrokerFilterService,
 )
 from app.utils.protocols import BaseService
 from app.utils.wrappers import RoleServiceWrapper
@@ -52,22 +53,40 @@ from app.utils.types import RoleBundle
 from app.routes.entities.analyze.types import RawTuple
 
 
-_RAW: Dict[PermissionRole, RawTuple] = {
+from app.permissions import PermissionRole
+from app.schemas.entities.filters import (
+    WorkerFilterSchema, BrokerFilterSchema,
+    AdminFilterSchema, UserFilterSchema
+)
+from app.services.entities import (
+    AdminService, WorkerService, BrokerService,
+    AdminInterfaceService, WorkerInterfaceService,
+    BrokerInterfaceService,
+    AdminFilterService, WorkerFilterService,
+    BrokerFilterService,
+)
+from app.utils.wrappers import RoleServiceWrapper
+from app.utils.types import RoleBundle
+
+_RAW = {
     PermissionRole.ADMIN: (
         "/admin",
-        AdminService,  AdminInterfaceService,
+        AdminService,
+        AdminInterfaceService,
         AdminFilterService,
         AdminFilterSchema,
     ),
     PermissionRole.WORKER: (
         "/worker",
-        WorkerService, WorkerInterfaceService,
+        WorkerService,
+        WorkerInterfaceService,
         WorkerFilterService,
         WorkerFilterSchema,
     ),
     PermissionRole.BROKER: (
         "/broker",
-        BrokerService, BrokerInterfaceService,
+        BrokerService,
+        BrokerInterfaceService,
         BrokerFilterService,
         BrokerFilterSchema,
     ),
@@ -87,17 +106,4 @@ def _build_bundle(
     return RoleBundle(
         prefix=prefix,
         service=RoleServiceWrapper(svc_cls),
-        interface=RoleServiceWrapper(ui_cls),
-        filter=RoleServiceWrapper(flt_cls),
-        schema=schema_cls.Out,
-    )
-
-
-ROLE_REGISTRY: Dict[PermissionRole, RoleBundle] = {
-    role: _build_bundle(*raw_tuple)
-    for role, raw_tuple in _RAW.items()
-}
-
-__all__ = [
-    "ROLE_REGISTRY"
-]
+        interface=RoleServiceWrapper(ui

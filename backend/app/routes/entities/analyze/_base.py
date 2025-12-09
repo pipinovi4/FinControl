@@ -7,7 +7,7 @@ from app.utils.middlewares.limiter import rate_limit
 def generate_analyze_endpoints(
     router: APIRouter,
     *,
-    path: str,  # e.g. "clients_growth"
+    path: str,  # e.g. "applications_growth"
     handler: Callable[..., Awaitable],
     tags: list[str],
     wrapper: Callable[[Callable[..., Awaitable]], Callable[..., Awaitable]] = handle_route_exceptions,

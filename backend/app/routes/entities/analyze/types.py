@@ -9,7 +9,6 @@ from app.schemas.entities.filters import (
 )
 
 # ⛔ NOTICE:
-# ClientFilterSchema видаляється з системи разом із Legacy Client
 FilterSchemaT = TypeVar(
     "FilterSchemaT",
     AdminFilterSchema,
@@ -27,47 +26,35 @@ RawTuple = Tuple[
 ]
 
 
+from enum import Enum
+
 class AnalyzeType(str, Enum):
     """
-    Supported analytics metrics.
-
-    Each value must correspond to a method named `run_<metric>`
-    inside the appropriate Service class.
+    Application-centric analytics metrics.
     """
 
-    # ─────────────────────────────────────────────
-    # 📂 Application-centric metrics (MAIN FOCUS)
-    # ─────────────────────────────────────────────
+    # Applications
+    APPLICATIONS_GROWTH = "applications_growth"
+    APPLICATIONS_PER_BROKER = "applications_per_broker"
+    APPLICATIONS_PER_WORKER = "applications_per_worker"
 
-    APPLICATIONS_GROWTH = "applications_growth"              # Trend of created applications over time
-    APPLICATIONS_PER_BROKER = "applications_per_broker"      # Distribution of applications by broker
-    APPLICATIONS_PER_WORKER = "applications_per_worker"      # Distribution of applications by worker
+    APPLICATIONS_SUMMARY = "applications_summary"
+    APPLICATIONS_OVER_TIME = "applications_over_time"
+    APPLICATIONS_BY_SOURCE = "applications_by_source"
 
-    APPLICATIONS_SUMMARY = "applications_summary"            # Total, approved, rejected, pending
-    APPLICATIONS_OVER_TIME = "applications_over_time"        # Apps per day/week/month
-    APPLICATIONS_BY_SOURCE = "applications_by_source"        # Source channels segmentation
+    # Financial
+    REVENUE_PER_DAY = "revenue_per_day"
+    AVERAGE_AMOUNT = "average_amount"
+    TOTAL_REVENUE = "total_revenue"
 
-    # ─────────────────────────────────────────────
-    # 💰 Financial metrics
-    # ─────────────────────────────────────────────
-    REVENUE_PER_DAY = "revenue_per_day"                      # Issued credits per day
-    AVERAGE_AMOUNT = "average_amount"                        # Avg issued amount
-    TOTAL_REVENUE = "total_revenue"                          # Sum(amount) of all credit operations
-
-    # ─────────────────────────────────────────────
-    # 👥 User activity metrics
-    # ─────────────────────────────────────────────
+    # User-related
     ACTIVE_USERS_TODAY = "active_users_today"
     LAST_LOGIN_DISTRIBUTION = "last_login_distribution"
 
-    # ─────────────────────────────────────────────
-    # 🏢 Organizational metrics
-    # ─────────────────────────────────────────────
-    BROKERS_ACTIVITY = "brokers_activity"                    # Activity level based on app count
-    WORKERS_ACTIVITY = "workers_activity"                    # Same but for workers
+    # Organization
+    BROKERS_ACTIVITY = "brokers_activity"
+    WORKERS_ACTIVITY = "workers_activity"
 
-    # ─────────────────────────────────────────────
-    # 📊 System diagnostics
-    # ─────────────────────────────────────────────
+    # System
     SYSTEM_LOAD = "system_load"
     ERRORS_PER_DAY = "errors_per_day"

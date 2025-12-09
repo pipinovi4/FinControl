@@ -49,7 +49,7 @@ def make_analyze_websocket_handler(
             # (Optional) add support for dynamic filters via `receive_json`
             query = await flt_instance.apply()
 
-            # Find and run appropriate method (e.g. run_clients_growth)
+            # Find and run appropriate method (e.g. run_applications_growth)
             method_name = f"run_{metric.value}"
             if not hasattr(service, method_name):
                 raise WebSocketException(code=status.WS_1011_INTERNAL_ERROR)
@@ -80,17 +80,7 @@ def make_analyze_websocket_handler(
 
 
 def create_analyze_ws_routers() -> List[APIRouter]:
-    """
-    Generates all role-prefixed routers for analysis WebSocket endpoints.
-
-    Each role gets its own router at:
-        🔸 /<role>/ws/analyze/<metric>
-
-    Example:
-        /admin/ws/analyze/clients_growth
-        /worker/ws/analyze/revenue_per_day
-    """
-    routers: List[APIRouter] = []
+    routers = []
 
     for role, bundle in ROLE_REGISTRY.items():
         router = APIRouter(prefix=f"{bundle.prefix}/ws/analyze")

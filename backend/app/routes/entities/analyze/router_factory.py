@@ -71,10 +71,10 @@ def make_analyze_handler(
     return _handler
 
 def create_analyze_routers() -> List[APIRouter]:
-    routers: List[APIRouter] = []
+    routers = []
 
     for role, bundle in ROLE_REGISTRY.items():
-        router = APIRouter(prefix=bundle.prefix)
+        router = APIRouter(prefix=bundle.prefix + "/analyze")
 
         for metric in AnalyzeType:
             handler = make_analyze_handler(
@@ -84,12 +84,11 @@ def create_analyze_routers() -> List[APIRouter]:
                 role=role,
                 metric=metric,
             )
-
             generate_analyze_endpoints(
                 router=router,
                 path=metric.value,
                 handler=handler,
-                tags=[f"{role.value}"],
+                tags=[role.value],
                 rate_limit_rule="20/minute",
                 name=handler.__name__,
             )
