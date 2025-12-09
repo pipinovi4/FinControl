@@ -8,7 +8,7 @@ from db.session import Base
 class User(Base, AuthMixin, UUIDMixin, TimeStampMixin, SoftDeleteMixin):
     """
     Base user model used as a parent class for all user roles:
-    Client, Worker, Broker, and Admin.
+    Application, Worker, Broker, and Admin.
 
     Inherits:
     - UUIDMixin: provides UUID primary key as 'id'
@@ -24,7 +24,7 @@ class User(Base, AuthMixin, UUIDMixin, TimeStampMixin, SoftDeleteMixin):
         Enum(PermissionRole),
         nullable=False
     )
-    # Enum-based user role: defines access level and behavior (e.g., application, admin)
+    # Enum-based user role: defines access level and behavior (e.g., client, admin)
 
     is_active: Mapped[bool] = mapped_column(
         default=True,

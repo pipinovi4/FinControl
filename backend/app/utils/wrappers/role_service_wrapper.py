@@ -19,7 +19,7 @@ class RoleServiceWrapper(Generic[S]):
     Parameters
     ----------
     svc_or_cls : type[S]
-        A service class (`AdminService`, `ClientService`, etc).
+        A service class (`AdminService`, `ApplicationService`, etc).
     extra_allowed : Optional set of additional method names to expose.
     """
 

@@ -36,7 +36,7 @@ class PasswordService:
         password: str,
     ) -> Optional[User]:
         """
-        Returns polymorphic `User` instance (Admin | Worker | Broker | Client)
+        Returns polymorphic `User` instance (Admin | Worker | Broker )
         if credentials are valid, otherwise `None`.
         """
         stmt = (
