@@ -1,7 +1,6 @@
 from wizard.step import Step
 
 MASTER_STEPS = [
-
     # Access code
     Step("access_code", countries=["RU", "BY", "KZ"]),
     Step("inn_ru", countries=["RU"]),
@@ -17,7 +16,7 @@ MASTER_STEPS = [
     Step("dob"),
     Step("marital_status"),
 
-    # Employment root
+    # # Employment root
     Step("employment_status"),
 
     # Credit Reports (country-specific)
